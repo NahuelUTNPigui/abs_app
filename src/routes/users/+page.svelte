@@ -1,15 +1,17 @@
 <script>
   import Navbarr from '$lib/Navbarr.svelte';
+  
   import Swal from 'sweetalert2'
   import PocketBase from 'pocketbase'
   import { onMount } from 'svelte';
   import CronogramaModal from './CronogramaModal.svelte';
   import {coordinadora} from '$lib/coordinadora'
-  let ruta = 'http://127.0.0.1:8090'
+  let ruta = import.meta.env.VITE_RUTA
   const pb = new PocketBase(ruta);
   let voluntarias = []
   let cronogramas = []
   onMount(async ()=>{
+    console.log()
     const recordsv = await pb.collection('users').getFullList({filter:"active=true"});
     voluntarias  = recordsv
     const recordscrono = await pb.collection('cronogramas').getFullList({
@@ -229,6 +231,7 @@
         })
         cronogramas = recordscrono.map(c=>({
           userid:c.expand.user.id,
+          id:c.id,
           lunes:{
             turno:c.lunes?c.lunestarde?"tarde":"man":"no",
             fijo:c.lunes?c.lunesback?"emer":"fijo":"no"
@@ -298,6 +301,7 @@
         })
         cronogramas = recordscrono.map(c=>({
           userid:c.expand.user.id,
+          id:c.id,
           lunes:{
             turno:c.lunes?c.lunestarde?"tarde":"man":"no",
             fijo:c.lunes?c.lunesback?"emer":"fijo":"no"

@@ -1,5 +1,5 @@
 import PocketBase from 'pocketbase'
-let ruta = 'http://127.0.0.1:8090'
+let ruta = import.meta.env.VITE_RUTA
 
 export async function load({params}){
     
