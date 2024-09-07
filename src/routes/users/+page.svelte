@@ -288,13 +288,6 @@
         cel = ""
         idvol = ""
         coordinador = false
-        fomerrores={
-          nombre:false,
-          apellido:false,
-          cel:false,
-          contra:false,
-          confirmcontra:false
-        }
         const recordscrono = await pb.collection('cronogramas').getFullList({
           expand:"user",
           filter:"user.active=true"

@@ -48,7 +48,7 @@ export async function load({params}){
       let fila = recordscrono[i]
       if(fila.lunes){
           if(fila.lunesback){
-              lunes.back.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
+              lunes.back.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+": "+fila.expand.user.celular)
           }
           else if(fila.lunestarde){
               lunes.tar.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
@@ -59,7 +59,7 @@ export async function load({params}){
       }
       if(fila.martes){
         if(fila.martesback){
-          martes.back.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
+          martes.back.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+": "+fila.expand.user.celular)
         }
         else if(fila.martestarde){
           martes.tar.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
@@ -70,7 +70,7 @@ export async function load({params}){
       }
       if(fila.miercoles){
         if(fila.miercolesback){
-          miercoles.back.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
+          miercoles.back.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+": "+fila.expand.user.celular)
         }
         else if(fila.miercolestarde){
           miercoles.tar.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
@@ -81,7 +81,7 @@ export async function load({params}){
     }
     if(fila.jueves){
       if(fila.juevesback){
-        jueves.back.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
+        jueves.back.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+": "+fila.expand.user.celular)
       }
       else if(fila.juevestarde){
         jueves.tar.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
@@ -92,7 +92,7 @@ export async function load({params}){
   }
   if(fila.viernes){
     if(fila.viernesback){
-      viernes.back.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
+      viernes.back.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+": "+fila.expand.user.celular)
     }
     else if(fila.viernestarde){
       viernes.tar.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
@@ -103,7 +103,7 @@ export async function load({params}){
   }
   if(fila.sabado){
     if(fila.sabadoback){
-      sabado.back.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
+      sabado.back.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+": "+fila.expand.user.celular)
     }
     else if(fila.sabadotarde){
       sabado.tar.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
@@ -114,7 +114,7 @@ export async function load({params}){
   }
   if(fila.domingo){
     if(fila.domingoback){
-      domingo.back.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
+      domingo.back.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+": "+fila.expand.user.celular)
     }
     else if(fila.domingotarde){
       domingo.tar.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
