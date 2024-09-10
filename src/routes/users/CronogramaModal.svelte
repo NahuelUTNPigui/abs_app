@@ -101,7 +101,7 @@
             sabadoback:cronovoluntaria.sabado.turno=="no"?false:cronovoluntaria.sabado.fijo=="emer"?true:false,
 
             domingo:cronovoluntaria.domingo.turno=="no"?false:true,
-            domingotarde:cronovoluntaria.domingo.turno=="no"?false:cronovoluntaria.lundomingoes.turno=="tarde"?true:false,
+            domingotarde:cronovoluntaria.domingo.turno=="no"?false:cronovoluntaria.domingo.turno=="tarde"?true:false,
             domingoback:cronovoluntaria.domingo.turno=="no"?false:cronovoluntaria.domingo.fijo=="emer"?true:false,
         }
         try{
