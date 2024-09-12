@@ -6,9 +6,12 @@
   import {usuario} from '$lib/usuario'
   import { goto } from '$app/navigation';
   import {coordinadora} from '$lib/coordinadora'
-  let ruta = 'http://127.0.0.1:8090'
-  onMount(()=>{
+  let ruta = import.meta.env.VITE_RUTA
+  let nombreusuario = ''
+  onMount(async ()=>{
     let hab = $enabled
+    let pb_json = await JSON.parse(localStorage.getItem('pocketbase_auth'))
+    nombreusuario = pb_json.model.apellido+", "+pb_json.model.name
     if(hab==="no"){
       goto("/")
     }
@@ -54,6 +57,8 @@
               <a href="/" class="btn btn-ghost text-3xl">Abrazadoras</a>
             </div>
             <div class="flex-none">
+              <span>{nombreusuario}</span>
+              
               <details class="dropdown">
                 <summary class="btn btn-square btn-ghost">
                   <svg

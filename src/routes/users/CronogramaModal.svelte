@@ -111,7 +111,7 @@
             
         }
         catch(e){
-            console.log(e)
+            Swal.fire('Error editar', 'No se pude editar al cronograma', 'error');
         }
     }
     let edit = false

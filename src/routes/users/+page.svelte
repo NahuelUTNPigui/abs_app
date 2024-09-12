@@ -8,12 +8,18 @@
   import {coordinadora} from '$lib/coordinadora'
   let ruta = import.meta.env.VITE_RUTA
   const pb = new PocketBase(ruta);
+  let usuarioid = ""
+  let escoordinador=false
   let voluntarias = []
   let cronogramas = []
   onMount(async ()=>{
-    console.log()
     const recordsv = await pb.collection('users').getFullList({filter:"active=true"});
+
     voluntarias  = recordsv
+    let pb_json = await JSON.parse(localStorage.getItem('pocketbase_auth'))
+    usuarioid = pb_json.model.id
+    escoordinador = pb_json.model.coordinador
+
     const recordscrono = await pb.collection('cronogramas').getFullList({
       expand:"user",
       filter:"user.active=true"
@@ -58,7 +64,9 @@
   let idvol = ""
   let contra = ""
   let confirmcontra = ""
+  let oldcontra=""
   let coordinador = false
+  let cambiarcontra=false
   let cronovol = {
         userid:"",
         id:"",
@@ -154,20 +162,40 @@
       
     }
     else{
+      console.log(escoordinador);
+      console.log(usuarioid);
+      if(!escoordinador && idvol != usuarioid){
+        Swal.fire('Error modificar', 'Solo el usuario o una coordinadora puede modificar los datos', 'error');
+        return false
+      }
       if(isEmpty(nombre)){
-        Swal.fire('Error guardar', 'El nombre esta vacio', 'error');
+        Swal.fire('Error modificar', 'El nombre esta vacio', 'error');
         return false
       }
       if(isEmpty(apellido)){
-        Swal.fire('Error guardar', 'El apellido esta vacio', 'error');
+        Swal.fire('Error modificar', 'El apellido esta vacio', 'error');
         return false
+      }
+      if(cambiarcontra){
+        if(contra.length < 10){
+          Swal.fire('Error modificar', 'La contraseña debe tener al menos 10 caracteres', 'error');
+          return false
+        }
+        if(contra != confirmcontra){
+          Swal.fire('Error modificar', 'La contraseña debe coincidir con el confirmar contraseña', 'error');
+          return false
+        }
+        if(oldcontra==""){
+          Swal.fire('Error modificar', 'La contraseña vieja no puede estar vacia', 'error');
+          return false
+        }
       }
     }
     return true
   }
   async function guardar(){
     let c = $coordinadora
-    if(c=="No" || c==""){
+    if(idvol=="" && (c=="No" || c=="")){
       Swal.fire('Error guardar', 'No tienes permisos para guardar la voluntaria', 'error');
       return
     }
@@ -261,10 +289,11 @@
             fijo:c.domingo?c.domingoback?"emer":"fijo":"no"
           }
         }))
+        Swal.fire('Éxito guardar', 'Voluntaria guardada con éxito', 'success');
       }
       catch(e){
         Swal.fire('Error guardar', 'No se pudo guardar la voluntaria', 'error');
-        console.log(e)
+
       }
     }
     else{
@@ -275,11 +304,18 @@
       let data = {
         username : (nombre+apellido).toLowerCase()+"_abs",
         name:nombre,
-        email: (nombre+apellido).toLowerCase()+"@abs.com",
+        //email: (nombre+apellido).toLowerCase()+"@abs.com",
+        //emailVisibility: true,
         apellido:apellido,
         coordinador: coordinador,
         celular:cel
       }
+      if(cambiarcontra){
+        data.password = contra
+        data.passwordConfirm = confirmcontra
+        data.oldPassword=oldcontra
+      }
+
       try{
         const recordu = await pb.collection('users').update(idvol,data);
         voluntarias = await pb.collection('users').getFullList({filter:"active=true"});
@@ -288,6 +324,11 @@
         cel = ""
         idvol = ""
         coordinador = false
+        contra =""
+        confirmcontra=""
+        cambiarcontra =false
+        oldcontra=""
+        
         const recordscrono = await pb.collection('cronogramas').getFullList({
           expand:"user",
           filter:"user.active=true"
@@ -324,10 +365,10 @@
             fijo:c.domingo?c.domingoback?"emer":"fijo":"no"
           }
         }))
+        Swal.fire('Éxito editar', 'Voluntaria editada con éxito', 'success');
       }
       catch(e){
-        Swal.fire('Error editar', 'No se pude editar la voluntaria', 'error');
-        console.log(e)
+        Swal.fire('Error editar', 'No se pudo editar la voluntaria', 'error');
       }
     }
     
@@ -445,6 +486,35 @@
               <option value={false}>No</option>
             </select>
           </label>
+          {#if idvol !=''}
+            <div class="form-group">
+              <br>
+              <span class="label-text">Cambiar contraseña</span>  
+              <br>
+              <input type="checkbox" class="toggle" bind:checked={cambiarcontra} />
+            </div>
+            
+            {#if cambiarcontra }
+              <label for = "contra2" class="label">
+                <span class="label-text text-base">Nueva Contraseña</span>
+              </label>
+              <label class="input-group">
+                <input id ="contra2" type="password" class="input input-bordered" bind:value={contra}/>
+              </label>
+              <label for = "confcontra2" class="label">
+                <span class="label-text text-base">Confirmar Nueva Contraseña</span>
+              </label>
+              <label class="input-group">
+                <input id ="confcontra2" type="password" class="input input-bordered" bind:value={confirmcontra}/>
+              </label>
+              <label for = "confcontra3" class="label">
+                <span class="label-text text-base">Escribir la contraseña anterior</span>
+              </label>
+              <label class="input-group">
+                <input id ="confcontra3" type="password" class="input input-bordered" bind:value={oldcontra}/>
+              </label>
+            {/if}
+          {/if}
         </div>
         <div class="modal-action justify-start">
           <form method="dialog">
