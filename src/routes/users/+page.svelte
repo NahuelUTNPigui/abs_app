@@ -162,8 +162,6 @@
       
     }
     else{
-      console.log(escoordinador);
-      console.log(usuarioid);
       if(!escoordinador && idvol != usuarioid){
         Swal.fire('Error modificar', 'Solo el usuario o una coordinadora puede modificar los datos', 'error');
         return false
