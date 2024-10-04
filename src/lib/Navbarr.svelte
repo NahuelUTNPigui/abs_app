@@ -92,6 +92,8 @@
         <li><a class ="text-lg" href="/">Inicio</a></li>
         <li><a class ="text-lg" href="/users">Voluntarias</a></li>
         <li><a class ="text-lg" href="/schelude">Cronograma</a></li>
+        <li><a class ="text-lg" href="/bebes">Bebés</a></li>
+        <li><a class ="text-lg" href="/abrazos">Abrazos</a></li>
       </ul>
 
     </div>

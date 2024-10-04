@@ -11,11 +11,14 @@
   let usuarioid = ""
   let escoordinador=false
   let voluntarias = []
+  let voluntariasrows = []
   let cronogramas = []
+  let nombrebuscar = ""
   onMount(async ()=>{
     const recordsv = await pb.collection('users').getFullList({filter:"active=true"});
 
     voluntarias  = recordsv
+    voluntariasrows = voluntarias
     let pb_json = await JSON.parse(localStorage.getItem('pocketbase_auth'))
     usuarioid = pb_json.model.id
     escoordinador = pb_json.model.coordinador
@@ -124,6 +127,7 @@
         try{
           const recorddel = await pb.collection('users').update(id,data);
           voluntarias = await pb.collection('users').getFullList({filter:"active=true"});
+          voluntariasrows = voluntarias
           Swal.fire('Usuaria eliminada!', 'Se eliminó la voluntaria correctamente.', 'success');
         }
         catch(e){
@@ -218,7 +222,7 @@
       try{
         const recordc = await pb.collection('users').create(data);
         voluntarias = await pb.collection('users').getFullList({filter:"active=true"});
-
+        voluntariasrows = voluntarias
         nombre = ""
         apellido = ""
         cel = ""
@@ -317,6 +321,7 @@
       try{
         const recordu = await pb.collection('users').update(idvol,data);
         voluntarias = await pb.collection('users').getFullList({filter:"active=true"});
+        voluntariasrows = voluntarias
         nombre = ""
         apellido = ""
         cel = ""
@@ -371,23 +376,46 @@
     }
     
   }
+  function filterupdate(){
+    voluntariasrows = voluntarias.filter(v=>{
+      
+      if(v.name.toLowerCase().includes(nombrebuscar.toLowerCase()) ||v.apellido.toLowerCase().includes(nombrebuscar.toLowerCase())){
+        return true
+      }
+      else{
+        return false
+      }
+    })
+  }
+  async function darAbrazo(id){
+
+  }
   
 </script>
 <Navbarr>
+  
+  
+  
   <div class="w-full grid justify-items-center lg:m-20 lg:w-3/4  ">
+    
+    <div class="w-full grid justify-items-left mx-10">
+      <h1 class="text-xl font-bold italic md:mx-3 sm:mx-3 lg:mx-5">VOLUNTARIAS</h1>  
+    </div>
     <div class="flex m-1 gap-2 lg:gap-10" >
-        <div class="w-2/5">
+        <div class="w-2/5 my-1">
+        
           <label class="input input-bordered flex items-center gap-2">
-            <input type="text" class="grow" placeholder="Search" />
+            <input type="text" class="grow" placeholder="Buscar.." bind:value={nombrebuscar} on:input={filterupdate}/>
+
             
           </label>
-          </div>
-          <button class="btn btn-primary text-white " on:click={()=>openModal("")}>
+        </div>
+        <button class="btn btn-primary text-white " on:click={()=>openModal("")}>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 lg:size-6">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
             </svg>
             <span class="text-xl"> voluntaria</span>
-          </button>  
+        </button>  
           <br>
     </div>
     
@@ -397,15 +425,16 @@
       <!-- head -->
       <thead>
         <tr>
-          <th class="text-base">Nombre</th>
+          <th class="text-base">Nombre voluntaria</th>
           <th class="text-base">Acciones</th>
         </tr>
       </thead>
       <tbody>
-        {#each voluntarias as v}
+        {#each voluntariasrows as v}
         <tr>
           <td class="text-base">{v.name}, {v.apellido}</td>
           <td>
+
             <div class="tooltip" data-tip="Cronograma">
               <button on:click={()=>openSchModal(v.id)}>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
@@ -413,6 +442,14 @@
                 </svg>              
               </button>
             </div>
+            <!--<div class="tooltip" data-tip="Abrazar">
+              <button on:click={()=>darAbrazo(v.id)}>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                  <path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" />
+                </svg>                                           
+              </button>
+            </div>
+            -->
             <div class="tooltip" data-tip="Editar">
               <button on:click={()=>openModal(v.id)}>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
