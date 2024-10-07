@@ -479,6 +479,7 @@
           <h3 class="text-lg font-bold">Editar voluntaria</h3>  
         {/if}
         <div class="form-control">
+          <form action="">
           <label for = "nombre" class="label">
             <span class="label-text text-base">Nombre</span>
           </label>
@@ -502,13 +503,13 @@
               <span class="label-text text-base">Contraseña</span>
             </label>
             <label class="input-group">
-              <input id ="contra" type="password" class="input input-bordered" bind:value={contra}/>
+              <input id ="contra" type="password" class="input input-bordered" bind:value={contra} autocomplete="off" />
             </label>
             <label for = "confcontra" class="label">
               <span class="label-text text-base">Confirmar Contraseña</span>
             </label>
             <label class="input-group">
-              <input id ="confcontra" type="password" class="input input-bordered" bind:value={confirmcontra}/>
+              <input id ="confcontra" type="password" class="input input-bordered" bind:value={confirmcontra} autocomplete="off" />
             </label>
             
           {/if}
@@ -534,22 +535,24 @@
                 <span class="label-text text-base">Nueva Contraseña</span>
               </label>
               <label class="input-group">
-                <input id ="contra2" type="password" class="input input-bordered" bind:value={contra}/>
+                <input id ="contra2" type="password" class="input input-bordered" bind:value={contra} autocomplete="off" />
               </label>
               <label for = "confcontra2" class="label">
                 <span class="label-text text-base">Confirmar Nueva Contraseña</span>
               </label>
               <label class="input-group">
-                <input id ="confcontra2" type="password" class="input input-bordered" bind:value={confirmcontra}/>
+                <input id ="confcontra2" type="password" class="input input-bordered" bind:value={confirmcontra} autocomplete="off" />
               </label>
               <label for = "confcontra3" class="label">
                 <span class="label-text text-base">Escribir la contraseña anterior</span>
               </label>
               <label class="input-group">
-                <input id ="confcontra3" type="password" class="input input-bordered" bind:value={oldcontra}/>
+                <input id ="confcontra3" type="password" class="input input-bordered" bind:value={oldcontra} autocomplete="off" />
               </label>
             {/if}
           {/if}
+        
+         </form>
         </div>
         <div class="modal-action justify-start">
           <form method="dialog">

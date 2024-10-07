@@ -8,7 +8,11 @@
   let usuarioid = ""
   let escoordinador=false
   let bebes = []
+  // Estoy usando estos datos a lo largo de toda la aplicacion, usar un store?
   let bebesrows=[]
+  let bebesselect = []
+  let abrazadorasselect = []
+
   let prioridades = [{id:1,desc:"ALTA"},{id:2,desc:"BAJA"}]
   let idbebe = ""
   let nombrebebe=""
@@ -19,13 +23,30 @@
   let fechanacimiento = ""
   let prioridad = 1 
   let nombrebuscar=""
+  let ubicaciones =[{nombre:"Central"},{nombre:"Sala"}]
+  let turnos=[{nombre:"Mañana"},{nombre:"Tarde"}]
+  let idbebeabrazo = ""
+  let idabrazadora=""
+  let fechaabrazo=""
+  let turno = ""
+  let ubicacion = ""
   onMount(async () =>{
     let pb_json = await JSON.parse(localStorage.getItem('pocketbase_auth'))
     usuarioid = pb_json.model.id
     escoordinador = pb_json.model.coordinador
     const recordsb = await pb.collection('bebes').getFullList({filter:"active=true"});
+
     bebes = recordsb
-    bebesrows = bebes
+    bebesrows = recordsb
+    bebesselect = recordsb
+    bebesselect.sort((b1,b2)=>b1.nombre>b2.nombre?1:-1)
+
+    
+    const recordsv = await pb.collection('users').getFullList({filter:"active=true"});
+    abrazadorasselect = recordsv
+    abrazadorasselect.sort((a1,a2)=>a1.name>a2.name?1:-1)
+
+
   })
   function openModal(id){
     idbebe = id
@@ -50,8 +71,40 @@
     }
     formModal.showModal()
   }
-  function darAbrazo(id){
+  function openModalAbrazo(id){
+    idbebeabrazo = id
+    formAbrazo.showModal()
+  }
+  async function guardarabrazo(){
+    let data = {
+      bebe:idbebeabrazo,
+      abrazadora:idabrazadora,
+      turno,
+      ubicacion,
+      fecha:fechaabrazo+" 03:00:00",
+      active:true
+    }
+    try{
+      const recorda = await pb.collection('abrazos').create(data)
+      Swal.fire('Éxito guardar', 'Abrazo guardado con éxito', 'success');
+      
+    }
+    catch(e){
+      Swal.fire('Error guardar', 'No se pudo guardar el abrazo', 'error');
+    }
+    idbebeabrazo = ""
+    idabrazadora = ""
+    turno = ""
+    ubicacion = ""
+    fechaabrazo = ""
 
+  }
+  function cerrar(){
+    idbebeabrazo = ""
+    idabrazadora = ""
+    turno = ""
+    ubicacion = ""
+    fechaabrazo = ""
   }
   function eliminar(id){
     Swal.fire({
@@ -222,7 +275,7 @@
                        <td class="text-base">{b.nombremama}, {b.apellidomama}</td> 
                        <td>
                         <div class="tooltip" data-tip="Abrazar">
-                          <button on:click={()=>darAbrazo(b.id)}>
+                          <button on:click={()=>openModalAbrazo(b.id)}>
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
                                 <path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" />
                             </svg>                              
@@ -314,5 +367,66 @@
                 </div>
             </div>
         </dialog>
+        <dialog id="formAbrazo" class="modal">
+          <div class="modal-box w-11/12 max-w-1md">
+              <h3 class="text-lg font-bold">Nuevo abrazo</h3>
+              <div class="form-control">
+                  <label for="fecha" class="label">
+                      <span class="label-text text-base">Fecha</span>
+                  </label>
+                  <label class="input-group">
+                      <input id ="fecha" type="date"  class="input input-bordered" bind:value={fechaabrazo}/>
+                  </label>
+                  <label class="form-control w-3/5">
+                      <div class="label">
+                          <span class="label-text text-base">Bebé</span>
+                      </div>
+                      <select class="select select-bordered" name="bebes" id="bebes" bind:value={idbebeabrazo}>
+                          {#each bebesselect as b}
+                              <option value={b.id}>{`${b.nombre}(${b.apellidomama},${b.nombremama})`}</option>
+                          {/each}
+                      </select>
+                  </label>
+                  <label class="form-control w-3/5">
+                      <div class="label">
+                          <span class="label-text text-base">Abrazadoras</span>
+                      </div>
+                      <select class="select select-bordered" name="abrazadoras" id="abrazadoras" bind:value={idabrazadora}>
+                          {#each abrazadorasselect as a}
+                              <option value={a.id}>{`${a.name}, ${a.apellido}`}</option>
+                          {/each}
+                      </select>
+                  </label>
+                  <label class="form-control w-3/5">
+                      <div class="label">
+                          <span class="label-text text-base">Ubicación</span>
+                      </div>
+                      <select class="select select-bordered" name="ubicacion" id="ubicacion" bind:value={ubicacion}>
+                          {#each ubicaciones as u}
+                              <option value={u.nombre}>{`${u.nombre}`}</option>
+                          {/each}
+                      </select>
+                  </label>
+                  <label class="form-control w-3/5">
+                      <div class="label">
+                          <span class="label-text text-base">Turno</span>
+                      </div>
+                      <select class="select select-bordered" name="turno" id="turno" bind:value={turno}>
+                          {#each turnos as t}
+                              <option value={t.nombre}>{`${t.nombre}`}</option>
+                          {/each}
+                      </select>
+                  </label>
+                  
+              </div>
+              <div class="modal-action justify-start">
+                  <form method="dialog">
+                    <!-- if there is a button, it will close the modal -->
+                    <button class="btn btn-success" on:click={guardarabrazo}>Guardar</button>
+                    <button class="btn btn-error" on:click={cerrar}>Cancelar</button>
+                  </form>
+              </div>
+          </div>
+      </dialog>
     </div>
 </Navbarr>
