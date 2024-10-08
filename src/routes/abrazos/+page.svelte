@@ -9,13 +9,12 @@
     const HOY = new Date()
     let usuarioid = ""
     let escoordinador=false
-    let altaprioridad=false
     let bebes = []
     let abrazadoras = []
     let abrazadorasselect = []
     let bebesrows = []
     let bebesselect = []
-    let ubicaciones =[{nombre:"Central"},{nombre:"Sala"}]
+    let ubicaciones =[{nombre:"UTI1"},{nombre:"UTI2"},{nombre:"UTI3"},{nombre:"UCI1"},{nombre:"UCI2"},{nombre:"UCI3"},{nombre:"Prealta"}]
     let turnos=[{nombre:"Mañana"},{nombre:"Tarde"}]
     let prioridades = [{id:1,nombre:"Todos"},{id:2,nombre:"Solo alta"}]
     let idbebe = ""
@@ -30,7 +29,7 @@
         abrazadoras  = recordsv
         abrazadorasselect = recordsv
         abrazadorasselect.sort((a1,a2)=>a1.name>a2.name?1:-1)
-        const recordsb = await pb.collection('bebes').getFullList({filter:"active=true"});
+        const recordsb = await pb.collection('bebes').getFullList({filter:`active=true&&fechaegreso=""`});
         bebes = recordsb
         //const record = await pb.collection('abrazos').getFirstListItem(`active=true&&bebe="${b.id}"`);
         bebesrows = []
@@ -40,9 +39,8 @@
                 continue
             }
             const resultList = await pb.collection('abrazos').getList(1, 100, {
-                filter:  `active=true&&bebe="${b.id}"&&bebe.fechaegreso!=''`,
-                sort:"-fecha",
-                expand:"bebe"
+                filter:  `active=true&&bebe='${b.id}'`,
+                sort:"-fecha"
             });
             if(resultList.totalItems > 0){
                 let abrazo = resultList.items[0]

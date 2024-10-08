@@ -24,13 +24,19 @@
   let fechanacimiento = ""
   let prioridad = 1 
   let nombrebuscar=""
-  let ubicaciones =[{nombre:"Central"},{nombre:"Sala"}]
+  let opcionesegresos=[{nombre:"Sin fecha egreso"},{nombre:"Todos"}]
+  let conegreso = opcionesegresos[0].nombre
+  let opcionesdisponibilidad=[{nombre:"Todos"},{nombre:"Disponibles"},{nombre:"No disponibles"}]
+  let ubicaciones =[{nombre:"UTI1"},{nombre:"UTI2"},{nombre:"UTI3"},{nombre:"UCI1"},{nombre:"UCI2"},{nombre:"UCI3"},{nombre:"Prealta"}]
   let turnos=[{nombre:"Mañana"},{nombre:"Tarde"}]
+  
   let idbebeabrazo = ""
   let idabrazadora=""
   let fechaabrazo=""
   let turno = ""
   let ubicacion = ""
+  let disponible = true
+  let iddisponible="Todos"
   onMount(async () =>{
     let pb_json = await JSON.parse(localStorage.getItem('pocketbase_auth'))
     usuarioid = pb_json.model.id
@@ -39,6 +45,7 @@
 
     bebes = recordsb
     bebesrows = recordsb
+    bebesrows = bebesrows.filter(b=>b.fechaegreso=="")
     bebesselect = recordsb
     bebesselect.sort((b1,b2)=>b1.nombre>b2.nombre?1:-1)
 
@@ -69,6 +76,7 @@
         fechaegreso = bebe.fechaegreso?bebe.fechaegreso.split(' ')[0]:''
         fechanacimiento = bebe.fechanacimiento.split(' ')[0]
         prioridad = bebe.prioridad
+        disponible = bebe.disponible
     }
     formModal.showModal()
   }
@@ -179,13 +187,14 @@
             fechaingreso:fechaingreso +' 03:00:00.000Z' ,
             fechanacimiento:fechanacimiento +' 03:00:00.000Z' ,
             prioridad,
-            active : true
+            active : true,
+            disponible : true
         }
         try{
             const recordb = await pb.collection('bebes').create(data)
             const recordsb = await pb.collection('bebes').getFullList({filter:"active=true"});
             bebes = recordsb
-            bebesrows = bebes
+            filterupdate()
             nombrebebe=""
             nombremama=""
             apellidomama = ""
@@ -205,7 +214,8 @@
             apellidomama,
             fechaingreso:fechaingreso +' 03:00:00.000Z',
             fechanacimiento:fechanacimiento +' 03:00:00.000Z' ,
-            prioridad
+            prioridad,
+            disponible
         }
         if(fechaegreso != ""){
 
@@ -216,7 +226,7 @@
             const recordb = await pb.collection('bebes').update(idbebe,data)
             const recordsb = await pb.collection('bebes').getFullList({filter:"active=true"});
             bebes = recordsb
-            bebesrows = bebes
+            filterupdate()
             nombrebebe=""
             nombremama=""
             apellidomama = ""
@@ -231,7 +241,19 @@
     }
   }
   function filterupdate(){
-    bebesrows = bebes.filter(b=>{
+    bebesrows = bebes
+    if(conegreso=="Sin fecha egreso"){
+        bebesrows = bebesrows.filter(b=>b.fechaegreso=="")
+    }
+    if(iddisponible!="Todos"){
+        if(iddisponible=="Disponibles"){
+            bebesrows = bebesrows.filter(b=>b.disponible)
+        }
+        else{
+            bebesrows = bebesrows.filter(b=>!b.disponible)
+        }
+    }
+    bebesrows = bebesrows.filter(b=>{
         if(b.nombre.toLowerCase().includes(nombrebuscar.toLowerCase()) ){
         return true
       }
@@ -249,20 +271,35 @@
       <h1 class="text-xl font-bold italic md:mx-3 sm:mx-4 lg:mx-10">BEBÉS</h1>  
     </div>
     <div class="w-full grid justify-items-center lg:m-20 lg:w-3/4  ">
-        <div class="flex m-1 gap-2 lg:gap-10" >
+        <div class="flex m-1 gap-1 lg:gap-10" >
+            <label for="opcionegresos">Buscar por:</label>
+            <select id="opcionegreso" name="opcionegreso" class="select select-bordered" bind:value={ conegreso} on:change={filterupdate}>
+                {#each opcionesegresos as o}
+                    <option value={o.nombre}>{o.nombre}</option>
+                {/each}
+
+            </select>
+            <select id="opciondisp" name="opciondisp" class="select select-bordered" bind:value={ iddisponible} on:change={filterupdate}>
+                {#each opcionesdisponibilidad as o}
+                    <option value={o.nombre}>{o.nombre}</option>
+                {/each}
+
+            </select>
+        </div>
+        <div class="flex m-1 gap-1 lg:gap-10" >
             <div class="w-2/5">
               <label class="input input-bordered flex items-center gap-2">
                 <input type="text" class="grow" placeholder="Buscar.." bind:value={nombrebuscar} on:input={filterupdate} />
                 
               </label>
-              </div>
-              <button class="btn btn-primary text-white " on:click={()=>openModal("")}>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 lg:size-6">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                </svg>
-                <span class="text-xl"> bebé</span>
-              </button>  
-              <br>
+            </div>
+            <button class="btn btn-primary text-white " on:click={()=>openModal("")}>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 lg:size-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+              <span class="text-xl"> bebé</span>
+            </button>  
+            <br>
         </div>
         <table class="table table-lg" >
             <thead>
@@ -278,13 +315,13 @@
                        <td class="text-base">{b.nombre}</td> 
                        <td class="text-base">{b.nombremama}, {b.apellidomama}</td> 
                        <td>
-                        <div class="tooltip" data-tip="Abrazar">
+                        <!--<div class="tooltip" data-tip="Abrazar">
                           <button on:click={()=>openModalAbrazo(b.id)}>
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
                                 <path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" />
                             </svg>                              
                           </button>
-                        </div>
+                        </div>-->
                         <div class="tooltip" data-tip="Editar">
                           <button on:click={()=>openModal(b.id)}>
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
@@ -369,6 +406,20 @@
 
                         </select>
                     </label>
+                    {#if idbebe !=''}
+                        <label class="form-control w-3/5">
+                            <div class="label">
+                            <span class="label-text">Disponible</span>
+                            </div>
+                            <select class="select select-bordered" bind:value={disponible}>
+                                <option value={true}>{"Disponible"}</option>
+                                <option value={false}>{"No disponible"}</option>
+                                
+
+                            </select>
+                        </label>
+                    {/if}
+                    
                 </div>
                 <div class="modal-action justify-start">
                     <form method="dialog">

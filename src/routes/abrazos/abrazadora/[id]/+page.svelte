@@ -3,16 +3,16 @@
     import PocketBase from 'pocketbase'
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
+    import * as XLSX from "xlsx"
     let ruta = import.meta.env.VITE_RUTA
     const pb = new PocketBase(ruta);
     let usuarioid = ""
     let escoordinador=false
     let abrazadora = null
     let bebes=[]
-    let abrazadoras = []
     let abrazosrows = []
     let abrazos = []
-    let ubicaciones =[{nombre:"Central"},{nombre:"Sala"}]
+    let ubicaciones =[{nombre:"UTI1"},{nombre:"UTI2"},{nombre:"UTI3"},{nombre:"UCI1"},{nombre:"UCI2"},{nombre:"UCI3"},{nombre:"Prealta"}]
     let turnos=[{nombre:"Mañana"},{nombre:"Tarde"}]
     let nombrebebe=""
     let nombreabrazadora=""
@@ -24,6 +24,7 @@
     let fechahasta = ""
     let idbebebuscar =""
     let idabrazadora = ""
+    let idubicacion=""
     onMount(async()=>{
         idabrazadora = $page.params.id
         const recordsv = await pb.collection('users').getOne(idabrazadora);
@@ -67,7 +68,54 @@
         if(fechahasta!=""){
             abrazosrows= abrazosrows.filter(a=>a.fecha<fechahasta)
         }
+        if(idubicacion!=""){
+            abrazosrows = abrazosrows.filter(a=>a.ubicacion == idubicacion)
+        }
         
+    }
+    function exportarXLSX(){
+        let csvdata = abrazosrows.map(item=>({
+            UNIDADES:item.ubicacion,
+            BEBE:`${item.expand.bebe.nombre}(${item.expand.bebe.apellidomama},${item.expand.bebe.nombremama})`,
+            ABRAZADORA:`${item.expand.abrazadora.apellido},${item.expand.abrazadora.name}`,
+            FECHA:new Date(item.fecha).toLocaleDateString(),
+            TURNO:item.turno
+        }))
+        const wb = XLSX.utils.book_new();
+        // Abrazos
+        const ws = XLSX.utils.aoa_to_sheet([])
+        let titulo = "ABRAZOS"
+        if(fechadesde!=""){
+            titulo = `${titulo} Desde ${fechadesde}`
+        }
+        if(fechahasta!=""){
+            titulo = `${titulo} Hasta ${fechahasta}`
+        }
+        ws['A1']={t:'s',v:titulo,s:{}}
+        const range = XLSX.utils.decode_range('A1:K1');
+        ws['!merges'] = [{ s: { r: range.s.r, c: range.s.c }, e: { r: range.e.r, c: range.e.c } }];
+        XLSX.utils.sheet_add_json(ws, csvdata, { origin: 'A2' });
+        XLSX.utils.book_append_sheet(wb, ws, 'Abrazos');
+        // Filtros
+        let bebesfilter = bebes.filter(b=>idbebebuscar==b.id)
+        let bebe = {
+            nombre:"",apellidomama:"",nombremama:""
+        }
+        if(bebesfilter.length!=0){
+            bebe = bebesfilter[0]
+        }
+        const wsFilter = XLSX.utils.aoa_to_sheet([
+            ['Filtro','Valor'],
+            ['Fecha desde',fechadesde],
+            ['Fecha hasta',fechahasta],
+            ['Unidad',idubicacion],
+            ['Abrazadora',nombreabrazadora],
+            ['Bebe',bebe.nombre==""?"":`${bebe.nombre}(${bebe.apellidomama},${bebe.nombremama})`]
+        ])
+        XLSX.utils.book_append_sheet(wb, wsFilter, 'Filtros aplicados');
+        // Guardar el excel
+        XLSX.writeFile(wb, `${titulo.replace(/\//g, "-")}.xlsx`, { cellStyles: true });
+    
     }
 </script>
 <Navbarr>
@@ -97,11 +145,29 @@
                 {/each}
             </select>
         </div>
+        <div class="w-1/2 px-3 mb-6 md:mb-0">
+            <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-first-name">
+                Ubicación    
+            </label>
+            <select class="select select-bordered" name="bebes" id="bebes" bind:value={idubicacion} on:change={filterUpdate}>
+                <option value={""}>{`Todos`}</option>
+                {#each ubicaciones as u}
+                    
+                    <option value={u.nombre}>{`${u.nombre}`}</option>
+                    
+                {/each}
+            </select>
+        </div>
+    </div>
+    <div class="grid justify-start mx-1">
+        <button class="btn btn-primary text-white " on:click={exportarXLSX}>
+            <span class="text-xl">Exportar EXCEL</span>
+        </button>  
     </div>
     <div class="w-full grid justify-items-center lg:m-20 lg:w-3/4">
         
         <div class="w-full grid justify-items-left mx-10">
-            <h1 class="text-xl font-bold italic md:mx-3 sm:mx-3 lg:mx-5">HISTORIAL ABRAZOS</h1>  
+            <h1 class="text-xl font-bold italic md:mx-3 sm:mx-3 lg:mx-5">HISTORIAL ABRAZOS DE : {nombreabrazadora}</h1>  
         </div>
         <table class="table table-md">
             <thead>
