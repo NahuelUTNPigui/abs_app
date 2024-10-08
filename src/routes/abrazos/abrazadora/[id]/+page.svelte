@@ -1,1 +1,188 @@
-tampoco se que poner
+<script>
+    import Navbarr from '$lib/Navbarr.svelte';
+    import PocketBase from 'pocketbase'
+    import { onMount } from 'svelte';
+    import { page } from '$app/stores';
+    let ruta = import.meta.env.VITE_RUTA
+    const pb = new PocketBase(ruta);
+    let usuarioid = ""
+    let escoordinador=false
+    let abrazadora = null
+    let bebes=[]
+    let abrazadoras = []
+    let abrazosrows = []
+    let abrazos = []
+    let ubicaciones =[{nombre:"Central"},{nombre:"Sala"}]
+    let turnos=[{nombre:"Mañana"},{nombre:"Tarde"}]
+    let nombrebebe=""
+    let nombreabrazadora=""
+    let turno=""
+    let ubicacion=""
+    let fechaabrazo=""
+    let idabrazo=""
+    let fechadesde = ""
+    let fechahasta = ""
+    let idbebebuscar =""
+    let idabrazadora = ""
+    onMount(async()=>{
+        idabrazadora = $page.params.id
+        const recordsv = await pb.collection('users').getOne(idabrazadora);
+        abrazadora  = recordsv
+        nombreabrazadora = `${abrazadora.apellido},${abrazadora.name}`
+        const recordaz = await pb.collection('abrazos').getFullList({filter:`active=true&&abrazadora='${idabrazadora}'`,expand:'abrazadora,bebe',sort:"-fecha"});
+        abrazos = recordaz
+        abrazosrows = recordaz
+        const recordsb = await pb.collection('bebes').getFullList({filter:'active=true',sort:"nombre"});
+        bebes = recordsb
+        let pb_json = await JSON.parse(localStorage.getItem('pocketbase_auth'))
+        usuarioid = pb_json.model.id
+        escoordinador = pb_json.model.coordinador
+    })
+    function openModal(id){
+        let abrazo = abrazosrows.filter(a=>a.id==id)[0]
+        turno = abrazo.turno
+        ubicacion=abrazo.ubicacion
+        
+        fechaabrazo = abrazo.fecha.split(" ")[0]
+        nombrebebe = `${abrazo.expand.bebe.nombre}(${abrazo.expand.bebe.apellidomama},${abrazo.expand.bebe.nombremama})`
+        nombreabrazadora = `${abrazo.expand.abrazadora.apellido},${abrazo.expand.abrazadora.name}`
+        idabrazo = id
+        formAbrazo.showModal() 
+    }
+    function cerrar(){
+        turno = ""
+        ubicacion = ""
+        fechaabrazo=""
+        nombreabrazadora = ""
+        nombrebebe = ""
+    }
+    function filterUpdate(){
+        abrazosrows = abrazos
+        if(idbebebuscar !=""){    
+            abrazosrows = abrazosrows.filter(a=>a.bebe==idbebebuscar)
+        }     
+        if(fechadesde!=""){
+            abrazosrows= abrazosrows.filter(a=>a.fecha>fechadesde)   
+        }
+        if(fechahasta!=""){
+            abrazosrows= abrazosrows.filter(a=>a.fecha<fechahasta)
+        }
+        
+    }
+</script>
+<Navbarr>
+    <div class="flex flex-wrap -mx-3 mb-6 mt-2">
+        <div class="w-1/2 px-3 mb-6 md:mb-0">
+            <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-first-name">
+              Fecha desde
+            </label>
+            <input id ="fechadesde" type="date"  class="input input-bordered" bind:value={fechadesde} on:change={filterUpdate}/>
+        </div>
+        <div class="w-1/2 px-3 mb-6 md:mb-0">
+            <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-first-name">
+              Fecha Hasta
+            </label>
+            <input id ="fechadesde" type="date"  class="input input-bordered" bind:value={fechahasta} on:change={filterUpdate}/>
+        </div>
+    </div>
+    <div class="flex flex-wrap -mx-3 mb-6 mt-2">
+        <div class="w-1/2 px-3 mb-6 md:mb-0">
+            <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-first-name">
+                Bebes    
+            </label>
+            <select class="select select-bordered" name="bebes" id="bebes" bind:value={idbebebuscar} on:change={filterUpdate}>
+                <option value={""}>{`Todos`}</option>
+                {#each bebes as b}
+                    <option value={b.id}>{`${b.nombre}(${b.apellidomama})`}</option>
+                {/each}
+            </select>
+        </div>
+    </div>
+    <div class="w-full grid justify-items-center lg:m-20 lg:w-3/4">
+        
+        <div class="w-full grid justify-items-left mx-10">
+            <h1 class="text-xl font-bold italic md:mx-3 sm:mx-3 lg:mx-5">HISTORIAL ABRAZOS</h1>  
+        </div>
+        <table class="table table-md">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Bebe</th>
+                    <th>Abrazadora</th>
+                    <th>Acciones</th>
+                </tr>
+
+            </thead>
+            <tbody>
+                {#each abrazosrows as a}
+                    <tr>
+                        <td>{new Date(a.fecha).toLocaleDateString()}</td>
+                        <td>{`${a.expand.bebe.nombre} (${a.expand.bebe.apellidomama})`}</td>
+                        <td>{a.expand.abrazadora.name+","+a.expand.abrazadora.apellido}</td>
+                        <td>
+                            <div class="tooltip" data-tip="Editar">
+                                <button on:click={()=>openModal(a.id)}>
+                                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                    <path d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712ZM19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 0 0-1.32 2.214l-.8 2.685a.75.75 0 0 0 .933.933l2.685-.8a5.25 5.25 0 0 0 2.214-1.32L19.513 8.2Z" />
+                                  </svg>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                {/each}
+            </tbody>
+        </table>
+        <dialog id="formAbrazo" class="modal">
+            <div class="modal-box w-11/12 max-w-1md">
+                <h3 class="text-lg font-bold">Nuevo abrazo</h3>
+                <div class="form-control">
+                    <label for="fecha" class="label">
+                        <span class="label-text text-base">Fecha</span>
+                    </label>
+                    <label class="input-group">
+                        <input id ="fecha" type="date"  class="input input-bordered" bind:value={fechaabrazo}/>
+                    </label>
+                    <label for="bebe" class="label">
+                        <span class="label-text text-base">Bebé</span>
+                    </label>
+                    <label class="input-group">
+                        <input id ="bebe" type="text"  class="input input-bordered" bind:value={nombrebebe}/>
+                    </label>
+                    <label for="abrazadora" class="label">
+                        <span class="label-text text-base">Abrazadora</span>
+                    </label>
+                    <label class="input-group">
+                        <input id ="abrazadora" type="text"  class="input input-bordered" bind:value={nombreabrazadora}/>
+                    </label>
+                    <label class="form-control w-3/5">
+                        <div class="label">
+                            <span class="label-text text-base">Ubicación</span>
+                        </div>
+                        <select class="select select-bordered" name="ubicacion" id="ubicacion" bind:value={ubicacion}>
+                            {#each ubicaciones as u}
+                                <option value={u.nombre}>{`${u.nombre}`}</option>
+                            {/each}
+                        </select>
+                    </label>
+                    <label class="form-control w-3/5">
+                        <div class="label">
+                            <span class="label-text text-base">Turno</span>
+                        </div>
+                        <select class="select select-bordered" name="turno" id="turno" bind:value={turno}>
+                            {#each turnos as t}
+                                <option value={t.nombre}>{`${t.nombre}`}</option>
+                            {/each}
+                        </select>
+                    </label>
+                    
+                </div>
+                <div class="modal-action justify-start">
+                    <form method="dialog">
+                      <!-- if there is a button, it will close the modal -->
+                      <button class="btn btn-error" on:click={cerrar}>Cancelar</button>
+                    </form>
+                </div>
+            </div>
+        </dialog>
+    </div>
+</Navbarr>

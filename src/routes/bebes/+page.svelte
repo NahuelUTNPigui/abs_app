@@ -3,6 +3,7 @@
   import Swal from 'sweetalert2'
   import PocketBase from 'pocketbase'
   import { onMount } from 'svelte';
+  import { goto } from '$app/navigation';
   let ruta = import.meta.env.VITE_RUTA
   const pb = new PocketBase(ruta);
   let usuarioid = ""
@@ -239,6 +240,9 @@
       } 
     })
   }
+  function historialbebe(id){
+    goto("/abrazos/bebe/"+id)
+  }
 </script>
 <Navbarr>
     <div class="justify-start mx-2 lg:mx-10">
@@ -287,6 +291,14 @@
                               <path d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712ZM19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 0 0-1.32 2.214l-.8 2.685a.75.75 0 0 0 .933.933l2.685-.8a5.25 5.25 0 0 0 2.214-1.32L19.513 8.2Z" />
                             </svg>
                           </button>
+                        </div>
+                        <div class="tooltip" data-tip="Historial abrazos">
+                            <button on:click={()=>historialbebe(b.id)}>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                    <path d="M3.375 3C2.339 3 1.5 3.84 1.5 4.875v.75c0 1.036.84 1.875 1.875 1.875h17.25c1.035 0 1.875-.84 1.875-1.875v-.75C22.5 3.839 21.66 3 20.625 3H3.375Z" />
+                                    <path fill-rule="evenodd" d="m3.087 9 .54 9.176A3 3 0 0 0 6.62 21h10.757a3 3 0 0 0 2.995-2.824L20.913 9H3.087Zm6.163 3.75A.75.75 0 0 1 10 12h4a.75.75 0 0 1 0 1.5h-4a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd" />
+                                </svg>                                  
+                            </button>
                         </div>
                         <div class="tooltip" data-tip="Eliminar">
                           <button on:click={()=>eliminar(b.id)}>

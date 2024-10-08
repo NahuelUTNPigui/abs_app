@@ -15,9 +15,6 @@
     let abrazos = []
     let ubicaciones =[{nombre:"Central"},{nombre:"Sala"}]
     let turnos=[{nombre:"Mañana"},{nombre:"Tarde"}]
-    let pagina= 1
-    let offset = 0
-    let count = 0
     let nombrebebe=""
     let nombreabrazadora=""
     let turno=""
@@ -32,7 +29,7 @@
         const recordsv = await pb.collection('users').getFullList({filter:"active=true",sort:"name"});
         abrazadoras  = recordsv
         
-        const recordsb = await pb.collection('bebes').getFullList({filter:'active=true&&fechaegreso=""',sort:"nombre"});
+        const recordsb = await pb.collection('bebes').getFullList({filter:'active=true',sort:"nombre"});
         bebes = recordsb
         // Traigo todos los abrazos? Por ahora esta bien
         const recordaz = await pb.collection('abrazos').getFullList({filter:"active=true",expand:'abrazadora,bebe',sort:"-fecha"});

@@ -40,8 +40,9 @@
                 continue
             }
             const resultList = await pb.collection('abrazos').getList(1, 100, {
-                filter:  `active=true&&bebe="${b.id}"`,
-                sort:"-fecha"
+                filter:  `active=true&&bebe="${b.id}"&&bebe.fechaegreso!=''`,
+                sort:"-fecha",
+                expand:"bebe"
             });
             if(resultList.totalItems > 0){
                 let abrazo = resultList.items[0]
