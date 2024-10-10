@@ -191,41 +191,46 @@
 
 </script>
 <Navbarr>
-    <div class="grid justify-start mx-1">
-        <button class="btn btn-primary text-white " on:click={()=>volver()}>
-            <span class="text-xl">Volver</span>
-        </button>  
+    <div class="flex flex-wrap lg:mx-10 mb-6 mt-2 sm:mx-0 xm:mx-0" >
+        <div class="lg:w-1/4 md:w-1/2 lg:mx-10 mb-6 md:mb-0 sm:mb-0 sm:mx-0">
+            <button class="btn btn-outline"on:click={()=>volver()}>
+                <span class="text-xl">Volver</span>
+            </button>  
+        </div>
+        <div class="lg:w-1/4 px-1 md:w-1/2 lg:mx-10 mb-6 md:mb-0 sm:mb-0 sm:mx-0">
+            <button class="btn btn-outline" on:click={exportarXLSX}>
+                <span class="text-xl">Exportar EXCEL</span>
+            </button>
+        </div>
     </div>
-    <div class="flex flex-wrap -mx-3 mb-6 mt-2">
-        <div class="w-1/2 px-3 mb-6 md:mb-0">
-            <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-first-name">
+    <div class="flex flex-wrap lg:mx-10 mb-6 mt-2 sm:mx-0 xm:mx-0" >
+        <div class="lg:w-1/4 md:w-1/2 lg:mx-10 mb-6 md:mb-0 sm:mb-0 sm:mx-0">
+            <label class="block uppercase tracking-wide text-xs font-bold mb-2" for="grid-first-name">
               Fecha desde
             </label>
             <input id ="fechadesde" type="date"  class="input input-bordered" bind:value={fechadesde} on:change={filterUpdate}/>
         </div>
-        <div class="w-1/2 px-3 mb-6 md:mb-0">
-            <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-first-name">
+        <div class="lg:w-1/4 px-1 md:w-1/2 lg:mx-10 mb-6 md:mb-0 sm:mb-0 sm:mx-0">
+            <label class="block uppercase tracking-wide text-xs font-bold mb-2" for="grid-first-name">
               Fecha Hasta
             </label>
             <input id ="fechadesde" type="date"  class="input input-bordered" bind:value={fechahasta} on:change={filterUpdate}/>
         </div>
     </div>
-    <div class="flex flex-wrap -mx-3 mb-6 mt-2">
-        <div class="w-1/2 px-3 mb-6 md:mb-0">
-            <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-first-name">
+    <div class="flex flex-wrap lg:mx-10 mb-6 lg:mt-2 sm:mt-1 sm:mx-0 xm:mx-0">
+        <div class="lg:w-1/4 md:w-1/2 lg:mx-10 mb-6 md:mb-0 sm:mb-0 sm:mx-0">
+            <label class="block uppercase tracking-wide text-xs font-bold mb-2" for="grid-first-name">
                 Bebes    
             </label>
             <select class="select select-bordered" name="bebes" id="bebes" bind:value={idbebebuscar} on:change={filterUpdate}>
                 <option value={""}>{`Todos`}</option>
                 {#each bebes as b}
-                    
                     <option value={b.id}>{`${acortarPalabra(b.nombre)}(${acortarPalabra(b.apellidomama)})`}</option>
-                    
                 {/each}
             </select>
         </div>
-        <div class="w-1/2 px-3 mb-6 md:mb-0">
-            <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-first-name">
+        <div class="lg:w-1/4 px-1 md:w-1/2 lg:mx-10 mb-6 md:mb-0 sm:mb-0 sm:mx-0">
+            <label class="block uppercase tracking-wide text-xs font-bold mb-2" for="grid-first-name">
                 Voluntaria    
             </label>
             <select class="select select-bordered" name="bebes" id="bebes" bind:value={idabrazadorabuscar} on:change={filterUpdate}>
@@ -237,9 +242,9 @@
             </select>
         </div>
     </div>
-    <div class="flex flex-wrap -mx-3 mb-6 mt-2">
-        <div class="w-1/2 px-3 mb-6 md:mb-0">
-            <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-first-name">
+    <div class="flex flex-wrap lg:mx-10 mb-6 lg:mt-2 sm:mt-1 sm:mx-0 xm:mx-0">
+        <div class="lg:w-1/4 md:w-1/2 lg:mx-10 mb-6 md:mb-0 sm:mb-0 sm:mx-0">
+            <label class="block uppercase tracking-wide text-xs font-bold mb-2" for="grid-first-name">
                 Ubicación    
             </label>
             <select class="select select-bordered" name="bebes" id="bebes" bind:value={idubicacion} on:change={filterUpdate}>
@@ -251,11 +256,6 @@
                 {/each}
             </select>
         </div>
-    </div>
-    <div class="grid justify-start mx-1">
-        <button class="btn btn-primary text-white " on:click={exportarXLSX}>
-            <span class="text-xl">Exportar EXCEL</span>
-        </button>  
     </div>
     <div class="w-full grid justify-items-center lg:m-20 lg:w-3/4">
         

@@ -16,4 +16,7 @@ pnpm run dev -- --open
 ## Production
 ```
     pnpm run build --mode production
+    pnpm run build --mode semilocal
+    pnpm run build --mode local
+
 ```

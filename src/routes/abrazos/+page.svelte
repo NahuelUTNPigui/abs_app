@@ -184,26 +184,39 @@
     
 </script>
 <Navbarr>
-    <div class="w-full grid justify-items-center lg:m-20 lg:w-3/4">
-        <div class="w-full grid justify-items-left mx-10">
-            <h1 class="text-xl font-bold italic md:mx-3 sm:mx-3 lg:mx-5">ABRAZOS</h1>  
-        </div>
-        <div class="flex m-1 gap-2 lg:gap-10" >
+    
+    <div class="flex flex-wrap lg:mx-10 mb-1 sm:mb-2 mt-2 sm:mx-0" >
+        <div class="lg:w-1/4 md:w-1/2 lg:mx-10 mb-1 sm:mb-2 sm:mx-0">
+            <label class="block uppercase tracking-wide text-xs font-bold mb-2" for="grid-first-name">
+                Prioridad    
+            </label>
             <select class="select select-bordered" bind:value={prioridad} on:change={cambiarFiltro}>
                 {#each prioridades as p}
                     <option value={p.id}>{p.nombre}</option>
                 {/each}
 
             </select>
+        </div>
+    </div>
+    <div class="flex flex-wrap lg:mx-10 mb-1 sm:mb-2 mt-2 sm:mx-0" >
+        <div class="lg:w-1/4 md:w-1/2 lg:mx-10 mb-1 sm:mb-2 sm:mx-0">
             <button class="btn btn-primary text-white " on:click={()=>irHistorial()}>
                 <span class="text-xl">Historial</span>
             </button> 
+        </div>
+        <div class="lg:w-1/4 md:w-1/2 px-1 lg:mx-10 mb-1 sm:mb-2 sm:mx-0">
             <button class="btn btn-primary text-white " on:click={()=>openModal()}>
                 
                 <span class="text-xl">Nuevo abrazo</span>
             </button>  
-            <br>
         </div>
+    </div>
+    <!--Por que funciona al reves los mx-->
+    <div class="w-full grid justify-items-left  sm:mx-10 mx-1">
+        <h1 class="text-xl font-bold italic sm:mx-10 ">ABRAZOS</h1>  
+    </div>
+    <div class="w-full grid justify-items-center lg:m-20 lg:w-3/4">
+
         <table class="table table-lg">
             <thead>
                 <tr>

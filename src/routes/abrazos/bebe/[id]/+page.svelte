@@ -120,23 +120,23 @@
     }
 </script>
 <Navbarr>
-    <div class="flex flex-wrap -mx-3 mb-6 mt-2">
-        <div class="w-1/2 px-3 mb-6 md:mb-0">
-            <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-first-name">
-            Fecha desde
+    <div class="flex flex-wrap lg:mx-10 mb-6 mt-2 sm:mx-0 xm:mx-0" >
+        <div class="lg:w-1/4 md:w-1/2 lg:mx-10 mb-6 md:mb-0 sm:mb-0 sm:mx-0">
+            <label class="block uppercase tracking-wide text-xs font-bold mb-2" for="grid-first-name">
+              Fecha desde
             </label>
             <input id ="fechadesde" type="date"  class="input input-bordered" bind:value={fechadesde} on:change={filterUpdate}/>
         </div>
-        <div class="w-1/2 px-3 mb-6 md:mb-0">
-            <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-first-name">
-            Fecha Hasta
+        <div class="lg:w-1/4 px-1 md:w-1/2 lg:mx-10 mb-6 md:mb-0 sm:mb-0 sm:mx-0">
+            <label class="block uppercase tracking-wide text-xs font-bold mb-2" for="grid-first-name">
+              Fecha Hasta
             </label>
             <input id ="fechadesde" type="date"  class="input input-bordered" bind:value={fechahasta} on:change={filterUpdate}/>
         </div>
     </div>
-    <div class="flex flex-wrap -mx-3 mb-6 mt-2">
-        <div class="w-1/2 px-3 mb-6 md:mb-0">
-            <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-first-name">
+    <div class="flex flex-wrap lg:mx-10 mb-6 lg:mt-2 sm:mt-1 sm:mx-0 xm:mx-0">
+        <div class="lg:w-1/4 md:w-1/2 lg:mx-10 mb-6 md:mb-0 sm:mb-0 sm:mx-0">
+            <label class="block uppercase tracking-wide text-xs font-bold mb-2" for="grid-first-name">
                 Voluntaria    
             </label>
             <select class="select select-bordered" name="bebes" id="bebes" bind:value={idabrazadorabuscar} on:change={filterUpdate}>
@@ -147,9 +147,9 @@
                 {/each}
             </select>
         </div>
-        <div class="w-1/2 px-3 mb-6 md:mb-0">
-            <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-first-name">
-                Ubicación    
+        <div class="lg:w-1/4 px-1 md:w-1/2 lg:mx-10 mb-6 md:mb-0 sm:mb-0 sm:mx-0">
+            <label class="block uppercase tracking-wide text-xs font-bold mb-2" for="grid-first-name">
+                Unidad    
             </label>
             <select class="select select-bordered" name="bebes" id="bebes" bind:value={idubicacion} on:change={filterUpdate}>
                 <option value={""}>{`Todos`}</option>
@@ -161,10 +161,12 @@
             </select>
         </div>
     </div>
-    <div class="grid justify-start mx-1">
-        <button class="btn btn-primary text-white " on:click={exportarXLSX}>
-            <span class="text-xl">Exportar EXCEL</span>
-        </button>  
+    <div class="flex flex-wrap lg:mx-10 mb-6 lg:mt-2 sm:mt-1 sm:mx-0 xm:mx-0">
+        <div class="lg:w-1/4 md:w-1/2 lg:mx-10 mb-6 md:mb-0 sm:mb-0 sm:mx-0">
+            <button class="btn btn-outline " on:click={exportarXLSX}>
+                <span class="text-xl">Exportar EXCEL</span>
+            </button>
+        </div>
     </div>
     <div class="w-full grid justify-items-center lg:m-20 lg:w-3/4">
         
@@ -175,7 +177,7 @@
             <thead>
                 <tr>
                     <th>Fecha</th>
-                    <th>Bebe</th>
+                    <th>Unidad</th>
                     <th>Abrazadora</th>
                     <th>Acciones</th>
                 </tr>
@@ -185,14 +187,15 @@
                 {#each abrazosrows as a}
                     <tr>
                         <td>{new Date(a.fecha).toLocaleDateString()}</td>
-                        <td>{`${a.expand.bebe.nombre} (${a.expand.bebe.apellidomama})`}</td>
+                        <td>{`${a.ubicacion}`}</td>
                         <td>{a.expand.abrazadora.name+","+a.expand.abrazadora.apellido}</td>
                         <td>
-                            <div class="tooltip" data-tip="Editar">
+                            <div class="tooltip" data-tip="Ver">
                                 <button on:click={()=>openModal(a.id)}>
-                                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
-                                    <path d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712ZM19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 0 0-1.32 2.214l-.8 2.685a.75.75 0 0 0 .933.933l2.685-.8a5.25 5.25 0 0 0 2.214-1.32L19.513 8.2Z" />
-                                  </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                        <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+                                        <path fill-rule="evenodd" d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 0 1 0-1.113ZM17.25 12a5.25 5.25 0 1 1-10.5 0 5.25 5.25 0 0 1 10.5 0Z" clip-rule="evenodd" />
+                                    </svg>
                                 </button>
                               </div>
                               

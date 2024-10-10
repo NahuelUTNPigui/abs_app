@@ -270,15 +270,21 @@
     <div class="justify-start mx-2 lg:mx-10">
       <h1 class="text-xl font-bold italic md:mx-3 sm:mx-4 lg:mx-10">BEBÉS</h1>  
     </div>
-    <div class="w-full grid justify-items-center lg:m-20 lg:w-3/4  ">
-        <div class="flex m-1 gap-1 lg:gap-10" >
-            <label for="opcionegresos">Buscar por:</label>
+    <div class="flex flex-wrap lg:mx-10 mb-6 mt-2 sm:mx-0 xm:mx-0">
+        <div class="lg:w-1/4 md:w-1/2 lg:mx-10 mb-6 md:mb-0 sm:mb-0 sm:mx-0">
+            <label class="block uppercase tracking-wide text-xs font-bold mb-2" for="grid-first-name">
+                Fecha egreso
+            </label>
             <select id="opcionegreso" name="opcionegreso" class="select select-bordered" bind:value={ conegreso} on:change={filterupdate}>
                 {#each opcionesegresos as o}
                     <option value={o.nombre}>{o.nombre}</option>
                 {/each}
-
             </select>
+        </div>
+        <div class="lg:w-1/4 px-2 md:w-1/2 lg:mx-10 mb-6 md:mb-0 sm:mb-0 sm:mx-0">
+            <label class="block uppercase tracking-wide text-xs font-bold mb-2" for="grid-first-name">
+                Disponible
+            </label>
             <select id="opciondisp" name="opciondisp" class="select select-bordered" bind:value={ iddisponible} on:change={filterupdate}>
                 {#each opcionesdisponibilidad as o}
                     <option value={o.nombre}>{o.nombre}</option>
@@ -286,21 +292,20 @@
 
             </select>
         </div>
-        <div class="flex m-1 gap-1 lg:gap-10" >
-            <div class="w-2/5">
-              <label class="input input-bordered flex items-center gap-2">
+    </div>
+    <div class="flex flex-wrap lg:mx-10 mb-6 mt-1 sm:mx-0 xm:mx-0">
+        <div class="lg:w-1/4 md:w-1/2 lg:mx-10 mb-6 md:mb-0 sm:mb-0 sm:mx-0">
+            <label class="input input-bordered flex items-center gap-2">
                 <input type="text" class="grow" placeholder="Buscar.." bind:value={nombrebuscar} on:input={filterupdate} />
-                
-              </label>
-            </div>
-            <button class="btn btn-primary text-white " on:click={()=>openModal("")}>
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 lg:size-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-              </svg>
-              <span class="text-xl"> bebé</span>
-            </button>  
-            <br>
+            </label>
         </div>
+        <div class="lg:w-1/4 px-2 md:w-1/2 lg:mx-10 mb-6 md:mb-0 sm:mb-0 sm:mx-0">
+            <button class="btn btn-primary text-white " on:click={()=>openModal("")}>
+                <span class="text-xl">Nuevo bebé</span>
+            </button>
+        </div>
+    </div>
+    <div class="w-full grid justify-items-center lg:m-20 lg:w-3/4">
         <table class="table table-lg" >
             <thead>
                 <tr>
@@ -349,87 +354,7 @@
                 {/each}
             </tbody>
         </table>
-        <dialog id="formModal" class="modal">
-            <div class="modal-box w-11/12 max-w-1md">
-                {#if idbebe==""}
-                    <h3 class="text-lg font-bold">Nuevo bebé</h3>  
-                {:else}
-                    <h3 class="text-lg font-bold">Editar bebé</h3>  
-                {/if}
-                <div class="form-control">
-                    <label for = "nombre" class="label">
-                        <span class="label-text text-base">Nombre</span>
-                    </label>
-                    <label class="input-group">
-                        <input id ="nombre" type="text"  class="input input-bordered" bind:value={nombrebebe}/>
-                    </label>
-                    <label for = "nombremama" class="label">
-                        <span class="label-text text-base">Nombre Madre</span>
-                    </label>
-                    <label class="input-group">
-                        <input id ="nombremama" type="text"  class="input input-bordered" bind:value={nombremama}/>
-                    </label>
-                    <label for = "apellidomama" class="label">
-                        <span class="label-text text-base">Apellido Madre</span>
-                    </label>
-                    <label class="input-group">
-                        <input id ="apellidomama" type="text"  class="input input-bordered" bind:value={apellidomama}/>
-                    </label>
-                    <label for = "fechanacimiento" class="label">
-                        <span class="label-text text-base">Fecha nacimiento</span>
-                    </label>
-                    <label class="input-group ">
-                        <input id ="fechanacimiento" type="date"  class="input input-bordered" bind:value={fechanacimiento}/>
-                    </label>
-                    <label for = "fechaingreso" class="label">
-                        <span class="label-text text-base">Fecha ingreso</span>
-                    </label>
-                    <label class="input-group ">
-                        <input id ="fechaingreso" type="date"  class="input input-bordered" bind:value={fechaingreso}/>
-                    </label>
-                    {#if idbebe !=''}
-                        <label for = "fechaegreso" class="label">
-                            <span class="label-text text-base">Fecha egreso</span>
-                        </label>
-                        <label class="input-group">
-                            <input id ="fechaegreso" type="date"  class="input input-bordered" bind:value={fechaegreso}/>
-                        </label>
-                    {/if}
-                    <label class="form-control w-3/5">
-                        <div class="label">
-                          <span class="label-text">Prioridad</span>
-                        </div>
-                        <select class="select select-bordered" bind:value={prioridad}>
-                            {#each prioridades as p}
-                                <option value={p.id}>{p.desc}</option>
-                            {/each}
-
-                        </select>
-                    </label>
-                    {#if idbebe !=''}
-                        <label class="form-control w-3/5">
-                            <div class="label">
-                            <span class="label-text">Disponible</span>
-                            </div>
-                            <select class="select select-bordered" bind:value={disponible}>
-                                <option value={true}>{"Disponible"}</option>
-                                <option value={false}>{"No disponible"}</option>
-                                
-
-                            </select>
-                        </label>
-                    {/if}
-                    
-                </div>
-                <div class="modal-action justify-start">
-                    <form method="dialog">
-                      <!-- if there is a button, it will close the modal -->
-                      <button class="btn btn-success" on:click={guardar}>Guardar</button>
-                      <button class="btn btn-error">Cancelar</button>
-                    </form>
-                </div>
-            </div>
-        </dialog>
+        
         <dialog id="formAbrazo" class="modal">
           <div class="modal-box w-11/12 max-w-1md">
               <h3 class="text-lg font-bold">Nuevo abrazo</h3>
@@ -492,4 +417,85 @@
           </div>
       </dialog>
     </div>
+    <dialog id="formModal" class="modal modal-middle">
+        <div class="modal-box w-11/12 max-w-1md">
+            {#if idbebe==""}
+                <h3 class="text-lg font-bold">Nuevo bebé</h3>  
+            {:else}
+                <h3 class="text-lg font-bold">Editar bebé</h3>  
+            {/if}
+            <div class="form-control">
+                <label for = "nombre" class="label">
+                    <span class="label-text text-base">Nombre</span>
+                </label>
+                <label class="input-group">
+                    <input id ="nombre" type="text"  class="input input-bordered" bind:value={nombrebebe}/>
+                </label>
+                <label for = "nombremama" class="label">
+                    <span class="label-text text-base">Nombre Madre</span>
+                </label>
+                <label class="input-group">
+                    <input id ="nombremama" type="text"  class="input input-bordered" bind:value={nombremama}/>
+                </label>
+                <label for = "apellidomama" class="label">
+                    <span class="label-text text-base">Apellido Madre</span>
+                </label>
+                <label class="input-group">
+                    <input id ="apellidomama" type="text"  class="input input-bordered" bind:value={apellidomama}/>
+                </label>
+                <label for = "fechanacimiento" class="label">
+                    <span class="label-text text-base">Fecha nacimiento</span>
+                </label>
+                <label class="input-group ">
+                    <input id ="fechanacimiento" type="date"  class="input input-bordered" bind:value={fechanacimiento}/>
+                </label>
+                <label for = "fechaingreso" class="label">
+                    <span class="label-text text-base">Fecha ingreso</span>
+                </label>
+                <label class="input-group ">
+                    <input id ="fechaingreso" type="date"  class="input input-bordered" bind:value={fechaingreso}/>
+                </label>
+                {#if idbebe !=''}
+                    <label for = "fechaegreso" class="label">
+                        <span class="label-text text-base">Fecha egreso</span>
+                    </label>
+                    <label class="input-group">
+                        <input id ="fechaegreso" type="date"  class="input input-bordered" bind:value={fechaegreso}/>
+                    </label>
+                {/if}
+                <label class="form-control w-3/5">
+                    <div class="label">
+                      <span class="label-text">Prioridad</span>
+                    </div>
+                    <select class="select select-bordered" bind:value={prioridad}>
+                        {#each prioridades as p}
+                            <option value={p.id}>{p.desc}</option>
+                        {/each}
+
+                    </select>
+                </label>
+                {#if idbebe !=''}
+                    <label class="form-control w-3/5">
+                        <div class="label">
+                        <span class="label-text">Disponible</span>
+                        </div>
+                        <select class="select select-bordered" bind:value={disponible}>
+                            <option value={true}>{"Disponible"}</option>
+                            <option value={false}>{"No disponible"}</option>
+                            
+
+                        </select>
+                    </label>
+                {/if}
+                
+            </div>
+            <div class="modal-action justify-start">
+                <form method="dialog">
+                  <!-- if there is a button, it will close the modal -->
+                  <button class="btn btn-success" on:click={guardar}>Guardar</button>
+                  <button class="btn btn-error">Cancelar</button>
+                </form>
+            </div>
+        </div>
+    </dialog>
 </Navbarr>
