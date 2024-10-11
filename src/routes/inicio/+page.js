@@ -12,43 +12,63 @@ export async function load({params}){
     let lunes = {
       man:[],
       tar:[],
-      back:[]
+      back:[],
+      manback:[],
+      tarback:[]
     }
     let martes = {
       man:[],
       tar:[],
-      back:[]
+      back:[],
+      manback:[],
+      tarback:[]
     }
     let miercoles = {
       man:[],
       tar:[],
-      back:[]
+      back:[],
+      manback:[],
+      tarback:[]
     }
     let jueves = {
       man:[],
       tar:[],
-      back:[]
+      back:[],
+      manback:[],
+      tarback:[]
     }
     let viernes = {
       man:[],
       tar:[],
-      back:[]
+      back:[],
+      manback:[],
+      tarback:[]
     }
     let sabado = {
       man:[],
       tar:[],
-      back:[]
+      back:[],
+      manback:[],
+      tarback:[]
     }
     let domingo = {
       man:[],
       tar:[],
-      back:[]
+      back:[],
+      manback:[],
+      tarback:[]
     }
     for(let i = 0;i<recordscrono.length;i++){
       let fila = recordscrono[i]
       if(fila.lunes){
           if(fila.lunesback){
-              lunes.back.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
+            if(fila.lunestarde){
+              lunes.tarback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
+            }
+            else{
+              lunes.manback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
+            }
+            //lunes.back.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+": "+fila.expand.user.celular)
           }
           else if(fila.lunestarde){
               lunes.tar.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
@@ -59,7 +79,13 @@ export async function load({params}){
       }
       if(fila.martes){
         if(fila.martesback){
-          martes.back.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
+          if(fila.martestarde){
+            martes.tarback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
+          }
+          else{
+            martes.manback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
+          }
+          //martes.back.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+": "+fila.expand.user.celular)
         }
         else if(fila.martestarde){
           martes.tar.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
@@ -70,7 +96,13 @@ export async function load({params}){
       }
       if(fila.miercoles){
         if(fila.miercolesback){
-          miercoles.back.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
+          if(fila.miercolestarde){
+            miercoles.tarback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
+          }
+          else{
+            miercoles.manback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
+          }
+          //miercoles.back.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+": "+fila.expand.user.celular)
         }
         else if(fila.miercolestarde){
           miercoles.tar.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
@@ -78,59 +110,83 @@ export async function load({params}){
         else{
           miercoles.man.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
         }
-    }
-    if(fila.jueves){
-      if(fila.juevesback){
-        jueves.back.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
       }
-      else if(fila.juevestarde){
-        jueves.tar.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
+      if(fila.jueves){
+        if(fila.juevesback){
+          if(fila.juevestarde){
+            jueves.tarback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
+          }
+          else{
+            jueves.manback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
+          }
+          //jueves.back.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+": "+fila.expand.user.celular)
+        }
+        else if(fila.juevestarde){
+          jueves.tar.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
+        }
+        else{
+          jueves.man.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
+        }
+    }
+    if(fila.viernes){
+      if(fila.viernesback){
+        if(fila.viernestarde){
+          viernes.tarback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
+        }
+        else{
+          viernes.manback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
+        }
+        //viernes.back.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+": "+fila.expand.user.celular)
+      }
+      else if(fila.viernestarde){
+        viernes.tar.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
       }
       else{
-        jueves.man.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
+        viernes.man.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
       }
-  }
-  if(fila.viernes){
-    if(fila.viernesback){
-      viernes.back.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
     }
-    else if(fila.viernestarde){
-      viernes.tar.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
+    if(fila.sabado){
+      if(fila.sabadoback){
+        if(fila.sabadotarde){
+          sabado.tarback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
+        }
+        else{
+          sabado.manback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
+        }
+        //sabado.back.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+": "+fila.expand.user.celular)
+      }
+      else if(fila.sabadotarde){
+        sabado.tar.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
+      }
+      else{
+        sabado.man.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
+      }
     }
-    else{
-      viernes.man.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
-    }
-  }
-  if(fila.sabado){
-    if(fila.sabadoback){
-      sabado.back.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
-    }
-    else if(fila.sabadotarde){
-      sabado.tar.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
-    }
-    else{
-      sabado.man.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
-    }
-  }
-  if(fila.domingo){
-    if(fila.domingoback){
-      domingo.back.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
-    }
-    else if(fila.domingotarde){
-      domingo.tar.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
-    }
-    else{
-      domingo.man.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
-    }
-  }
-    }
-    return {
-      lunes,
-      martes,
-      miercoles,
-      jueves,
-      viernes,
-      sabado,
-      domingo
+    if(fila.domingo){
+      if(fila.domingoback){
+        if(fila.domingotarde){
+          domingo.tarback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
+        }
+        else{
+          domingo.manback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
+        }
+        //domingo.back.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+": "+fila.expand.user.celular)
+      }
+      else if(fila.domingotarde){
+        domingo.tar.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
+      }
+      else{
+        domingo.man.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
+      }
     }
   }
+  return {
+    lunes,
+    martes,
+    miercoles,
+    jueves,
+    viernes,
+    sabado,
+    domingo
+  }
+}

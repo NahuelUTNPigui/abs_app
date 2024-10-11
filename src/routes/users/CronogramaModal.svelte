@@ -1,5 +1,6 @@
 <script>
     import PocketBase from 'pocketbase'
+    import Swal from 'sweetalert2'
     let ruta = import.meta.env.VITE_RUTA
     
     export let cronovoluntaria = {
