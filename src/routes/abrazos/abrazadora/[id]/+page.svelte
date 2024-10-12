@@ -8,7 +8,6 @@
     let ruta = import.meta.env.VITE_RUTA
     const pb = new PocketBase(ruta);
     let osc = $oscuro
-    $: light = osc === "no"
     let usuarioid = ""
     let escoordinador=false
     let abrazadora = null
@@ -28,6 +27,12 @@
     let idbebebuscar =""
     let idabrazadora = ""
     let idubicacion=""
+
+    export async function load({ params }) {
+        const { id } = params;
+        // Aquí puedes hacer una llamada a la API o a tu fuente de datos
+        return { props: { id } };
+    }
     onMount(async()=>{
         idabrazadora = $page.params.id
         const recordsv = await pb.collection('users').getOne(idabrazadora);

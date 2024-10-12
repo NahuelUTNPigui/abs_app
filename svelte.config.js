@@ -11,7 +11,21 @@ const config = {
 			fallback: undefined,
 			precompress: false,
 			strict: true
-		})
+		}),
+		prerender:{
+			entries:[
+				"/",
+				"/abrazos",
+				"/abrazos/historial",
+				"/bebes",
+				"/inicio",
+				"/login",
+				"/schelude",
+				"/test",
+				"/users",
+				"/abrazos/abrazadora/1",
+				"/abrazos/bebe/1"]
+		}
 	}
 };
 
