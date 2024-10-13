@@ -18,7 +18,7 @@
   onMount(async ()=>{
     const recordsv = await pb.collection('users').getFullList({filter:"active=true"});
 
-    voluntarias  = recordsv
+    voluntarias  = recordsv.sort((v1,v2)=>v1.name.toLowerCase()>v2.name.toLowerCase()?1:-1)
     voluntariasrows = voluntarias
     let pb_json = await JSON.parse(localStorage.getItem('pocketbase_auth'))
     usuarioid = pb_json.model.id
@@ -403,7 +403,7 @@
   <div class="w-full grid justify-items-center lg:m-20 lg:w-3/4  ">
     
     <div class="w-full grid justify-items-left mx-10">
-      <h1 class="text-xl font-bold italic md:mx-3 sm:mx-3 lg:mx-5">VOLUNTARIAS</h1>  
+      <h1 class="text-xl font-bold italic md:mx-3 sm:mx-3 lg:mx-5">ABRAZADORAS</h1>  
     </div>
     <div class="flex m-1 gap-2 lg:gap-10" >
         <div class="w-2/5 my-1">
@@ -419,7 +419,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
             </svg>-->
 
-            <span class="text-xl">Nueva voluntaria</span>
+            <span class="text-xl">Nueva Abrazadora</span>
         </button>  
           <br>
     </div>
@@ -430,7 +430,7 @@
       <!-- head -->
       <thead>
         <tr>
-          <th class="text-base">Nombre voluntaria</th>
+          <th class="text-base">Nombre Abrazadora</th>
           <th class="text-base">Acciones</th>
         </tr>
       </thead>
@@ -487,9 +487,9 @@
     <dialog id="formModal" class="modal">
       <div class="modal-box w-11/12 max-w-1md">
         {#if idvol==""}
-          <h3 class="text-lg font-bold">Nueva voluntaria</h3>  
+          <h3 class="text-lg font-bold">Nueva Abrazadora</h3>  
         {:else}
-          <h3 class="text-lg font-bold">Editar voluntaria</h3>  
+          <h3 class="text-lg font-bold">Editar Abrazadora</h3>  
         {/if}
         <div class="form-control">
           <form action="">

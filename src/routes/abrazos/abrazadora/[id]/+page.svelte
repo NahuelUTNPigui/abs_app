@@ -4,6 +4,7 @@
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
     import {oscuro} from '$lib/oscuro'
+    import { goto } from '$app/navigation';
     import * as XLSX from "xlsx"
     let ruta = import.meta.env.VITE_RUTA
     const pb = new PocketBase(ruta);
@@ -93,6 +94,7 @@
             FECHA:new Date(item.fecha).toLocaleDateString(),
             TURNO:item.turno
         }))
+        
         const wb = XLSX.utils.book_new();
         // Abrazos
         const ws = XLSX.utils.aoa_to_sheet([])
@@ -107,6 +109,8 @@
         const range = XLSX.utils.decode_range('A1:K1');
         ws['!merges'] = [{ s: { r: range.s.r, c: range.s.c }, e: { r: range.e.r, c: range.e.c } }];
         XLSX.utils.sheet_add_json(ws, csvdata, { origin: 'A2' });
+        let totalfilas = [{"CANTIDAD ABRAZOS":csvdata.length}]
+        XLSX.utils.sheet_add_json(ws,totalfilas,{origin:'G2'})
         XLSX.utils.book_append_sheet(wb, ws, 'Abrazos');
         // Filtros
         let bebesfilter = bebes.filter(b=>idbebebuscar==b.id)
@@ -129,24 +133,34 @@
         XLSX.writeFile(wb, `${titulo.replace(/\//g, "-")}.xlsx`, { cellStyles: true });
     
     }
+    function volver(){
+        goto("/users/")
+    }
 </script>
 <Navbarr>
     <div class="flex flex-wrap lg:mx-10 mb-6 mt-2 sm:mx-0 xm:mx-0" >
         <div class="lg:w-1/4 md:w-1/2 lg:mx-10 mb-6 md:mb-0 sm:mb-0 sm:mx-0">
+            <button class="btn btn-outline"on:click={()=>volver()}>
+                <span class="text-xl">Volver</span>
+            </button>  
+        </div>
+    </div>
+    <div class="flex flex-wrap lg:mx-10 mb-1 mt-2 sm:mx-0 xm:mx-0" >
+        <div class="lg:w-1/4 md:w-1/2 lg:mx-10 mb-1 md:mb-0 sm:mb-0 sm:mx-0">
             <label class="block uppercase tracking-wide text-xs font-bold mb-2" for="grid-first-name">
               Fecha desde
             </label>
             <input id ="fechadesde" type="date"  class="input input-bordered" bind:value={fechadesde} on:change={filterUpdate}/>
         </div>
-        <div class="lg:w-1/4 px-1 md:w-1/2 lg:mx-10 mb-6 md:mb-0 sm:mb-0 sm:mx-0">
+        <div class="lg:w-1/4 px-1 md:w-1/2 lg:mx-10 mb-1 md:mb-0 sm:mb-0 sm:mx-0">
             <label class="block uppercase tracking-wide text-xs font-bold mb-2" for="grid-first-name">
               Fecha Hasta
             </label>
             <input id ="fechadesde" type="date"  class="input input-bordered" bind:value={fechahasta} on:change={filterUpdate}/>
         </div>
     </div>
-    <div class="flex flex-wrap lg:mx-10 mb-6 lg:mt-2 sm:mt-1 sm:mx-0 xm:mx-0">
-        <div class="lg:w-1/4 md:w-1/2 lg:mx-10 mb-6 md:mb-0 sm:mb-0 sm:mx-0">
+    <div class="flex flex-wrap lg:mx-10 mb-1 lg:mt-2 sm:mt-1 sm:mx-0 xm:mx-0">
+        <div class="lg:w-1/4 md:w-1/2 lg:mx-10 mb-1 md:mb-0 sm:mb-0 sm:mx-0">
             <label class="block uppercase tracking-wide text-xs font-bold mb-2" for="grid-first-name">
                 Bebes    
             </label>
@@ -157,7 +171,7 @@
                 {/each}
             </select>
         </div>
-        <div class="lg:w-1/4 px-1 md:w-1/2 lg:mx-10 mb-6 md:mb-0 sm:mb-0 sm:mx-0">
+        <div class="lg:w-1/4 px-1 md:w-1/2 lg:mx-10 mb-1 md:mb-0 sm:mb-0 sm:mx-0">
             <label class="block uppercase tracking-wide text-xs font-bold mb-2" for="grid-first-name">
                 Unidad    
             </label>
@@ -171,8 +185,8 @@
             </select>
         </div>
     </div>
-    <div class="flex flex-wrap lg:mx-10 mb-6 lg:mt-2 sm:mt-1 sm:mx-0 xm:mx-0">
-        <div class="lg:w-1/4 md:w-1/2 lg:mx-10 mb-6 md:mb-0 sm:mb-0 sm:mx-0">
+    <div class="flex flex-wrap lg:mx-10 mb-1 lg:mt-2 sm:mt-1 sm:mx-0 xm:mx-0">
+        <div class="lg:w-1/4 md:w-1/2 lg:mx-10 mb-1 md:mb-0 sm:mb-0 sm:mx-0">
             <button class="btn btn-outline" on:click={exportarXLSX}>
                 <span class="text-xl">Exportar EXCEL</span>
             </button>

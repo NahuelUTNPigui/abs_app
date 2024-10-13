@@ -109,7 +109,7 @@
             
             const record = await pb.collection('cronogramas').update(cronovoluntaria.id, data);
             edit = false
-            Swal.fire('Exito guardar cronograma', 'Se pudo guardar el nuevo cronograma', 'Success');
+            Swal.fire('Exito guardar cronograma', 'Se pudo guardar el nuevo cronograma', 'success');
             
         }
         catch(e){

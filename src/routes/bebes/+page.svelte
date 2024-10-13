@@ -6,6 +6,7 @@
   import { goto } from '$app/navigation';
   let ruta = import.meta.env.VITE_RUTA
   const pb = new PocketBase(ruta);
+  const HOY = new Date().toISOString().split("T")[0]
   let usuarioid = ""
   let escoordinador=false
   let bebes = []
@@ -21,10 +22,13 @@
   let apellidomama = ""
   let fechaingreso = ""
   let fechaegreso = ""
+  // Es una variable para indicar si el bebe tiene fecha de egreso, si la tiene y esta vacia borrarla
+  let confechaegreso = false
   let fechanacimiento = ""
   let prioridad = 1 
   let nombrebuscar=""
   let opcionesegresos=[{nombre:"Sin fecha egreso"},{nombre:"Todos"}]
+  
   let conegreso = opcionesegresos[0].nombre
   let opcionesdisponibilidad=[{nombre:"Todos"},{nombre:"Disponibles"},{nombre:"No disponibles"}]
   let ubicaciones =[{nombre:"UTI1"},{nombre:"UTI2"},{nombre:"UTI3"},{nombre:"UCI1"},{nombre:"UCI2"},{nombre:"UCI3"},{nombre:"Prealta"}]
@@ -74,6 +78,9 @@
         apellidomama = bebe.apellidomama
         fechaingreso = bebe.fechaingreso.split(' ')[0]
         fechaegreso = bebe.fechaegreso?bebe.fechaegreso.split(' ')[0]:''
+        if(fechaegreso!=''){
+            confechaegreso = true
+        }
         fechanacimiento = bebe.fechanacimiento.split(' ')[0]
         prioridad = bebe.prioridad
         disponible = bebe.disponible
@@ -106,7 +113,7 @@
     turno = ""
     ubicacion = ""
     fechaabrazo = ""
-
+    confechaegreso = false
   }
   function cerrar(){
     idbebeabrazo = ""
@@ -221,6 +228,11 @@
 
             data.fechaegreso = fechaegreso +' 03:00:00.000Z'
         }
+        else{
+            if(confechaegreso){
+                data.fechaegreso=''
+            }
+        }
         try{
 
             const recordb = await pb.collection('bebes').update(idbebe,data)
@@ -233,6 +245,7 @@
             fechaingreso = ""
             fechaegreso = ""
             prioridad = 1
+            confechaegreso = false
             Swal.fire('Éxito editar', 'Bebé editado con éxito', 'success');
         }
         catch(e){
@@ -296,7 +309,7 @@
     <div class="flex flex-wrap lg:mx-10 mb-6 mt-1 sm:mx-0 xm:mx-0">
         <div class="lg:w-1/4 md:w-1/2 lg:mx-10 mb-6 md:mb-0 sm:mb-0 sm:mx-0">
             <label class="input input-bordered flex items-center gap-2">
-                <input type="text" class="grow" placeholder="Buscar.." bind:value={nombrebuscar} on:input={filterupdate} />
+                <input type="text" class="grow" placeholder="Buscar por nombre.." bind:value={nombrebuscar} on:input={filterupdate} />
             </label>
         </div>
         <div class="lg:w-1/4 px-2 md:w-1/2 lg:mx-10 mb-6 md:mb-0 sm:mb-0 sm:mx-0">
@@ -447,13 +460,13 @@
                     <span class="label-text text-base">Fecha nacimiento</span>
                 </label>
                 <label class="input-group ">
-                    <input id ="fechanacimiento" type="date"  class="input input-bordered" bind:value={fechanacimiento}/>
+                    <input id ="fechanacimiento" type="date" max={HOY}  class="input input-bordered" bind:value={fechanacimiento}/>
                 </label>
                 <label for = "fechaingreso" class="label">
                     <span class="label-text text-base">Fecha ingreso</span>
                 </label>
                 <label class="input-group ">
-                    <input id ="fechaingreso" type="date"  class="input input-bordered" bind:value={fechaingreso}/>
+                    <input id ="fechaingreso" type="date" max={HOY}  class="input input-bordered" bind:value={fechaingreso}/>
                 </label>
                 {#if idbebe !=''}
                     <label for = "fechaegreso" class="label">
