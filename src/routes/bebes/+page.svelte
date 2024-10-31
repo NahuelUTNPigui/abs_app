@@ -48,10 +48,12 @@
     const recordsb = await pb.collection('bebes').getFullList({filter:"active=true"});
 
     bebes = recordsb
-    bebesrows = recordsb
+    bebes.sort((b1,b2)=>b1.apellidomama>b2.apellidomama?1:-1)
+    bebesrows = bebes
     bebesrows = bebesrows.filter(b=>b.fechaegreso=="")
-    bebesselect = recordsb
-    bebesselect.sort((b1,b2)=>b1.nombre>b2.nombre?1:-1)
+    
+    bebesselect = bebes
+    
 
     
     const recordsv = await pb.collection('users').getFullList({filter:"active=true"});
@@ -61,6 +63,9 @@
 
   })
   function openModal(id){
+    goto('/bebes/'+id+"/")
+    
+    return
     idbebe = id
     if(idbebe == ""){
         nombrebebe=""
@@ -201,6 +206,7 @@
             const recordb = await pb.collection('bebes').create(data)
             const recordsb = await pb.collection('bebes').getFullList({filter:"active=true"});
             bebes = recordsb
+            bebes.sort((b1,b2)=>b1.apellidomama>b2.apellidomama?1:-1)
             filterupdate()
             nombrebebe=""
             nombremama=""
@@ -238,6 +244,7 @@
             const recordb = await pb.collection('bebes').update(idbebe,data)
             const recordsb = await pb.collection('bebes').getFullList({filter:"active=true"});
             bebes = recordsb
+            bebes.sort((b1,b2)=>b1.apellidomama>b2.apellidomama?1:-1)
             filterupdate()
             nombrebebe=""
             nombremama=""
@@ -313,7 +320,7 @@
             </label>
         </div>
         <div class="lg:w-1/4 px-2 md:w-1/2 lg:mx-10 mb-6 md:mb-0 sm:mb-0 sm:mx-0">
-            <button class="btn btn-primary text-white " on:click={()=>openModal("")}>
+            <button class="btn btn-primary text-white " on:click={()=>openModal("0")}>
                 <span class="text-xl">Nuevo bebé</span>
             </button>
         </div>
@@ -322,16 +329,16 @@
         <table class="table table-lg" >
             <thead>
                 <tr>
-                    <th class="text-base">Nombre bebé</th>
                     <th class="text-base">Mamá</th>
+                    <th class="text-base">Nombre bebé</th>
                     <th class="text-base">Acciones</th>
                 </tr>
             </thead>
             <tbody>
                 {#each bebesrows as b}
                     <tr>
+                       <td class="text-base">{b.apellidomama}, {b.nombremama}</td> 
                        <td class="text-base">{b.nombre}</td> 
-                       <td class="text-base">{b.nombremama}, {b.apellidomama}</td> 
                        <td>
                         <!--<div class="tooltip" data-tip="Abrazar">
                           <button on:click={()=>openModalAbrazo(b.id)}>

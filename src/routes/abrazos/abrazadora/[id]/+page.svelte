@@ -3,12 +3,10 @@
     import PocketBase from 'pocketbase'
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
-    import {oscuro} from '$lib/oscuro'
     import { goto } from '$app/navigation';
     import * as XLSX from "xlsx"
     let ruta = import.meta.env.VITE_RUTA
     const pb = new PocketBase(ruta);
-    let osc = $oscuro
     let usuarioid = ""
     let escoordinador=false
     let abrazadora = null

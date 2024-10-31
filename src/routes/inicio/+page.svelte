@@ -57,7 +57,7 @@
     }
 </script>
 <Navbarr>
-    <div class="grid justify-items-center ml-5">
+    <div class="grid justify-items-center ml-1">
         <div class="card bg-base-100 shadow-xl lg:w-full">
             <div class="card-body">
                 <h2 class="card-title text-xl">CRONOGRAMA {diasemana(new Date().getDay()).toUpperCase()}</h2>
@@ -80,9 +80,12 @@
                     </div>
                     
                 </div>
+                <div class="grid grid-cols-1 mb-0">
+                    <h2 class="text-lg font-semibold mb-0">Backup</h2>
+                </div>
                 <div class="grid grid-cols-2">
                     <div >
-                        <h2 class="text-lg font-normal italic">Backup mañana</h2>
+                        <h2 class="text-lg font-normal italic">Mañana</h2>
                         <ul class="list-disc">
                             {#each schdia.manback as v}
                                 <li>
@@ -100,7 +103,7 @@
                         </ul>
                     </div>
                     <div >
-                        <h2 class="text-lg font-normal italic">Backup tarde</h2>
+                        <h2 class="text-lg font-normal italic">Tarde</h2>
                         <ul class="list-disc">
                             {#each schdia.tarback as v}
                                 <li>

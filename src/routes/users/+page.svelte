@@ -7,18 +7,52 @@
   import CronogramaModal from './CronogramaModal.svelte';
   import {coordinadora} from '$lib/coordinadora'
   import { goto } from '$app/navigation';
+  //VARIABLES
+  // Capaz haga falta una nueva pagina para el modal de nueva usuario
   let ruta = import.meta.env.VITE_RUTA
   const pb = new PocketBase(ruta);
+
   let usuarioid = ""
   let escoordinador=false
+  let habilitado = false
   let voluntarias = []
   let voluntariasrows = []
   let cronogramas = []
   let nombrebuscar = ""
+  let nombre = ""
+  let apellido = ""
+  let cel = ""
+  let idvol = ""
+  let contra = ""
+  let confirmcontra = ""
+  let oldcontra=""
+  let coordinador = false
+  let cambiarcontra=false
+  let onchangecambiarcontra = false
+  //Validar modal
+  let malnombre=false
+  let malapellido = false
+  let malcontra = false
+  let malconfcontra = false
+  let maloldcontra = false
+  let cronovol = {
+        userid:"",
+        id:"",
+        lunes:{turno:"no",fijo:"no"},
+        martes:{turno:"no",fijo:"no"},
+        miercoles:{turno:"no",fijo:"no"},
+        jueves:{turno:"no",fijo:"no"},
+        viernes:{turno:"no",fijo:"no"},
+        sabado:{turno:"no",fijo:"no"},
+        domingo:{turno:"no",fijo:"no"}
+  }
+  function sortVoluntaria(v1,v2){
+    return v1.apellido.toLowerCase().replaceAll("ñ","n")>v2.apellido.toLowerCase().replaceAll("ñ","n")?1:-1
+  }
   onMount(async ()=>{
     const recordsv = await pb.collection('users').getFullList({filter:"active=true"});
 
-    voluntarias  = recordsv.sort((v1,v2)=>v1.name.toLowerCase()>v2.name.toLowerCase()?1:-1)
+    voluntarias  = recordsv.sort((v1,v2)=>sortVoluntaria(v1,v2))
     voluntariasrows = voluntarias
     let pb_json = await JSON.parse(localStorage.getItem('pocketbase_auth'))
     usuarioid = pb_json.model.id
@@ -62,32 +96,15 @@
     })
     )    
   })
-  let nombre = ""
-  let apellido = ""
-  let cel = ""
-  let idvol = ""
-  let contra = ""
-  let confirmcontra = ""
-  let oldcontra=""
-  let coordinador = false
-  let cambiarcontra=false
-  let cronovol = {
-        userid:"",
-        id:"",
-        lunes:{turno:"no",fijo:"no"},
-        martes:{turno:"no",fijo:"no"},
-        miercoles:{turno:"no",fijo:"no"},
-        jueves:{turno:"no",fijo:"no"},
-        viernes:{turno:"no",fijo:"no"},
-        sabado:{turno:"no",fijo:"no"},
-        domingo:{turno:"no",fijo:"no"}
-  }
+  
   function isEmpty(str) {
     return (!str || str.length === 0 );
   }
   function openModal(id){
     idvol = id
+    
     if(idvol===""){
+      habilitado = false
       nombre = ""
       apellido = ""
       cel = ""
@@ -96,6 +113,16 @@
       coordinador = false
     }
     else{
+      contra = ""
+      confirmcontra = ""
+      oldcontra = ""
+      if(!escoordinador && idvol != usuarioid){
+        habilitado = false
+      }
+      else{
+        habilitado = true
+      }
+      
       let vol = voluntarias.filter(v=>v.id===idvol)[0]
       nombre = vol.name
       apellido = vol.apellido
@@ -196,6 +223,53 @@
     }
     return true
   }
+
+  function validarBoton(esguardar){
+    if(esguardar){
+      if(isEmpty(nombre)){
+        return false
+      }
+      if(isEmpty(apellido)){        
+        return false
+      }
+      if(isEmpty(contra)){        
+        return false
+      }
+      if(contra.length < 10){        
+        return false
+      }
+      if(contra != confirmcontra){        
+        return false
+      }
+      return true
+    }
+    else{
+      if(!escoordinador && idvol != usuarioid){
+             
+        return false
+      }
+      if(isEmpty(nombre)){        
+        return false
+      }
+      if(isEmpty(apellido)){        
+        return false
+      }
+      if(onchangecambiarcontra){
+        
+        if(contra.length < 10){          
+          return false
+        }
+        if(contra != confirmcontra){          
+          return false
+        }
+        if(oldcontra.length<10){          
+          return false
+        }
+      }
+      return true
+    }
+    
+  }
   async function guardar(){
     let c = $coordinadora
     if(idvol=="" && (c=="No" || c=="")){
@@ -208,9 +282,9 @@
        return
       }
       let data = {
-        username : (nombre+apellido).toLowerCase()+"_abs",
+        username : (nombre+apellido).toLowerCase().replaceAll("ñ","n")+"_abs",
         name:nombre,
-        email: (nombre+apellido).toLowerCase()+"@abs.com",
+        email: (nombre+apellido).toLowerCase().replaceAll("ñ","n")+"@abs.com",
         emailVisibility: true,
         apellido:apellido,
         password: contra,
@@ -224,6 +298,7 @@
         const recordc = await pb.collection('users').create(data);
         voluntarias = await pb.collection('users').getFullList({filter:"active=true"});
         voluntariasrows = voluntarias
+        voluntariasrows.sort((v1,v2)=>sortVoluntaria(v1,v2))
         nombre = ""
         apellido = ""
         cel = ""
@@ -305,7 +380,7 @@
         return
       }
       let data = {
-        username : (nombre+apellido).toLowerCase()+"_abs",
+        //username : (nombre+apellido).toLowerCase()+"_abs",
         name:nombre,
         //email: (nombre+apellido).toLowerCase()+"@abs.com",
         //emailVisibility: true,
@@ -323,6 +398,7 @@
         const recordu = await pb.collection('users').update(idvol,data);
         voluntarias = await pb.collection('users').getFullList({filter:"active=true"});
         voluntariasrows = voluntarias
+        voluntariasrows.sort((v1,v2)=>sortVoluntaria(v1,v2))
         nombre = ""
         apellido = ""
         cel = ""
@@ -377,10 +453,14 @@
     }
     
   }
+  function coincideapellido(apellido,v){
+    return v.apellido.toLowerCase().startsWith(apellido.toLowerCase())
+  }
   function filterupdate(){
     voluntariasrows = voluntarias.filter(v=>{
       
-      if(v.name.toLowerCase().includes(nombrebuscar.toLowerCase()) ||v.apellido.toLowerCase().includes(nombrebuscar.toLowerCase())){
+      //if(v.name.toLowerCase().includes(nombrebuscar.toLowerCase()) ||v.apellido.toLowerCase().includes(nombrebuscar.toLowerCase())){
+      if(coincideapellido(nombrebuscar,v)){
         return true
       }
       else{
@@ -388,13 +468,80 @@
       }
     })
   }
-  async function darAbrazo(id){
-
+  function onChangeInput(inputNombre,esguardar){
+    if(inputNombre == "NOMBRE" ){
+      habilitado=validarBoton(esguardar)
+      if(isEmpty(nombre)){
+        malnombre = true
+      }
+      else{
+        malnombre = false
+      }
+      
+    }
+    if(inputNombre == "APELLIDO" ){
+      habilitado=validarBoton(esguardar)
+      if(isEmpty(apellido)){
+        malapellido = true
+      }
+      else{
+        malapellido = false
+      }
+    }
+    if(inputNombre == "CONTRA" ){
+      habilitado=validarBoton(esguardar)
+      if(isEmpty(contra) || contra.length < 10){
+        malcontra = true
+      }
+      else{
+        malcontra = false
+      }
+      if(contra != confirmcontra){
+        malconfcontra = true
+      }
+      else{
+        malconfcontra = false
+      }
+    }
+    if(inputNombre == "CONFCONTRA" ){
+      habilitado=validarBoton(esguardar)
+      if(contra != confirmcontra){
+        malconfcontra = true
+      }
+      else{
+        malconfcontra = false
+      }
+    }
+    if(inputNombre == "CAMBIAR"){
+      onchangecambiarcontra = !onchangecambiarcontra
+      
+      if(!onchangecambiarcontra){
+        malcontra = false
+        malconfcontra = false
+        maloldcontra = false
+        contra = ""
+        confirmcontra = ""
+        oldcontra = ""
+      }
+      
+      habilitado = validarBoton(esguardar)
+    }
+    if(inputNombre == "OLDCONTRA"){
+      habilitado = validarBoton(esguardar)
+      if(oldcontra.length<10){
+        maloldcontra = true
+      }
+    }
   }
   function historialabrazadora(id){
     goto("/abrazos/abrazadora/"+id)
   }
-  
+  function cerrarFormModal(){
+    malnombre = false
+    malapellido = false
+    malconfcontra = false
+    malcontra = false
+  }
 </script>
 <Navbarr>
   
@@ -423,9 +570,7 @@
         </button>  
           <br>
     </div>
-    
-    
-    
+
     <table class="table table-lg" >
       <!-- head -->
       <thead>
@@ -437,7 +582,7 @@
       <tbody>
         {#each voluntariasrows as v}
         <tr>
-          <td class="text-base">{v.name}, {v.apellido}</td>
+          <td class="text-base">{v.apellido},{v.name}</td>
           <td>
 
             <div class="tooltip" data-tip="Cronograma">
@@ -494,16 +639,30 @@
         <div class="form-control">
           <form action="">
           <label for = "nombre" class="label">
-            <span class="label-text text-base">Nombre</span>
+            <span class="label-text text-base">Nombre*</span>
           </label>
           <label class="input-group">
-            <input id ="nombre" type="text"  class="input input-bordered" bind:value={nombre}/>
+            <input id ="nombre" type="text"  
+              class={`input input-bordered ${malnombre?"input-error":""}`}
+              on:change={()=>onChangeInput("NOMBRE",idvol=="")} 
+              bind:value={nombre}
+            />
+            <div class={`label ${malnombre?"":"hidden"}`}>
+              <span class="label-text-alt text-red-400">Error, el nombre no puede estar vacio</span>
+            </div>
           </label>
           <label for = "apellido" class="label">
-            <span class="label-text text-base">Apellido</span>
+            <span class="label-text text-base">Apellido*</span>
           </label>
           <label class="input-group">
-            <input id ="apellido" type="text"  class="input input-bordered" bind:value={apellido}/>
+            <input id ="apellido" type="text"  
+              class={`input input-bordered ${malapellido?"input-error":""}`} 
+              on:change={()=>onChangeInput("APELLIDO",idvol=="")} 
+              bind:value={apellido}
+            />
+            <div class={`label ${malapellido?"":"hidden"}`}>
+              <span class="label-text-alt text-red-400">Error, el apellido no puede estar vacio</span>
+            </div>
           </label>
           <label for = "cel" class="label ">
             <span class="label-text text-base">Celular</span>
@@ -513,16 +672,31 @@
           </label>
           {#if idvol==""}
             <label for = "contra" class="label">
-              <span class="label-text text-base">Contraseña</span>
+              <span class="label-text text-base">Contraseña*</span>
             </label>
             <label class="input-group">
-              <input id ="contra" type="password" class="input input-bordered" bind:value={contra} autocomplete="off" />
+              <input id ="contra" type="password" 
+                class={`input input-bordered ${malcontra?"input-error":""}`}  
+                on:change={()=>onChangeInput("CONTRA",idvol=="")} 
+                bind:value={contra} autocomplete="off"
+              />
+              <div class={`label ${malcontra?"":"hidden"}`}>
+                <span class="label-text-alt text-red-400">Error, debe tener al menos 10 caracteres</span>
+              </div>
             </label>
             <label for = "confcontra" class="label">
-              <span class="label-text text-base">Confirmar Contraseña</span>
+              <span class="label-text text-base">Confirmar Contraseña*</span>
             </label>
             <label class="input-group">
-              <input id ="confcontra" type="password" class="input input-bordered" bind:value={confirmcontra} autocomplete="off" />
+              <input id ="confcontra" type="password" 
+                class={`input input-bordered ${malconfcontra?"input-error":""}`}  
+                on:change={()=>onChangeInput("CONFCONTRA",idvol=="")} 
+                bind:value={confirmcontra} 
+                autocomplete="off" 
+              />
+              <div class={`label ${malconfcontra?"":"hidden"}`}>
+                <span class="label-text-alt text-red-400">Error, deben coincidir las contraseñas</span>
+              </div>
             </label>
             
           {/if}
@@ -540,27 +714,51 @@
               <br>
               <span class="label-text">Cambiar contraseña</span>  
               <br>
-              <input type="checkbox" class="toggle" bind:checked={cambiarcontra} />
+              <input type="checkbox" class="toggle" on:change={()=>onChangeInput("CAMBIAR",idvol=="")} bind:checked={cambiarcontra} />
             </div>
             
             {#if cambiarcontra }
               <label for = "contra2" class="label">
-                <span class="label-text text-base">Nueva Contraseña</span>
+                <span class="label-text text-base">Nueva Contraseña*</span>
               </label>
               <label class="input-group">
-                <input id ="contra2" type="password" class="input input-bordered" bind:value={contra} autocomplete="off" />
+                <input id ="contra2" type="password" 
+                  class={`input input-bordered ${malcontra?"input-error":""}`}  
+                  on:change={()=>onChangeInput("CONTRA",idvol=="")}
+                  bind:value={contra} 
+                  autocomplete="off" 
+                />
+                <div class={`label ${malcontra?"":"hidden"}`}>
+                  <span class="label-text-alt text-red-400">Error, debe tener al menos 10 caracteres</span>
+                </div>
               </label>
               <label for = "confcontra2" class="label">
-                <span class="label-text text-base">Confirmar Nueva Contraseña</span>
+                <span class="label-text text-base">Confirmar Nueva Contraseña*</span>
               </label>
               <label class="input-group">
-                <input id ="confcontra2" type="password" class="input input-bordered" bind:value={confirmcontra} autocomplete="off" />
+                <input id ="confcontra2" type="password" 
+                  
+                  class={`input input-bordered ${malconfcontra?"input-error":""}`} 
+                  on:change={()=>onChangeInput("CONFCONTRA",idvol=="")} 
+                  bind:value={confirmcontra} autocomplete="off" 
+                />
+                <div class={`label ${malconfcontra?"":"hidden"}`}>
+                  <span class="label-text-alt text-red-400">Error, deben coincidir las contraseñas</span>
+                </div>
               </label>
               <label for = "confcontra3" class="label">
-                <span class="label-text text-base">Escribir la contraseña anterior</span>
+                <span class="label-text text-base">Escribir la contraseña anterior*</span>
               </label>
               <label class="input-group">
-                <input id ="confcontra3" type="password" class="input input-bordered" bind:value={oldcontra} autocomplete="off" />
+                <input id ="confcontra3" type="password" 
+                  class={`input input-bordered ${maloldcontra?"input-error":""}`} 
+
+                  on:change={()=>onChangeInput("OLDCONTRA",idvol=="")}
+                  bind:value={oldcontra} autocomplete="off" 
+                />
+                <div class={`label ${maloldcontra?"":"hidden"}`}>
+                    <span class="label-text-alt text-red-400">Error, debe tener al menos 10 caracteres</span>
+                </div>
               </label>
             {/if}
           {/if}
@@ -570,8 +768,8 @@
         <div class="modal-action justify-start">
           <form method="dialog">
             <!-- if there is a button, it will close the modal -->
-            <button class="btn btn-success" on:click={guardar}>Guardar</button>
-            <button class="btn btn-error">Cancelar</button>
+            <button class="btn btn-success" disabled='{!habilitado}' on:click={guardar}>Guardar</button>
+            <button class="btn btn-error" on:click={cerrarFormModal}>Cancelar</button>
           </form>
         </div>
       </div>
