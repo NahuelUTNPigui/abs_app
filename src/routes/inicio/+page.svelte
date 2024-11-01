@@ -57,8 +57,8 @@
     }
 </script>
 <Navbarr>
-    <div class="grid justify-items-center ml-1">
-        <div class="card bg-base-100 shadow-xl lg:w-full">
+    <div class="grid justify-items-center mx-1 lg:mx-5">
+        <div class="card bg-base-100 shadow-xl w-full">
             <div class="card-body">
                 <h2 class="card-title text-xl">CRONOGRAMA {diasemana(new Date().getDay()).toUpperCase()}</h2>
                 <div class="grid grid-cols-2">

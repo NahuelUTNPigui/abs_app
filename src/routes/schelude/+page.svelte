@@ -22,7 +22,7 @@
     <div class="w-11/12 ml-5">
         <div >
             <details class="collapse collapse-plus bg-base-200">
-                <summary class="collapse-title text-xl font-medium">LUNES</summary>
+                <summary class="collapse-title text-xl font-bold">LUNES</summary>
                 <div class="collapse-content">
                     <div class="grid grid-cols-2">
                         <div >
@@ -43,9 +43,12 @@
                         </div>
                         
                     </div>
+                    <div class="grid grid-cols-1 mb-0">
+                        <h2 class="text-lg font-semibold mb-0">Backup</h2>
+                    </div>
                     <div class="grid grid-cols-2">
                         <div >
-                            <h2 class="text-lg font-normal italic">Backup mañana</h2>
+                            <h2 class="text-lg font-normal italic">Mañana</h2>
                             <ul class="list-disc">
                                 {#each lunes.manback as v}
                                     <li>
@@ -63,7 +66,7 @@
                             </ul>
                         </div>
                         <div >
-                            <h2 class="text-lg font-normal italic">Backup tarde</h2>
+                            <h2 class="text-lg font-normal italic">Tarde</h2>
                             <ul class="list-disc">
                                 {#each lunes.tarback as v}
                                     <li>
@@ -85,7 +88,7 @@
             </details>
             <br>
             <details class="collapse collapse-plus bg-base-200">
-                <summary class="collapse-title text-xl font-medium">MARTES</summary>
+                <summary class="collapse-title text-xl font-bold">MARTES</summary>
                 <div class="collapse-content">
                     <div class="grid grid-cols-2">
                         <div >
@@ -106,9 +109,12 @@
                         </div>
                         
                     </div>
+                    <div class="grid grid-cols-1 mb-0">
+                        <h2 class="text-lg font-semibold mb-0">Backup</h2>
+                    </div>
                     <div class="grid grid-cols-2">
                         <div >
-                            <h2 class="text-lg font-normal italic">Backup mañana</h2>
+                            <h2 class="text-lg font-normal italic">Mañana</h2>
                             <ul class="list-disc">
                                 {#each martes.manback as v}
                                     <li>
@@ -126,7 +132,7 @@
                             </ul>
                         </div>
                         <div >
-                            <h2 class="text-lg font-normal italic">Backup tarde</h2>
+                            <h2 class="text-lg font-normal italic">Tarde</h2>
                             <ul class="list-disc">
                                 {#each martes.tarback as v}
                                     <li>
@@ -148,7 +154,7 @@
             </details>
             <br>
             <details class="collapse collapse-plus bg-base-200">
-                <summary class="collapse-title text-xl font-medium">MIÉRCOLES</summary>
+                <summary class="collapse-title text-xl font-bold">MIÉRCOLES</summary>
                 <div class="collapse-content">
                     <div class="grid grid-cols-2">
                         <div >
@@ -168,9 +174,12 @@
                             </ul>
                         </div>
                     </div>
+                    <div class="grid grid-cols-1 mb-0">
+                        <h2 class="text-lg font-semibold mb-0">Backup</h2>
+                    </div>
                     <div class="grid grid-cols-2">
                         <div >
-                            <h2 class="text-lg font-normal italic">Backup mañana</h2>
+                            <h2 class="text-lg font-normal italic">Mañana</h2>
                             <ul class="list-disc">
                                 {#each miercoles.manback as v}
                                     <li>
@@ -188,7 +197,7 @@
                             </ul>
                         </div>
                         <div >
-                            <h2 class="text-lg font-normal italic">Backup tarde</h2>
+                            <h2 class="text-lg font-normal italic">Tarde</h2>
                             <ul class="list-disc">
                                 {#each miercoles.tarback as v}
                                     <li>
@@ -210,7 +219,7 @@
             </details>
             <br>
             <details class="collapse collapse-plus bg-base-200">
-                <summary class="collapse-title text-xl font-medium">JUEVES</summary>
+                <summary class="collapse-title text-xl font-bold">JUEVES</summary>
                 <div class="collapse-content">
                     <div class="grid grid-cols-2">
                         <div >
@@ -230,9 +239,12 @@
                             </ul>
                         </div>
                     </div>
+                    <div class="grid grid-cols-1 mb-0">
+                        <h2 class="text-lg font-semibold mb-0">Backup</h2>
+                    </div>
                     <div class="grid grid-cols-2">
                         <div >
-                            <h2 class="text-lg font-normal italic">Backup mañana</h2>
+                            <h2 class="text-lg font-normal italic">Mañana</h2>
                             <ul class="list-disc">
                                 {#each jueves.manback as v}
                                     <li>
@@ -250,7 +262,7 @@
                             </ul>
                         </div>
                         <div >
-                            <h2 class="text-lg font-normal italic">Backup tarde</h2>
+                            <h2 class="text-lg font-normal italic">Tarde</h2>
                             <ul class="list-disc">
                                 {#each jueves.tarback as v}
                                     <li>
@@ -272,7 +284,7 @@
             </details>
             <br>
             <details class="collapse collapse-plus bg-base-200">
-                <summary class="collapse-title text-xl font-medium">VIERNES</summary>
+                <summary class="collapse-title text-xl font-bold">VIERNES</summary>
                 <div class="collapse-content">
                     <div class="grid grid-cols-2">
                         <div >
@@ -293,9 +305,12 @@
                         </div>
                         
                     </div>
+                    <div class="grid grid-cols-1 mb-0">
+                        <h2 class="text-lg font-semibold mb-0">Backup</h2>
+                    </div>
                     <div class="grid grid-cols-2">
                         <div >
-                            <h2 class="text-lg font-normal italic">Backup mañana</h2>
+                            <h2 class="text-lg font-normal italic">Mañana</h2>
                             <ul class="list-disc">
                                 {#each viernes.manback as v}
                                     <li>
@@ -313,7 +328,7 @@
                             </ul>
                         </div>
                         <div >
-                            <h2 class="text-lg font-normal italic">Backup tarde</h2>
+                            <h2 class="text-lg font-normal italic">Tarde</h2>
                             <ul class="list-disc">
                                 {#each viernes.tarback as v}
                                     <li>
@@ -335,7 +350,7 @@
             </details>
             <br>
             <details class="collapse collapse-plus bg-base-200">
-                <summary class="collapse-title text-xl font-medium">SÁBADO</summary>
+                <summary class="collapse-title text-xl font-bold">SÁBADO</summary>
                 <div class="collapse-content">
                     <div class="grid grid-cols-2">
                         <div >
@@ -355,9 +370,12 @@
                             </ul>
                         </div>
                     </div>
+                    <div class="grid grid-cols-1 mb-0">
+                        <h2 class="text-lg font-semibold mb-0">Backup</h2>
+                    </div>
                     <div class="grid grid-cols-2">
                         <div >
-                            <h2 class="text-lg font-normal italic">Backup mañana</h2>
+                            <h2 class="text-lg font-normal italic">Mañana</h2>
                             <ul class="list-disc">
                                 {#each sabado.manback as v}
                                     <li>
@@ -375,7 +393,7 @@
                             </ul>
                         </div>
                         <div >
-                            <h2 class="text-lg font-normal italic">Backup tarde</h2>
+                            <h2 class="text-lg font-normal italic">Tarde</h2>
                             <ul class="list-disc">
                                 {#each sabado.tarback as v}
                                     <li>
@@ -397,7 +415,7 @@
             </details>
             <br>
             <details class="collapse collapse-plus bg-base-200">
-                <summary class="collapse-title text-xl font-medium">DOMINGO</summary>
+                <summary class="collapse-title text-xl font-bold">DOMINGO</summary>
                 <div class="collapse-content">
                     <div class="grid grid-cols-2">
                         <div >
@@ -418,9 +436,12 @@
                         </div>
                         
                     </div>
+                    <div class="grid grid-cols-1 mb-0">
+                        <h2 class="text-lg font-semibold mb-0">Backup</h2>
+                    </div>
                     <div class="grid grid-cols-2">
                         <div >
-                            <h2 class="text-lg font-normal italic">Backup mañana</h2>
+                            <h2 class="text-lg font-normal italic">Mañana</h2>
                             <ul class="list-disc">
                                 {#each domingo.manback as v}
                                     <li>
@@ -438,7 +459,7 @@
                             </ul>
                         </div>
                         <div >
-                            <h2 class="text-lg font-normal italic">Backup tarde</h2>
+                            <h2 class="text-lg font-normal italic">Tarde</h2>
                             <ul class="list-disc">
                                 {#each domingo.tarback as v}
                                     <li>

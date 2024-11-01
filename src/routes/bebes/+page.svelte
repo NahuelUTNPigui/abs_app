@@ -142,7 +142,10 @@
                 const recordsb = await pb.collection('bebes').getFullList({filter:"active=true"});
 
                 bebes = recordsb
+                bebes.sort((b1,b2)=>b1.apellidomama>b2.apellidomama?1:-1)
+
                 bebesrows = bebes
+                filterupdate()
                 nombrebebe=""
                 nombremama=""
                 apellidomama = ""
@@ -152,7 +155,7 @@
                 Swal.fire('Bebe eliminado!', 'Se eliminó al bebé correctamente.', 'success');
             }
             catch(e){
-                Swal.fire('Acción cancelada', 'No se pudo eliminar al bebe', 'error');
+                Swal.fire('Error eliminar', 'No se pudo eliminar al bebe', 'error');
             }
         }
         else if(result.dismiss === Swal.DismissReason.cancel){
@@ -274,7 +277,7 @@
         }
     }
     bebesrows = bebesrows.filter(b=>{
-        if(b.nombre.toLowerCase().includes(nombrebuscar.toLowerCase()) ){
+        if(b.apellidomama.toLowerCase().startsWith(nombrebuscar.toLowerCase()) ){
         return true
       }
       else{
@@ -290,7 +293,7 @@
     <div class="justify-start mx-2 lg:mx-10">
       <h1 class="text-xl font-bold italic md:mx-3 sm:mx-4 lg:mx-10">BEBÉS</h1>  
     </div>
-    <div class="flex flex-wrap lg:mx-10 mb-6 mt-2 sm:mx-0 xm:mx-0">
+    <div class="flex flex-wrap mx-1 lg:mx-10 mb-6 mt-2 ">
         <div class="lg:w-1/4 md:w-1/2 lg:mx-10 mb-6 md:mb-0 sm:mb-0 sm:mx-0">
             <label class="block uppercase tracking-wide text-xs font-bold mb-2" for="grid-first-name">
                 Fecha egreso
@@ -313,10 +316,10 @@
             </select>
         </div>
     </div>
-    <div class="flex flex-wrap lg:mx-10 mb-6 mt-1 sm:mx-0 xm:mx-0">
+    <div class="flex flex-wrap mx-1 lg:mx-10 mb-6 mt-1">
         <div class="lg:w-1/4 md:w-1/2 lg:mx-10 mb-6 md:mb-0 sm:mb-0 sm:mx-0">
             <label class="input input-bordered flex items-center gap-2">
-                <input type="text" class="grow" placeholder="Buscar por nombre.." bind:value={nombrebuscar} on:input={filterupdate} />
+                <input type="text" class="grow" placeholder="Buscar por apellido madre.." bind:value={nombrebuscar} on:input={filterupdate} />
             </label>
         </div>
         <div class="lg:w-1/4 px-2 md:w-1/2 lg:mx-10 mb-6 md:mb-0 sm:mb-0 sm:mx-0">
@@ -326,19 +329,20 @@
         </div>
     </div>
     <div class="w-full grid justify-items-center lg:m-20 lg:w-3/4">
-        <table class="table table-lg" >
+        <table class="table table-lg w-full" >
             <thead>
                 <tr>
-                    <th class="text-base">Mamá</th>
-                    <th class="text-base">Nombre bebé</th>
-                    <th class="text-base">Acciones</th>
+                    <th class="text-base w-3/12"  >Mamá</th>
+                    <th class="text-base w-3/12"  >Bebé</th>
+                    <th class="text-base w-3/12"  >Acciones</th>
                 </tr>
             </thead>
             <tbody>
                 {#each bebesrows as b}
                     <tr>
                        <td class="text-base">{b.apellidomama}, {b.nombremama}</td> 
-                       <td class="text-base">{b.nombre}</td> 
+                       <td class="text-base">{`${b.nombre} (${b.unidad})` }</td> 
+                       
                        <td>
                         <!--<div class="tooltip" data-tip="Abrazar">
                           <button on:click={()=>openModalAbrazo(b.id)}>

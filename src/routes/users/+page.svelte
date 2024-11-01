@@ -547,10 +547,10 @@
   
   
   
-  <div class="w-full grid justify-items-center lg:m-20 lg:w-3/4  ">
+  <div class="w-full grid lg:m-20 lg:w-3/4  ">
     
-    <div class="w-full grid justify-items-left mx-10">
-      <h1 class="text-xl font-bold italic md:mx-3 sm:mx-3 lg:mx-5">ABRAZADORAS</h1>  
+    <div class="w-full grid justify-items-left mx-1">
+      <h1 class="text-xl font-bold italic ">ABRAZADORAS</h1>  
     </div>
     <div class="flex m-1 gap-2 lg:gap-10" >
         <div class="w-2/5 my-1">
@@ -571,11 +571,11 @@
           <br>
     </div>
 
-    <table class="table table-lg" >
+    <table class="table table-lg w-4/5" >
       <!-- head -->
       <thead>
         <tr>
-          <th class="text-base">Nombre Abrazadora</th>
+          <th class="text-base w-1/3">Nombre Abrazadora</th>
           <th class="text-base">Acciones</th>
         </tr>
       </thead>

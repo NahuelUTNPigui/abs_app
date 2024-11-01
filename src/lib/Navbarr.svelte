@@ -11,7 +11,7 @@
   onMount(async ()=>{
     let hab = $enabled
     let pb_json = await JSON.parse(localStorage.getItem('pocketbase_auth'))
-    nombreusuario = pb_json.model.apellido+", "+pb_json.model.name
+    nombreusuario = pb_json.model.apellido
     if(hab==="no"){
       goto("/")
     }
@@ -39,12 +39,12 @@
     <div class="drawer-content w-full">
         <div class="navbar bg-base-100">
             <div class="flex-none">
-              <button class="btn btn-square btn-ghost" on:click={handleClick}>
+              <button class="mx-1 px-1 btn btn-ghost" on:click={handleClick}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
-                  class="inline-block h-5 w-5 stroke-current">
+                  class="mx-0 px-0 inline-block h-5 w-5 stroke-current">
                   <path
                     stroke-linecap="round"
                     stroke-linejoin="round"
@@ -54,9 +54,9 @@
               </button>
             </div>
             <div class="flex-1">
-              <a href="/" class="btn btn-ghost text-3xl">Abrazadoras</a>
+              <a href="/" class="pl-0 pr-1 btn btn-ghost text-2xl">Abrazadoras</a>
             </div>
-            <div class="flex-none">
+            <div class="flex">
               <span>{nombreusuario}</span>
               
               <details class="dropdown">
