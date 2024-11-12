@@ -100,9 +100,14 @@
                 if(fechaegreso!=''){
                     confechaegreso = true
                 }
-
-                const recorda = await pb.collection('users').getOne(record.abrazadora) 
-                nombreabrazadora = `${recorda.apellido}, ${recorda.name}`
+                try{
+                    const recorda = await pb.collection('users').getOne(record.abrazadora) 
+                    nombreabrazadora = `${recorda.apellido}, ${recorda.name}`
+                }
+                catch(errabz){
+                    nombreabrazadora = ""
+                }
+                
 
                 botonhabilitado = true
                 
