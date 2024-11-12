@@ -1,4 +1,5 @@
 <script>
+    import { browser } from "$app/environment"
     import Navbarr from '$lib/Navbarr.svelte';
     import PocketBase from 'pocketbase'
     import { onMount } from 'svelte';
@@ -29,11 +30,11 @@
     let pesonacimiento = 0
     let edadgestacional = 0
     let maternidad = false
-    let diagnosticorich = ""
     let diagnostico = ""
     let unidad = "Prealta"
-    
-    
+    //Abrazadora
+    let abrazadora=""
+    let nombreabrazadora = ""
     let confechaegreso = false
     //validar form
     let malnombre=false
@@ -42,6 +43,23 @@
     let malnacimiento=false
     let malingreso=false
     let botonhabilitado=false
+    //Informacion vieja 
+    let olddata={
+        nombre:"",
+        nombremama,
+        apellidomama,
+        fechaingreso:"" ,
+        fechanacimiento:"",
+        procedencia,
+        edadmadre:edadmama,
+        prioridad,
+        disponible : true,
+        maternidadnacimiento : "",
+        semanasgestacional :"",
+        diagnostico,
+        unidad,
+        peso:""
+    }
     //Metodos
     onMount(async()=>{
         idbebe = $page.params.slug
@@ -50,25 +68,43 @@
             try{
                 const record = await pb.collection('bebes').getOne(idbebe)
                 nombrebebe = record.nombre
+                olddata.nombre = record.nombre
                 nombremama = record.nombremama
+                olddata.nombremama = record.nombremama
                 apellidomama = record.apellidomama
+                olddata.apellidomama = record.apellidomama
                 fechaingreso = record.fechaingreso.split(' ')[0]
+                olddata.fechaingreso = record.fechaingreso
                 prioridad = record.prioridad
+                olddata.prioridad = record.prioridad
                 fechanacimiento = record.fechanacimiento.split(' ')[0]
+                olddata.fechanacimiento = record.fechanacimiento
                 disponible = record.disponible
+                olddata.disponible = record.disponible
                 edadmama = record.edadmadre
+                olddata.edadmadre = record.edadmadre
                 procedencia = record.procedencia
+                olddata.procedencia = record.procedencia
                 edadgestacional = record.semanasgestacional
+                olddata.semanasgestacional = record.semanasgestacional
                 maternidad = record.maternidadnacimiento
+                olddata.maternidadnacimiento = record.maternidadnacimiento
                 diagnostico = record.diagnostico
-                diagnosticorich = record.diagnosticorich
+                olddata.diagnostico = record.diagnostico
                 fechaegreso = record.fechaegreso?record.fechaegreso.split(' ')[0]:""
-                botonhabilitado = true
+                olddata.data = record.fechaegreso
                 pesonacimiento = record.peso
+                olddata.peso = record.peso
                 unidad = record.unidad
+                olddata.unidad = record.unidad
                 if(fechaegreso!=''){
                     confechaegreso = true
                 }
+
+                const recorda = await pb.collection('users').getOne(record.abrazadora) 
+                nombreabrazadora = `${recorda.apellido}, ${recorda.name}`
+
+                botonhabilitado = true
                 
             }catch(e){
                 Swal.fire('Error editar', 'No existe el bebe', 'error');
@@ -84,7 +120,6 @@
                 pesonacimiento = 0
                 edadgestacional = 0
                 maternidad = false
-                diagnosticorich = ""
                 diagnostico = ""
                 unidad = "Prealta"
                 bebe404 = true
@@ -92,6 +127,9 @@
             }      
         }
         else{
+            if(browser){
+                abrazadora = JSON.parse(localStorage.getItem("pocketbase_auth")).model.id
+            }
             nombrebebe = ""
             nombremama = ""
             apellidomama = ""
@@ -104,7 +142,6 @@
             pesonacimiento = 0
             edadgestacional = 0
             maternidad = false
-            diagnosticorich = ""
             diagnostico = ""
             unidad = "Prealta"
             
@@ -139,23 +176,23 @@
         }
         else{
             if(nombrebebe.length==0){
-                Swal.fire('Error guardar', 'El nombre del bebe esta vacio', 'error');
+                Swal.fire('Error editar', 'El nombre del bebe esta vacio', 'error');
                 return false
             }            
             if(nombremama.length==0){
-                Swal.fire('Error guardar', 'El nombre de la madre esta vacio', 'error');
+                Swal.fire('Error editar', 'El nombre de la madre esta vacio', 'error');
                 return false
             }
             if(apellidomama.length == 0){
-                Swal.fire('Error guardar', 'El apellido de la madre esta vacio', 'error');
+                Swal.fire('Error editar', 'El apellido de la madre esta vacio', 'error');
                 return false
             }
             if(fechanacimiento.length == 0){
-                Swal.fire('Error guardar', 'Debe seleccionar la fecha de nacimiento', 'error');
+                Swal.fire('Error editar', 'Debe seleccionar la fecha de nacimiento', 'error');
                 return false
             }
             if(fechaingreso.length == 0){
-                Swal.fire('Error guardar', 'Debe seleccionar la fecha de ingreso', 'error');
+                Swal.fire('Error editar', 'Debe seleccionar la fecha de ingreso', 'error');
                 return false
             }
             return true
@@ -248,9 +285,11 @@
                     semanasgestacional :edadgestacional,
                     diagnostico,
                     unidad,
-                    peso:pesonacimiento
+                    peso:pesonacimiento,
+                    abrazadora
                 }
                 try{
+                    console.log(abrazadora)
                     const recordb = await pb.collection('bebes').create(data)
                     Swal.fire('Éxito guardar', 'Bebé guardado con éxito', 'success');
                     goto("/bebes")
@@ -269,8 +308,7 @@
                     procedencia,
                     edadmadre:edadmama,
                     prioridad,
-                    active : true,
-                    disponible : true,
+                    disponible,
                     maternidadnacimiento : maternidad,
                     semanasgestacional :edadgestacional,
                     diagnostico,
@@ -287,7 +325,13 @@
                     }
                 }
                 try{
+                    let datah ={
+                        ...olddata,
+                        bebe:idbebe,
+                        operacion:"Edicion"
+                    }
                     const recordb = await pb.collection('bebes').update(idbebe,data)
+                    const recordnewhistorial = await pb.collection('historialesbebe').create(datah);
                     goto("/bebes")
                     Swal.fire('Éxito guardar', 'Bebé editado con éxito', 'success');
                 }
@@ -309,9 +353,10 @@
 
 </script>
 <Navbarr>
+    
     <div class="container mx-auto">
         <!--NEW-->
-        <h2 class="text-2xl font-bold mb-6 text-center">
+        <h2 class="text-2xl mx-1 font-bold mb-6 text-left">
             {#if idbebe=="0"}
                     NUEVO BEBÉ
                 {:else}
@@ -319,11 +364,29 @@
                 {/if}
         </h2>
         {#if idbebe!="0"}
-            <h2 class="text-2xl font-bold mb-6 text-center">
+            <h2 class="text-2xl mx-1 font-bold mb-6 text-left">
                 {`${apellidomama},${nombremama} (${nombrebebe})`}
             </h2>
         {/if}
-        <h3 class="text-xl font-semibold mb-1 lg:mb-0 text-left">
+        {#if idbebe!="0"}
+            <h3 class="text-xl mx-1 font-semibold mb-1 lg:mb-0 text-left">
+                Datos abrazadora
+            </h3>
+            <div class="grid lg:grid-cols-4 lg:gap-6 mx-1 mb-2">
+                <label for = "nombreabrazadora" class="label">
+                    <span class="label-text text-base">Abrazadora que lo registró</span>
+                </label>
+                <label class="input-group">
+                    <input id ="nombreabrazadora" type="text"  
+                        class={`input input-bordered`}
+                        disabled
+                        bind:value={nombreabrazadora}
+                    />
+                </label>
+            </div>
+            
+        {/if}
+        <h3 class="text-xl mx-1 font-semibold mb-1 lg:mb-0 text-left">
             Datos madre
         </h3>
         <div class="grid lg:grid-cols-4 lg:gap-6 mx-1 mb-2">
@@ -446,7 +509,7 @@
                 </label>
                 <label class="input-group ">
                     <input id ="fechaingreso" type="date" max={HOY}  
-                        class={`input input-bordered w-3/4 lg:w-1/2 ${malingreso?"input-error":""}`}                        
+                        class={`input input-bordered w-3/4 lg:w-1/2 ${malingreso?"input-error":""}`}
                         on:change={()=>onChangeInput("INGRESO")}
                         bind:value={fechaingreso}
                     />
@@ -519,7 +582,9 @@
               </label>
             </div>
         </div>
-        <div class="grid grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8 mx-1">
+        
+        
+        <div class="grid grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8 mx-1 mb-1">
             <div class="w-full">
                 <button class="btn btn-success text-white" disabled='{!botonhabilitado}' on:click={guardar}>Guardar</button>
                 
@@ -529,6 +594,8 @@
             </div>
 
         </div>
+        
+        
     </div>
 
 </Navbarr>

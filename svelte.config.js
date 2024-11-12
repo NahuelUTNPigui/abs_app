@@ -19,6 +19,7 @@ const config = {
 				"/abrazos/historial",
 				"/bebes",
 				"/bebes/1",
+				"/bebes/historia/1",
 				"/inicio",
 				"/login",
 				"/schelude",
