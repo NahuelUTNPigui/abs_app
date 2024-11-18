@@ -2,13 +2,11 @@ import PocketBase from 'pocketbase'
 let ruta = import.meta.env.VITE_RUTA
 
 export async function load({params}){
-    
     const pb = new PocketBase(ruta);
     const recordscrono = await pb.collection('cronogramas').getFullList({
         expand:"user",
         filter:"user.active=true"
     })
-    
     let lunes = {
       man:[],
       tar:[],
@@ -127,66 +125,76 @@ export async function load({params}){
         else{
           jueves.man.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
         }
-    }
-    if(fila.viernes){
-      if(fila.viernesback){
-        if(fila.viernestarde){
-          viernes.tarback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
+      }
+      if(fila.viernes){
+        if(fila.viernesback){
+          if(fila.viernestarde){
+            viernes.tarback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
+          }
+          else{
+            viernes.manback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
+          }
+          //viernes.back.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+": "+fila.expand.user.celular)
+        }
+        else if(fila.viernestarde){
+          viernes.tar.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
         }
         else{
-          viernes.manback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
+          viernes.man.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
         }
-        //viernes.back.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+": "+fila.expand.user.celular)
       }
-      else if(fila.viernestarde){
-        viernes.tar.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
-      }
-      else{
-        viernes.man.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
-      }
-    }
-    if(fila.sabado){
-      if(fila.sabadoback){
-        if(fila.sabadotarde){
-          sabado.tarback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
+      if(fila.sabado){
+        if(fila.sabadoback){
+          if(fila.sabadotarde){
+            sabado.tarback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
+          }
+          else{
+            sabado.manback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
+          }
+          //sabado.back.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+": "+fila.expand.user.celular)
         }
-        else{
-          sabado.manback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
-        }
-        //sabado.back.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+": "+fila.expand.user.celular)
-      }
-      else if(fila.sabadotarde){
-        sabado.tar.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
-      }
-      else{
-        sabado.man.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
-      }
-    }
-    if(fila.domingo){
-      if(fila.domingoback){
-        if(fila.domingotarde){
-          domingo.tarback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
+        else if(fila.sabadotarde){
+          sabado.tar.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
         }
         else{
-          domingo.manback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
+          sabado.man.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
         }
-        //domingo.back.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+": "+fila.expand.user.celular)
       }
-      else if(fila.domingotarde){
-        domingo.tar.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
-      }
-      else{
-        domingo.man.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
+      if(fila.domingo){
+        if(fila.domingoback){
+          if(fila.domingotarde){
+            domingo.tarback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
+          }
+          else{
+            domingo.manback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
+          }
+          //domingo.back.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+": "+fila.expand.user.celular)
+        }
+        else if(fila.domingotarde){
+          domingo.tar.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
+        }
+        else{
+          domingo.man.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
+        }
       }
     }
-  }
-  return {
-    lunes,
-    martes,
-    miercoles,
-    jueves,
-    viernes,
-    sabado,
-    domingo
-  }
+    let partesdiarios = await pb.collection("partes").getList(1,10,{
+      sort:"-fecha",
+      expand:"registrado,modificado"
+    })
+    
+    let partehoy=partesdiarios.items[0]?partesdiarios.items[0]:null
+    let parteayer=partesdiarios.items[1]?partesdiarios.items[1]:null
+    
+    return {
+      lunes,
+      martes,
+      miercoles,
+      jueves,
+      viernes,
+      sabado,
+      domingo,
+      partehoy,
+      parteayer
+    }
 }

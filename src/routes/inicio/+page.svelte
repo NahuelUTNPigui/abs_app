@@ -34,6 +34,8 @@
     export let data
     let dianum = new Date().getDay()
     let schdia = data.lunes
+    let partehoy = data.partehoy
+    let parteayer = data.parteayer
     if(dianum==1){
         schdia = data.lunes
     }
@@ -123,6 +125,51 @@
                 </div>
             </div>
         </div>
+        {#if partehoy}
+            <dir class="card bg-base-100 shadow-xl w-full">
+                <div class="card-body">
+                    <h2 class="card-title text-xl">PARTE {new Date(partehoy.fecha).toLocaleDateString()}</h2>
+                    <div class="grid grid-cols-1">
+                        <p class="text-md">
+                            {partehoy.parte}
+                        </p>
+                    </div>
+                    <div class="grid grid-cols-2">
+                        <span class="text-xs">
+                            {`Registrado por: ${partehoy.expand.registrado.apellido}, ${partehoy.expand.registrado.name}`}
+                        </span>
+                        {#if partehoy.expand.modificado}
+                            <span class="text-xs">
+                                {`Modificado por: ${partehoy.expand.modificado.apellido}, ${partehoy.expand.modificado.name}`}
+                            </span>
+                        {/if}
+                    </div>
+                </div>
+            </dir>
+        {/if}
+        {#if parteayer}
+            <dir class="card bg-base-100 shadow-xl w-full">
+                <div class="card-body">
+                    <h2 class="card-title text-xl">PARTE {new Date(parteayer.fecha).toLocaleDateString()}</h2>
+                    <div class="grid grid-cols-1">
+                        <p class="text-md">
+                            {parteayer.parte}
+                        </p>
+                        
+                    </div>
+                    <div class="grid grid-cols-2">
+                        <span class="text-xs">
+                            {`Registrado por: ${parteayer.expand.registrado.apellido}, ${parteayer.expand.registrado.name}`}
+                        </span>
+                        {#if parteayer.expand.modificado}
+                            <span class="text-xs">
+                                {`Modificado por: ${parteayer.expand.modificado.apellido}, ${parteayer.expand.modificado.name}`}
+                            </span>
+                        {/if}
+                    </div>
+                </div>
+            </dir>    
+        {/if}
     </div>
 </Navbarr>
 

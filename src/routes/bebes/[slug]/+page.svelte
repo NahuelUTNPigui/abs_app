@@ -239,10 +239,12 @@
             }
         }
         if(inputNombre == "NOMBREMAMA"){
+            console.log("nombremama")
+            console.log(nombremama)
             if(nombremama.length==0){
                 malnombremadre = true
             }else{
-                malnombre = false
+                malnombremadre = false
             }
         }
         if(inputNombre == "APELLIDOMAMA"){
@@ -294,7 +296,7 @@
                     abrazadora
                 }
                 try{
-                    console.log(abrazadora)
+                    
                     const recordb = await pb.collection('bebes').create(data)
                     Swal.fire('Éxito guardar', 'Bebé guardado con éxito', 'success');
                     goto("/bebes")
@@ -402,8 +404,9 @@
                 <label class="input-group">
                     <input id ="nombremama" type="text"  
                         class={`input input-bordered ${malnombremadre?"input-error":""}`}
-                        on:change={()=>onChangeInput("NOMBREMAMA")}
                         bind:value={nombremama}
+                        on:change={()=>onChangeInput("NOMBREMAMA")}
+                        
                     />
                     <div class={`label ${malnombremadre?"":"hidden"}`}>
                         <span class="label-text-alt text-red-400">Error debe escribir el nombre de la madre</span>
@@ -417,8 +420,9 @@
                 <label class="input-group">
                     <input id ="apellidomama" type="text"  
                         class={`input input-bordered ${malapellidomadre?"input-error":""}`}
-                        on:change={()=>onChangeInput("APELLIDOMAMA")} 
                         bind:value={apellidomama}
+                        on:change={()=>onChangeInput("APELLIDOMAMA")} 
+                        
                     />
                     <div class={`label ${malapellidomadre?"":"hidden"}`}>
                         <span class="label-text-alt text-red-400">Error debe escribir el apellido de la madre</span>
@@ -487,7 +491,8 @@
                 <div class="label">
                     <span class="label-text">Nacio en maternidad</span>
                 </div>
-                <select class="select select-bordered" bind:value={maternidad}>
+                <select class="select select-bordered" 
+                    bind:value={maternidad}>
                     <option value={true}>{"Si"}</option>
                     <option value={false}>{"No"}</option>                        
                 </select>
@@ -500,8 +505,9 @@
                 <label class="input-group ">
                     <input id ="fechanacimiento" type="date" max={HOY}
                         class={`input input-bordered w-3/4 lg:w-1/2 ${malnacimiento?"input-error":""}`}                        
-                        on:change={()=>onChangeInput("NACIMIENTO")}
                         bind:value={fechanacimiento}
+                        on:change={()=>onChangeInput("NACIMIENTO")}
+                        
                     />
                     <div class={`label ${malnacimiento?"":"hidden"}`}>
                         <span class="label-text-alt text-red-400">Error debe tener una fecha de nacimiento</span>
@@ -515,8 +521,9 @@
                 <label class="input-group ">
                     <input id ="fechaingreso" type="date" max={HOY}  
                         class={`input input-bordered w-3/4 lg:w-1/2 ${malingreso?"input-error":""}`}
-                        on:change={()=>onChangeInput("INGRESO")}
                         bind:value={fechaingreso}
+                        on:change={()=>onChangeInput("INGRESO")}
+                        
                     />
                     <div class={`label ${malingreso?"":"hidden"}`}>
                         <span class="label-text-alt text-red-400">Error debe tener una fecha de ingreso</span>

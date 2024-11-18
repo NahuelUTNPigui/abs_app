@@ -716,7 +716,7 @@
               <br>
               <span class="label-text">Cambiar contraseña</span>  
               <br>
-              <input type="checkbox" class="toggle" on:change={()=>onChangeInput("CAMBIAR",idvol=="")} bind:checked={cambiarcontra} />
+              <input type="checkbox" class="toggle mt-2" on:change={()=>onChangeInput("CAMBIAR",idvol=="")} bind:checked={cambiarcontra} />
             </div>
             
             {#if cambiarcontra }

@@ -114,8 +114,25 @@
         try{
             let recordaedit = await pb.collection('abrazos').update(idabrazo,data);
             
-            const recordaz = await pb.collection('abrazos').getFullList({filter:"active=true",expand:'abrazadora,bebe'});
+            const recordaz = await pb.collection('abrazos').getFullList({filter:"active=true",expand:'abrazadora,bebe',sort:"-fecha"});
             abrazosrows = recordaz
+            if(idbebebuscar !=""){    
+                abrazosrows = abrazosrows.filter(a=>a.bebe==idbebebuscar)
+            }
+            
+            if(idabrazadorabuscar!=""){
+                abrazosrows = abrazosrows.filter(a=>a.abrazadora == idabrazadorabuscar)
+            }
+            
+            if(fechadesde!=""){
+                abrazosrows= abrazosrows.filter(a=>a.fecha>fechadesde)   
+            }
+            if(fechahasta!=""){
+                abrazosrows= abrazosrows.filter(a=>a.fecha<fechahasta)
+            }
+            if(idubicacion!=""){
+                abrazosrows = abrazosrows.filter(a=>a.ubicacion == idubicacion)
+            }
             Swal.fire('Éxito editar', 'Abrazo editado con éxito', 'success');
         }
         catch(e){
@@ -320,24 +337,24 @@
 </script>
 <Navbarr>
     <div class="flex flex-wrap mx-1 lg:mx-10 mb-1 mt-2 lg:mb-4" >
-        <div class="lg:w-1/4 md:w-1/2">
+        <div class="w-1/2 lg:w-1/4 ">
             <button class="btn btn-outline"on:click={()=>volver()}>
                 <span class="text-xl">Volver</span>
             </button>  
         </div>
-        <div class="lg:w-1/4 px-1 md:w-1/2">
+        <div class="w-1/2 lg:w-1/4 px-1 ">
             <button class="btn btn-outline" on:click={exportarXLSX}>
                 <span class="text-xl">Exportar EXCEL</span>
             </button>
         </div>
-        <div class="lg:w-1/4 md:w-1/2 mt-1 lg:mt-0">
-            <button class="btn btn-outline" on:click={()=>exportarAgrupar(true)}>
-                <span class="text-xl">Excel por bebé</span>
-            </button>
-        </div>
-        <div class="lg:w-1/4  md:w-1/2 mt-1 lg:mt-0">
+        <div class="w-1/2 lg:w-1/4 mt-1 lg:mt-0">
             <button class="btn btn-outline" on:click={()=>exportarAgrupar(false)}>
                 <span class="text-xl">Excel por abrazadora</span>
+            </button>
+        </div>
+        <div class="w-1/2 lg:w-1/4 mt-1   lg:mt-0">
+            <button class="btn btn-outline" on:click={()=>exportarAgrupar(true)}>
+                <span class="text-xl">Excel por bebé</span>
             </button>
         </div>
     </div>
@@ -362,7 +379,7 @@
                 <option value={""}>{`Todos`}</option>
                 {#each bebes as b}
                     <option value={b.id}>{`${acortarPalabra(b.apellidomama)}(${acortarPalabra(b.nombre)})`}</option>
-                    <!--<option value={b.id}>{`${acortarPalabra(b.nombre)}(${acortarPalabra(b.apellidomama)})`}</option>-->
+                    
                 {/each}
             </select>
         </div>
@@ -379,31 +396,6 @@
             </select>
         </div>
     </div>
-    <!--<div class="flex flex-wrap lg:mx-10 mb-1 lg:mt-2 sm:mt-1 sm:mx-0 xm:mx-0">
-        <div class="lg:w-1/4 md:w-1/2 lg:mx-10 mb-1 md:mb-0 sm:mb-0 sm:mx-0">
-            <label class="block uppercase tracking-wide text-xs font-bold mb-2" for="grid-first-name">
-                Bebes    
-            </label>
-            <select class="select select-bordered" name="bebes" id="bebes" bind:value={idbebebuscar} on:change={filterUpdate}>
-                <option value={""}>{`Todos`}</option>
-                {#each bebes as b}
-                    <option value={b.id}>{`${acortarPalabra(b.nombre)}(${acortarPalabra(b.apellidomama)})`}</option>
-                {/each}
-            </select>
-        </div>
-        <div class="lg:w-1/4 px-1 md:w-1/2 lg:mx-10 mb-1 md:mb-0 sm:mb-0 sm:mx-0">
-            <label class="block uppercase tracking-wide text-xs font-bold mb-2" for="grid-first-name">
-                Voluntaria    
-            </label>
-            <select class="select select-bordered" name="bebes" id="bebes" bind:value={idabrazadorabuscar} on:change={filterUpdate}>
-                <option value={""}>{`Todas`}</option>
-                {#each abrazadoras as a}
-                    
-                    <option value={a.id}>{`${a.name}, ${a.apellido}`}</option>
-                {/each}
-            </select>
-        </div>
-    </div>-->
     <div class="grid grid-cols-2 lg:grid-cols-4 mx-1 lg:mx-10 mb-1 mt-3">
         <div class="">
             <label class="block uppercase tracking-wide text-xs font-bold mb-2" for="grid-first-name">
