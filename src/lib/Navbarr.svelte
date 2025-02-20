@@ -35,19 +35,17 @@
 	}
   let classactive="bg-purple-200 bg-opacity-25 text-purple-500 dark:bg-pruple-600 dark:text-purple-200 "
 </script>
-
-
 <div class="drawer">
     <input id="my-drawer" type="checkbox" class="drawer-toggle" bind:checked={checked} />
     <div class="drawer-content w-full">
         <div class="navbar bg-purple-800 bg-opacity-10">
             <div class="flex-none">
-              <button class="mx-1 px-1 btn btn-ghost" on:click={handleClick}>
+              <button class="mx-0 px-1 lg:px-8  btn btn-ghost" on:click={handleClick}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
-                  class="mx-0 px-0 inline-block h-5 w-5 stroke-current">
+                  class="mx-0 px-0 inline-block h-6 w-6 lg:h-8 lg:w-8 stroke-current">
                   <path
                     stroke-linecap="round"
                     stroke-linejoin="round"
@@ -148,6 +146,4 @@
       </ul>
 
     </div>
-    
-    
 </div>

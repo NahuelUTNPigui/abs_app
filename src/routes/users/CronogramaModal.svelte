@@ -1,7 +1,9 @@
 <script>
     import PocketBase from 'pocketbase'
+    import { createEventDispatcher } from 'svelte'
     import Swal from 'sweetalert2'
     let ruta = import.meta.env.VITE_RUTA
+    const dispatch = createEventDispatcher()
     
     export let cronovoluntaria = {
         userid:"",
@@ -110,11 +112,15 @@
             const record = await pb.collection('cronogramas').update(cronovoluntaria.id, data);
             edit = false
             Swal.fire('Exito guardar cronograma', 'Se pudo guardar el nuevo cronograma', 'success');
+            cerrarFormModal()
             
         }
         catch(e){
             Swal.fire('Error editar', 'No se pude editar al cronograma', 'error');
         }
+    }
+    function  cerrarFormModal(){
+        dispatch('cerrarModal',{},{})
     }
     let edit = false
 
@@ -131,7 +137,7 @@
                     <span class="label-text">Editar</span>    
                 {/if}
                 
-                <input type="checkbox" class="toggle" bind:checked={edit} />
+                <input id="editarcrono" type="checkbox" class="toggle" bind:checked={edit} />
               
             </label>
         </div>
@@ -148,7 +154,7 @@
                     <h3 class="text-2xl m-4">Lunes </h3>
                 </div>
                 <div>
-                    <button class="btn" on:click={()=>eliminarDia("lu")}> Quitar lunes </button>
+                    <button id="quitarLunes" class="btn" on:click={()=>eliminarDia("lu")}> Quitar lunes </button>
                 </div>
                 
             </div>
@@ -156,18 +162,18 @@
                 <div>
                     <span class="label-text"> Turno: </span>
                     
-                    <select class="select select-bordered select-sm" bind:value={cronovoluntaria.lunes.turno}>
+                    <select class="select select-bordered select-sm" id="comboTurnoLunes" bind:value={cronovoluntaria.lunes.turno}>
 
-                        <option value={"man"}>Mañana</option>
-                        <option value={"tarde"}>Tarde</option>
+                        <option class="optionManLunes" value={"man"}>Mañana</option>
+                        <option class="optionTardeLunes" value={"tarde"}>Tarde</option>
                     </select>
                 </div>
                 <div>
                     <span class="label-text"> Fijo: </span>
-                    <select class="select select-bordered select-sm" bind:value={cronovoluntaria.lunes.fijo}>
+                    <select class="select select-bordered select-sm" id="comboFijoLunes" bind:value={cronovoluntaria.lunes.fijo}>
                         
-                        <option value={"fijo"}>Fijo</option>
-                        <option value={"emer"}>Backup</option>
+                        <option class="optionFijoLunes" value={"fijo"}>Fijo</option>
+                        <option class="optionBackLunes" value={"emer"}>Backup</option>
                     </select>
                 </div>
             </div>
@@ -176,7 +182,7 @@
         </div>
     {:else}
         <div>
-            <button class="btn" on:click={()=>agregarDia("lu")}> Agregar lunes </button>
+            <button class="btn" id="btnLunes" on:click={()=>agregarDia("lu")}> Agregar lunes </button>
             <div class="divider"></div>
         </div>
     {/if}
@@ -187,7 +193,7 @@
                     <h3 class="text-2xl m-4">Martes </h3>
                 </div>
                 <div>
-                    <button class="btn" on:click={()=>eliminarDia("ma")}> Quitar martes </button>
+                    <button class="btn" id="quitarMartes" on:click={()=>eliminarDia("ma")}> Quitar martes </button>
                 </div>
                 
             </div>
@@ -195,7 +201,7 @@
                 <div>
                     <span class="label-text"> Turno: </span>
                     
-                    <select class="select select-bordered select-sm" bind:value={cronovoluntaria.martes.turno}>
+                    <select id="comboTurnoMartes" class="select select-bordered select-sm"  bind:value={cronovoluntaria.martes.turno}>
 
                         <option value={"man"}>Mañana</option>
                         <option value={"tarde"}>Tarde</option>
@@ -203,7 +209,7 @@
                 </div>
                 <div>
                     <span class="label-text"> Fijo: </span>
-                    <select class="select select-bordered select-sm" bind:value={cronovoluntaria.martes.fijo}>
+                    <select id="comboFijoMartes" class="select select-bordered select-sm" bind:value={cronovoluntaria.martes.fijo}>
                         
                         <option value={"fijo"}>Fijo</option>
                         <option value={"emer"}>Backup</option>
@@ -215,7 +221,7 @@
         </div>
     {:else}
         <div>
-            <button class="btn" on:click={()=>agregarDia("ma")}> Agregar martes </button>
+            <button class="btn" id="btnMartes" on:click={()=>agregarDia("ma")}> Agregar martes </button>
             <div class="divider"></div>
         </div>
     {/if}
@@ -226,7 +232,7 @@
                     <h3 class="text-2xl m-4">Miercoles </h3>
                 </div>
                 <div>
-                    <button class="btn" on:click={()=>eliminarDia("mi")}> Quitar miercoles </button>
+                    <button id="quitarMiercoles" class="btn" on:click={()=>eliminarDia("mi")}> Quitar miercoles </button>
                 </div>
                 
             </div>
@@ -234,7 +240,7 @@
                 <div>
                     <span class="label-text"> Turno: </span>
                     
-                    <select class="select select-bordered select-sm" bind:value={cronovoluntaria.miercoles.turno}>
+                    <select id="comboTurnoMiercoles" class="select select-bordered select-sm" bind:value={cronovoluntaria.miercoles.turno}>
 
                         <option value={"man"}>Mañana</option>
                         <option value={"tarde"}>Tarde</option>
@@ -242,7 +248,7 @@
                 </div>
                 <div>
                     <span class="label-text"> Fijo: </span>
-                    <select class="select select-bordered select-sm" bind:value={cronovoluntaria.miercoles.fijo}>
+                    <select id="comboFijoMiercoles" class="select select-bordered select-sm" bind:value={cronovoluntaria.miercoles.fijo}>
                         
                         <option value={"fijo"}>Fijo</option>
                         <option value={"emer"}>Backup</option>
@@ -254,7 +260,7 @@
         </div>
     {:else}
         <div>
-            <button class="btn" on:click={()=>agregarDia("mi")}> Agregar miercoles </button>
+            <button class="btn" id="btnMiercoles" on:click={()=>agregarDia("mi")}> Agregar miercoles </button>
             <div class="divider"></div>
         </div>
     {/if}
@@ -265,7 +271,7 @@
                     <h3 class="text-2xl m-4">Jueves </h3>
                 </div>
                 <div>
-                    <button class="btn" on:click={()=>eliminarDia("ju")}> Quitar jueves </button>
+                    <button id="quitarJueves" class="btn" on:click={()=>eliminarDia("ju")}> Quitar jueves </button>
                 </div>
                 
             </div>
@@ -273,7 +279,7 @@
                 <div>
                     <span class="label-text"> Turno: </span>
                     
-                    <select class="select select-bordered select-sm" bind:value={cronovoluntaria.jueves.turno}>
+                    <select id="comboTurnoJueves" class="select select-bordered select-sm" bind:value={cronovoluntaria.jueves.turno}>
 
                         <option value={"man"}>Mañana</option>
                         <option value={"tarde"}>Tarde</option>
@@ -281,7 +287,7 @@
                 </div>
                 <div>
                     <span class="label-text"> Fijo: </span>
-                    <select class="select select-bordered select-sm" bind:value={cronovoluntaria.jueves.fijo}>
+                    <select id="comboFijoJueves" class="select select-bordered select-sm" bind:value={cronovoluntaria.jueves.fijo}>
                         
                         <option value={"fijo"}>Fijo</option>
                         <option value={"emer"}>Backup</option>
@@ -293,7 +299,7 @@
         </div>
     {:else}
         <div>
-            <button class="btn" on:click={()=>agregarDia("ju")}> Agregar jueves </button>
+            <button class="btn" id="btnJueves" on:click={()=>agregarDia("ju")}> Agregar jueves </button>
             <div class="divider"></div>
         </div>
     {/if}
@@ -304,7 +310,7 @@
                     <h3 class="text-2xl m-4">Viernes </h3>
                 </div>
                 <div>
-                    <button class="btn" on:click={()=>eliminarDia("vi")}> Quitar viernes </button>
+                    <button id="quitarViernes" class="btn" on:click={()=>eliminarDia("vi")}> Quitar viernes </button>
                 </div>
                 
             </div>
@@ -312,7 +318,7 @@
                 <div>
                     <span class="label-text"> Turno: </span>
                     
-                    <select class="select select-bordered select-sm" bind:value={cronovoluntaria.viernes.turno}>
+                    <select id="comboTurnoViernes" class="select select-bordered select-sm" bind:value={cronovoluntaria.viernes.turno}>
 
                         <option value={"man"}>Mañana</option>
                         <option value={"tarde"}>Tarde</option>
@@ -320,7 +326,7 @@
                 </div>
                 <div>
                     <span class="label-text"> Fijo: </span>
-                    <select class="select select-bordered select-sm" bind:value={cronovoluntaria.viernes.fijo}>
+                    <select  id="comboFijoViernes" class="select select-bordered select-sm" bind:value={cronovoluntaria.viernes.fijo}>
                         
                         <option value={"fijo"}>Fijo</option>
                         <option value={"emer"}>Backup</option>
@@ -332,7 +338,7 @@
         </div>
     {:else}
         <div>
-            <button class="btn" on:click={()=>agregarDia("vi")}> Agregar viernes </button>
+            <button class="btn" id="btnViernes" on:click={()=>agregarDia("vi")}> Agregar viernes </button>
             <div class="divider"></div>
         </div>
     {/if}
@@ -371,7 +377,7 @@
         </div>
     {:else}
         <div>
-            <button class="btn" on:click={()=>agregarDia("sa")}> Agregar sabado </button>
+            <button class="btn" id="btnSabado" on:click={()=>agregarDia("sa")}> Agregar sabado </button>
             <div class="divider"></div>
         </div>
     {/if}
@@ -410,7 +416,7 @@
         </div>
     {:else}
         <div>
-            <button class="btn" on:click={()=>agregarDia("do")}> Agregar domingo </button>
+            <button class="btn" id="btnDomingo" on:click={()=>agregarDia("do")}> Agregar domingo </button>
             <div class="divider"></div>
         </div>
     {/if}
@@ -529,7 +535,13 @@
 {/if}
 
 {#if edit}
-    <div>
-        <button class="btn btn-success text-gray-100" on:click={editarcrono}>Guardar Cronograma</button>
+    <div class="modal-action justify-start">
+        <button id="btnGuardar" class="btn btn-success text-gray-100" on:click={editarcrono}>Guardar Cronograma</button>
+        <button class="btn btn-error text-white" on:click={cerrarFormModal}>Cerrar</button>
+    </div>    
+{:else}
+    <div class="modal-action justify-start">
+    
+        <button class="btn btn-error text-white" on:click={cerrarFormModal}>Cerrar</button>
     </div>    
 {/if}

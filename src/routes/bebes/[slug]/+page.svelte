@@ -239,8 +239,7 @@
             }
         }
         if(inputNombre == "NOMBREMAMA"){
-            console.log("nombremama")
-            console.log(nombremama)
+            
             if(nombremama.length==0){
                 malnombremadre = true
             }else{

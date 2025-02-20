@@ -135,6 +135,9 @@
     cronovol = cronogramas.filter(c=>c.userid==id)[0]
     schModal.showModal()
   }
+  function cerrarSchModal(){
+    schModal.close()
+  }
   async function eliminar(id){
     let c = $coordinadora
     if(c=="No" || c==""){
@@ -543,10 +546,7 @@
   }
 </script>
 <Navbarr>
-  
-  
-  
-  <div class="w-full grid lg:m-20 md:w-3/4  ">
+  <div class="w-full grid py-1 px-1 lg:px-8">
     
     <div class="w-full grid justify-items-left mx-1">
       <h1 class="text-xl font-bold italic ">ABRAZADORAS</h1>  
@@ -579,201 +579,195 @@
       </thead>
       <tbody>
         {#each voluntariasrows as v}
-        <tr>
-          <td class="text-base">{v.apellido},{v.name}</td>
-          <td class="flex gap-2">
-            <div class="tooltip" data-tip="Cronograma">
-              <button on:click={()=>openSchModal(v.id)}>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                </svg>              
-              </button>
-            </div>
-            <div class="tooltip" data-tip="Historial abrazos">
-              <button on:click={()=>historialabrazadora(v.id)}>
+          <tr>
+            <td class="text-base">{v.apellido},{v.name}</td>
+            <td class="flex gap-2">
+              <div class="tooltip" data-tip="Cronograma">
+                <button on:click={()=>openSchModal(v.id)}>
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                  </svg>              
+                </button>
+              </div>
+              <div class="tooltip" data-tip="Historial abrazos">
+                <button on:click={()=>historialabrazadora(v.id)}>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
+                        <path d="M3.375 3C2.339 3 1.5 3.84 1.5 4.875v.75c0 1.036.84 1.875 1.875 1.875h17.25c1.035 0 1.875-.84 1.875-1.875v-.75C22.5 3.839 21.66 3 20.625 3H3.375Z" />
+                        <path fill-rule="evenodd" d="m3.087 9 .54 9.176A3 3 0 0 0 6.62 21h10.757a3 3 0 0 0 2.995-2.824L20.913 9H3.087Zm6.163 3.75A.75.75 0 0 1 10 12h4a.75.75 0 0 1 0 1.5h-4a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd" />
+                    </svg>                                  
+                </button>
+              </div>
+              <div class="tooltip" data-tip="Editar">
+                <button on:click={()=>openModal(v.id)}>
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
-                      <path d="M3.375 3C2.339 3 1.5 3.84 1.5 4.875v.75c0 1.036.84 1.875 1.875 1.875h17.25c1.035 0 1.875-.84 1.875-1.875v-.75C22.5 3.839 21.66 3 20.625 3H3.375Z" />
-                      <path fill-rule="evenodd" d="m3.087 9 .54 9.176A3 3 0 0 0 6.62 21h10.757a3 3 0 0 0 2.995-2.824L20.913 9H3.087Zm6.163 3.75A.75.75 0 0 1 10 12h4a.75.75 0 0 1 0 1.5h-4a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd" />
-                  </svg>                                  
-              </button>
-            </div>
-            <div class="tooltip" data-tip="Editar">
-              <button on:click={()=>openModal(v.id)}>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
-                  <path d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712ZM19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 0 0-1.32 2.214l-.8 2.685a.75.75 0 0 0 .933.933l2.685-.8a5.25 5.25 0 0 0 2.214-1.32L19.513 8.2Z" />
-                </svg>
-              </button>
-            </div>
-            <div class="tooltip" data-tip="Eliminar">
-              <button on:click={()=>eliminar(v.id)}>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
-                  <path fill-rule="evenodd" d="M16.5 4.478v.227a48.816 48.816 0 0 1 3.878.512.75.75 0 1 1-.256 1.478l-.209-.035-1.005 13.07a3 3 0 0 1-2.991 2.77H8.084a3 3 0 0 1-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 0 1-.256-1.478A48.567 48.567 0 0 1 7.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 0 1 3.369 0c1.603.051 2.815 1.387 2.815 2.951Zm-6.136-1.452a51.196 51.196 0 0 1 3.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 0 0-6 0v-.113c0-.794.609-1.428 1.364-1.452Zm-.355 5.945a.75.75 0 1 0-1.5.058l.347 9a.75.75 0 1 0 1.499-.058l-.346-9Zm5.48.058a.75.75 0 1 0-1.498-.058l-.347 9a.75.75 0 0 0 1.5.058l.345-9Z" clip-rule="evenodd" />
-                </svg>            
-              </button>
-            </div>
-          </td>
-        </tr>
+                    <path d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712ZM19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 0 0-1.32 2.214l-.8 2.685a.75.75 0 0 0 .933.933l2.685-.8a5.25 5.25 0 0 0 2.214-1.32L19.513 8.2Z" />
+                  </svg>
+                </button>
+              </div>
+              <div class="tooltip" data-tip="Eliminar">
+                <button on:click={()=>eliminar(v.id)}>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
+                    <path fill-rule="evenodd" d="M16.5 4.478v.227a48.816 48.816 0 0 1 3.878.512.75.75 0 1 1-.256 1.478l-.209-.035-1.005 13.07a3 3 0 0 1-2.991 2.77H8.084a3 3 0 0 1-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 0 1-.256-1.478A48.567 48.567 0 0 1 7.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 0 1 3.369 0c1.603.051 2.815 1.387 2.815 2.951Zm-6.136-1.452a51.196 51.196 0 0 1 3.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 0 0-6 0v-.113c0-.794.609-1.428 1.364-1.452Zm-.355 5.945a.75.75 0 1 0-1.5.058l.347 9a.75.75 0 1 0 1.499-.058l-.346-9Zm5.48.058a.75.75 0 1 0-1.498-.058l-.347 9a.75.75 0 0 0 1.5.058l.345-9Z" clip-rule="evenodd" />
+                  </svg>            
+                </button>
+              </div>
+            </td>
+          </tr>
         {/each}
-        
-        
       </tbody>
     </table>
-    
-    <dialog id="schModal" class="modal">
-      <div class="modal-box">
-        <CronogramaModal cronovoluntaria={cronovol}></CronogramaModal>
-        <div class="modal-action justify-start">
-          <form method="dialog">
-            <button class="btn btn-error text-gray-100">Cerrar</button>
-          </form>
-          
-        </div>
-      </div>
-    </dialog>
   </div>
-  <dialog id="formModal" class="modal">
-    <div class="modal-box w-11/12 max-w-1md">
-      {#if idvol==""}
-        <h3 class="text-lg font-bold">Nueva Abrazadora</h3>  
-      {:else}
-        <h3 class="text-lg font-bold">Editar Abrazadora</h3>  
-      {/if}
-      <div class="form-control">
-        <form action="">
-          <label for = "nombre" class="label">
-            <span class="label-text text-base">Nombre*</span>
+</Navbarr>
+<dialog id="formModal" class="modal">
+  <div class="modal-box w-11/12 max-w-1md">
+    {#if idvol==""}
+      <h3 class="text-lg font-bold">Nueva Abrazadora</h3>  
+    {:else}
+      <h3 class="text-lg font-bold">Editar Abrazadora</h3>  
+    {/if}
+    <div class="form-control">
+      <form action="">
+        <label for = "nombre" class="label">
+          <span class="label-text text-base">Nombre*</span>
+        </label>
+        <label class="input-group">
+          <input id ="nombre" type="text"  
+            class={`input input-bordered ${malnombre?"input-error":""}`}
+            on:change={()=>onChangeInput("NOMBRE",idvol=="")} 
+            bind:value={nombre}
+          />
+          <div class={`label ${malnombre?"":"hidden"}`}>
+            <span class="label-text-alt text-red-400">Error, el nombre no puede estar vacio</span>
+          </div>
+        </label>
+        <label for = "apellido" class="label">
+          <span class="label-text text-base">Apellido*</span>
+        </label>
+        <label class="input-group">
+          <input id ="apellido" type="text"  
+            class={`input input-bordered ${malapellido?"input-error":""}`} 
+            bind:value={apellido}
+            on:change={()=>onChangeInput("APELLIDO",idvol=="")} 
+            
+          />
+          <div class={`label ${malapellido?"":"hidden"}`}>
+            <span class="label-text-alt text-red-400">Error, el apellido no puede estar vacio</span>
+          </div>
+        </label>
+        <label for = "cel" class="label ">
+          <span class="label-text text-base">Celular</span>
+        </label>
+        <label class="input-group">
+          <input id ="cel" type="text" class="input input-bordered" bind:value={cel}/>
+        </label>
+        {#if idvol==""}
+          <label for = "contra" class="label">
+            <span class="label-text text-base">Contraseña*</span>
           </label>
           <label class="input-group">
-            <input id ="nombre" type="text"  
-              class={`input input-bordered ${malnombre?"input-error":""}`}
-              on:change={()=>onChangeInput("NOMBRE",idvol=="")} 
-              bind:value={nombre}
+            <input id ="contra" type="password" 
+              class={`input input-bordered ${malcontra?"input-error":""}`}  
+              bind:value={contra} autocomplete="off"
+              on:input={()=>onChangeInput("CONTRA",idvol=="")} 
+              
             />
-            <div class={`label ${malnombre?"":"hidden"}`}>
-              <span class="label-text-alt text-red-400">Error, el nombre no puede estar vacio</span>
+            <div class={`label ${malcontra?"":"hidden"}`}>
+              <span class="label-text-alt text-red-400">Error, debe tener al menos 10 caracteres</span>
             </div>
           </label>
-          <label for = "apellido" class="label">
-            <span class="label-text text-base">Apellido*</span>
+          <label for = "confcontra" class="label">
+            <span class="label-text text-base">Confirmar Contraseña*</span>
           </label>
           <label class="input-group">
-            <input id ="apellido" type="text"  
-              class={`input input-bordered ${malapellido?"input-error":""}`} 
-              on:change={()=>onChangeInput("APELLIDO",idvol=="")} 
-              bind:value={apellido}
+            <input id ="confcontra" type="password" 
+              class={`input input-bordered ${malconfcontra?"input-error":""}`}  
+              bind:value={confirmcontra} 
+              on:input={()=>onChangeInput("CONFCONTRA",idvol=="")} 
+              
+              autocomplete="off" 
             />
-            <div class={`label ${malapellido?"":"hidden"}`}>
-              <span class="label-text-alt text-red-400">Error, el apellido no puede estar vacio</span>
+            <div class={`label ${malconfcontra?"":"hidden"}`}>
+              <span class="label-text-alt text-red-400">Error, deben coincidir las contraseñas</span>
             </div>
           </label>
-          <label for = "cel" class="label ">
-            <span class="label-text text-base">Celular</span>
-          </label>
-          <label class="input-group">
-            <input id ="cel" type="text" class="input input-bordered" bind:value={cel}/>
-          </label>
-          {#if idvol==""}
-            <label for = "contra" class="label">
-              <span class="label-text text-base">Contraseña*</span>
+          
+        {/if}
+        <label class="form-control w-4/5">
+          <div class="label">
+            <span class="label-text">Coordinador</span>
+          </div>
+          <select class="select select-bordered" bind:value={coordinador}>
+            <option value={true}>Si</option>
+            <option value={false}>No</option>
+          </select>
+        </label>
+        {#if idvol !=''}
+          <div class="form-group">
+            <br>
+            <span class="label-text">Cambiar contraseña</span>  
+            <br>
+            <input type="checkbox" class="toggle mt-2" on:change={()=>onChangeInput("CAMBIAR",idvol=="")} bind:checked={cambiarcontra} />
+          </div>
+          
+          {#if cambiarcontra }
+            <label for = "contra2" class="label">
+              <span class="label-text text-base">Nueva Contraseña*</span>
             </label>
             <label class="input-group">
-              <input id ="contra" type="password" 
+              <input id ="contra2" type="password" 
                 class={`input input-bordered ${malcontra?"input-error":""}`}  
-                on:change={()=>onChangeInput("CONTRA",idvol=="")} 
-                bind:value={contra} autocomplete="off"
+                on:change={()=>onChangeInput("CONTRA",idvol=="")}
+                bind:value={contra} 
+                autocomplete="off" 
               />
               <div class={`label ${malcontra?"":"hidden"}`}>
                 <span class="label-text-alt text-red-400">Error, debe tener al menos 10 caracteres</span>
               </div>
             </label>
-            <label for = "confcontra" class="label">
-              <span class="label-text text-base">Confirmar Contraseña*</span>
+            <label for = "confcontra2" class="label">
+              <span class="label-text text-base">Confirmar Nueva Contraseña*</span>
             </label>
             <label class="input-group">
-              <input id ="confcontra" type="password" 
-                class={`input input-bordered ${malconfcontra?"input-error":""}`}  
+              <input id ="confcontra2" type="password" 
+                
+                class={`input input-bordered ${malconfcontra?"input-error":""}`} 
                 on:change={()=>onChangeInput("CONFCONTRA",idvol=="")} 
-                bind:value={confirmcontra} 
-                autocomplete="off" 
+                bind:value={confirmcontra} autocomplete="off" 
               />
               <div class={`label ${malconfcontra?"":"hidden"}`}>
                 <span class="label-text-alt text-red-400">Error, deben coincidir las contraseñas</span>
               </div>
             </label>
-            
-          {/if}
-          <label class="form-control w-4/5">
-            <div class="label">
-              <span class="label-text">Coordinador</span>
-            </div>
-            <select class="select select-bordered" bind:value={coordinador}>
-              <option value={true}>Si</option>
-              <option value={false}>No</option>
-            </select>
-          </label>
-          {#if idvol !=''}
-            <div class="form-group">
-              <br>
-              <span class="label-text">Cambiar contraseña</span>  
-              <br>
-              <input type="checkbox" class="toggle mt-2" on:change={()=>onChangeInput("CAMBIAR",idvol=="")} bind:checked={cambiarcontra} />
-            </div>
-            
-            {#if cambiarcontra }
-              <label for = "contra2" class="label">
-                <span class="label-text text-base">Nueva Contraseña*</span>
-              </label>
-              <label class="input-group">
-                <input id ="contra2" type="password" 
-                  class={`input input-bordered ${malcontra?"input-error":""}`}  
-                  on:change={()=>onChangeInput("CONTRA",idvol=="")}
-                  bind:value={contra} 
-                  autocomplete="off" 
-                />
-                <div class={`label ${malcontra?"":"hidden"}`}>
-                  <span class="label-text-alt text-red-400">Error, debe tener al menos 10 caracteres</span>
-                </div>
-              </label>
-              <label for = "confcontra2" class="label">
-                <span class="label-text text-base">Confirmar Nueva Contraseña*</span>
-              </label>
-              <label class="input-group">
-                <input id ="confcontra2" type="password" 
-                  
-                  class={`input input-bordered ${malconfcontra?"input-error":""}`} 
-                  on:change={()=>onChangeInput("CONFCONTRA",idvol=="")} 
-                  bind:value={confirmcontra} autocomplete="off" 
-                />
-                <div class={`label ${malconfcontra?"":"hidden"}`}>
-                  <span class="label-text-alt text-red-400">Error, deben coincidir las contraseñas</span>
-                </div>
-              </label>
-              <label for = "confcontra3" class="label">
-                <span class="label-text text-base">Escribir la contraseña anterior*</span>
-              </label>
-              <label class="input-group">
-                <input id ="confcontra3" type="password" 
-                  class={`input input-bordered ${maloldcontra?"input-error":""}`} 
+            <label for = "confcontra3" class="label">
+              <span class="label-text text-base">Escribir la contraseña anterior*</span>
+            </label>
+            <label class="input-group">
+              <input id ="confcontra3" type="password" 
+                class={`input input-bordered ${maloldcontra?"input-error":""}`} 
 
-                  on:change={()=>onChangeInput("OLDCONTRA",idvol=="")}
-                  bind:value={oldcontra} autocomplete="off" 
-                />
-                <div class={`label ${maloldcontra?"":"hidden"}`}>
-                    <span class="label-text-alt text-red-400">Error, debe tener al menos 10 caracteres</span>
-                </div>
-              </label>
-            {/if}
+                on:change={()=>onChangeInput("OLDCONTRA",idvol=="")}
+                bind:value={oldcontra} autocomplete="off" 
+              />
+              <div class={`label ${maloldcontra?"":"hidden"}`}>
+                  <span class="label-text-alt text-red-400">Error, debe tener al menos 10 caracteres</span>
+              </div>
+            </label>
           {/if}
-      
-        </form>
-      </div>
-      <div class="modal-action justify-start">
-        <form method="dialog">
-          <!-- if there is a button, it will close the modal -->
-          <button class="btn btn-success" disabled='{!habilitado}' on:click={guardar}>Guardar</button>
-          <button class="btn btn-error" on:click={cerrarFormModal}>Cancelar</button>
-        </form>
-      </div>
+        {/if}
+    
+      </form>
     </div>
-  </dialog>
-</Navbarr>
+    <div class="modal-action justify-start">
+      <form method="dialog">
+        <!-- if there is a button, it will close the modal -->
+        <button id="guardarUser" class="btn btn-success text-white" disabled='{!habilitado}' on:click={guardar}>Guardar</button>
+        <button class="btn btn-error text-white" on:click={cerrarFormModal}>Cancelar</button>
+      </form>
+    </div>
+  </div>
+</dialog>
+<dialog id="schModal" class="modal">
+  <div class="modal-box">
+    <CronogramaModal cronovoluntaria={cronovol} on:cerrarModal={cerrarSchModal}></CronogramaModal>
+  </div>
+</dialog>

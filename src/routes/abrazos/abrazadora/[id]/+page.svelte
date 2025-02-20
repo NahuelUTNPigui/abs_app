@@ -6,6 +6,7 @@
     import { goto } from '$app/navigation';
     import * as XLSX from "xlsx"
     import ubicaciones from "$lib/ubicaciones"
+    import Trend from '$lib/graficos/Trend.svelte';
     let ruta = import.meta.env.VITE_RUTA
     const pb = new PocketBase(ruta);
     let usuarioid = ""
@@ -14,6 +15,7 @@
     let bebes=[]
     let abrazosrows = []
     let abrazos = []
+    let abrazosanalisis = []
     
     let turnos=[{nombre:"Mañana"},{nombre:"Tarde"}]
     let nombrebebe=""
@@ -86,6 +88,10 @@
         }
         
     }
+    function openTrendModal(){
+        abrazosanalisis = abrazosrows
+        trendAbrazos.showModal()
+    }
     function exportarXLSX(){
         let csvdata = abrazosrows.map(item=>({
             UNIDADES:item.ubicacion,
@@ -155,6 +161,14 @@
                 <span class="text-xl">Exportar EXCEL</span>
             </button>
         </div>
+    </div>
+    <div class="flex flex-wrap mx-1 lg:mx-10 mb-1 mt-4 lg:mb-4" >
+        <div class="lg:w-1/4 md:w-1/2">
+            <button class="btn btn-outline"on:click={()=>openTrendModal()}>
+                <span class="text-xl">Analisis abrazos</span>
+            </button>  
+        </div>
+        
     </div>
     <div class="grid grid-cols-2 lg:grid-cols-4 mx-1 lg:mx-10 mb-1" >
         <div class="">
@@ -314,4 +328,22 @@
             </div>
         </div>
     </dialog>    
+    
 </Navbarr>
+
+<dialog  id="trendAbrazos" class="modal">
+    <div class="modal-box max-w-5xl">
+        <form method="dialog">
+          <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+        </form>
+        <h3 class="text-lg font-bold">Abrazos en el tiempo</h3>
+        <Trend abrazos={abrazosanalisis}></Trend>
+        
+        <div class="modal-action justify-start">
+            <form method="dialog">
+              <!-- if there is a button, it will close the modal -->
+              <button class="btn btn-error text-white">Cerrar</button>
+            </form>
+        </div>
+    </div>
+</dialog>
