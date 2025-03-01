@@ -14,7 +14,6 @@
   let bebesrows=[]
   let bebesselect = []
   let abrazadorasselect = []
-
   let prioridades = [{id:1,desc:"ALTA"},{id:2,desc:"BAJA"}]
   let idbebe = ""
   let nombrebebe=""
@@ -64,39 +63,8 @@
   })
   function openModal(id){
     goto('/bebes/'+id+"/")
-    /*
-    return
-    idbebe = id
-    if(idbebe == ""){
-        nombrebebe=""
-        nombremama=""
-        apellidomama = ""
-        fechaingreso = ""
-        fechaegreso = ""
-        fechanacimiento = ""
-        prioridad = 1
-    }
-    else{
-        let bebe = bebes.filter(b=>b.id===idbebe)[0]
-        nombrebebe=bebe.nombre
-        nombremama=bebe.nombremama
-        apellidomama = bebe.apellidomama
-        fechaingreso = bebe.fechaingreso.split(' ')[0]
-        fechaegreso = bebe.fechaegreso?bebe.fechaegreso.split(' ')[0]:''
-        if(fechaegreso!=''){
-            confechaegreso = true
-        }
-        fechanacimiento = bebe.fechanacimiento.split(' ')[0]
-        prioridad = bebe.prioridad
-        disponible = bebe.disponible
-    }
-    formModal.showModal()
-    */
   }
-  function openModalAbrazo(id){
-    idbebeabrazo = id
-    formAbrazo.showModal()
-  }
+  
   async function guardarabrazo(){
     let data = {
       bebe:idbebeabrazo,
@@ -292,10 +260,31 @@
 </script>
 <Navbarr>
     <div class="px-1 lg:px-4 mx-1 lg:mx-4">
-    <div class="w-full grid justify-items-left mx-1 lg:mx-10">
-      <h1 class="text-xl font-bold italic">BEBÉS</h1>  
+    <div class="w-full grid justify-items-left mx-1 lg:mx-4">
+        <h1 class="">
+            <span class="text-xl font-bold italic">BEBÉS</span>
+            <span>
+                <div class="badge badge-outline">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="purple" class="size-4 mx-1">
+                        <path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" />
+                    </svg>
+                    Alta prioridad
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="green" class="size-4 mx-1">
+                        <path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" />
+                    </svg>
+                    Disponible
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="red" class="size-4 mx-1">
+                        <path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" />
+                    </svg>
+                    No disponible
+                </div>
+            </span>
+            
+        </h1>
+      
     </div>
-    <div class="grid grid-cols-2 m-1 gap-2 lg:gap-10 mb-2 mt-1 mx-1 lg:mx-10" >
+    
+    <div class="grid grid-cols-2 m-1 gap-2 lg:gap-10 mb-2 mt-1 mx-1 lg:mx-4" >
         <div class="w-full">
             <label class="block uppercase tracking-wide text-xs font-bold mb-2" for="grid-first-name">
                 Fecha egreso
@@ -318,7 +307,7 @@
             </select>
         </div>    
     </div>
-    <div class="grid lg:grid-cols-2 m-1 gap-2 lg:gap-10 mb-2 mt-1 mx-1 lg:mx-10" >
+    <div class="grid lg:grid-cols-2 m-1 gap-2 lg:gap-10 mb-2 mt-1 mx-1 lg:mx-4" >
         <div class="w-11/12 lg:w-full">
             <label class="input input-bordered flex items-center gap-2">
                 <input type="text" class="grow" placeholder="Buscar por apellido madre.." bind:value={nombrebuscar} on:input={filterupdate} />
@@ -326,11 +315,11 @@
         </div>
         <div class="w-full">
             <button class="btn btn-primary text-white " on:click={()=>openModal("0")}>
-                <span class="text-xl">Nuevo bebé</span>
+                <span class="text-xl">Nuevo</span>
             </button>
         </div>
     </div>
-    <div class="w-full grid justify-items-center mx-1 lg:mx-10 lg:w-3/4">
+    <div class="w-full grid justify-items-center overflow-x-auto">
         <table class="table table-lg w-full" >
             <thead>
                 <tr>

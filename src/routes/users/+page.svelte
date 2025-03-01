@@ -22,6 +22,9 @@
   let nombre = ""
   let apellido = ""
   let cel = ""
+  let domicilio = ""
+  let fechaingreso = ""
+  let fechaegreso = ""
   let idvol = ""
   let contra = ""
   let confirmcontra = ""
@@ -559,22 +562,21 @@
         </div>
         <div class="w-full">
           <button class="btn btn-primary text-white " on:click={()=>openModal("")}>
-              <!--<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 lg:size-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-              </svg>-->
+              
 
               <span class="text-xl">Nueva Abrazadora</span>
           </button>  
         </div>
         
     </div>
-
+    <div class="w-full grid justify-items-center mx-1  lg:w-3/4 overflow-x-auto">
     <table class="table table-lg w-full" >
       <!-- head -->
       <thead>
         <tr>
           <th class="text-base w-1/4">Abrazadora</th>
           <th class="text-base">Acciones</th>
+          
         </tr>
       </thead>
       <tbody>
@@ -611,55 +613,72 @@
                   </svg>            
                 </button>
               </div>
+              
             </td>
           </tr>
         {/each}
       </tbody>
     </table>
+    </div>
   </div>
 </Navbarr>
 <dialog id="formModal" class="modal">
-  <div class="modal-box w-11/12 max-w-1md">
+  <div class="modal-box w-11/12 max-w-5xl">
     {#if idvol==""}
       <h3 class="text-lg font-bold">Nueva Abrazadora</h3>  
     {:else}
       <h3 class="text-lg font-bold">Editar Abrazadora</h3>  
     {/if}
     <div class="form-control">
-      <form action="">
-        <label for = "nombre" class="label">
-          <span class="label-text text-base">Nombre*</span>
-        </label>
-        <label class="input-group">
-          <input id ="nombre" type="text"  
-            class={`input input-bordered ${malnombre?"input-error":""}`}
-            on:change={()=>onChangeInput("NOMBRE",idvol=="")} 
-            bind:value={nombre}
-          />
-          <div class={`label ${malnombre?"":"hidden"}`}>
-            <span class="label-text-alt text-red-400">Error, el nombre no puede estar vacio</span>
-          </div>
-        </label>
-        <label for = "apellido" class="label">
-          <span class="label-text text-base">Apellido*</span>
-        </label>
-        <label class="input-group">
-          <input id ="apellido" type="text"  
-            class={`input input-bordered ${malapellido?"input-error":""}`} 
-            bind:value={apellido}
-            on:change={()=>onChangeInput("APELLIDO",idvol=="")} 
-            
-          />
-          <div class={`label ${malapellido?"":"hidden"}`}>
-            <span class="label-text-alt text-red-400">Error, el apellido no puede estar vacio</span>
-          </div>
-        </label>
-        <label for = "cel" class="label ">
-          <span class="label-text text-base">Celular</span>
-        </label>
-        <label class="input-group">
-          <input id ="cel" type="text" class="input input-bordered" bind:value={cel}/>
-        </label>
+      <form action="" class="grid grid-cols-2">
+        <div>
+          <label for = "nombre" class="label">
+            <span class="label-text text-base">Nombre*</span>
+          </label>
+          <label class="input-group">
+            <input id ="nombre" type="text"  
+              class={`input input-bordered ${malnombre?"input-error":""}`}
+              on:change={()=>onChangeInput("NOMBRE",idvol=="")} 
+              bind:value={nombre}
+            />
+            <div class={`label ${malnombre?"":"hidden"}`}>
+              <span class="label-text-alt text-red-400">Error, el nombre no puede estar vacio</span>
+            </div>
+          </label>
+        </div>
+        <div>
+          <label for = "apellido" class="label">
+            <span class="label-text text-base">Apellido*</span>
+          </label>
+          <label class="input-group">
+            <input id ="apellido" type="text"  
+              class={`input input-bordered ${malapellido?"input-error":""}`} 
+              bind:value={apellido}
+              on:change={()=>onChangeInput("APELLIDO",idvol=="")} 
+              
+            />
+            <div class={`label ${malapellido?"":"hidden"}`}>
+              <span class="label-text-alt text-red-400">Error, el apellido no puede estar vacio</span>
+            </div>
+          </label>
+        </div>
+        <div>
+          <label for = "cel" class="label ">
+            <span class="label-text text-base">Celular</span>
+          </label>
+          <label class="input-group">
+            <input id ="cel" type="text" class="input input-bordered" bind:value={cel}/>
+          </label>
+        </div>
+        <div>
+          <label for = "domicilio" class="label ">
+            <span class="label-text text-base">Domicilio</span>
+          </label>
+          <label class="input-group">
+            <input id ="domicilio" type="text" class="input input-bordered" bind:value={domicilio}/>
+          </label>
+        </div>
+        
         {#if idvol==""}
           <label for = "contra" class="label">
             <span class="label-text text-base">Contraseña*</span>

@@ -6,7 +6,9 @@
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
     import unidades from '$lib/ubicaciones'
+    import guardarHistorial from "$lib/bd/historialbebe"
     import Swal from 'sweetalert2'
+    import sexos from "$lib/sexo"
     //Variables
     let ruta = import.meta.env.VITE_RUTA
     const pb = new PocketBase(ruta);
@@ -17,7 +19,7 @@
     // Mama
     let nombremama=""
     let apellidomama = ""
-    let edadmama=0
+    let edadmama=""
     let procedencia = ""
     //bebe
     let idbebe = "0"
@@ -27,11 +29,15 @@
     let disponible = true
     let fechanacimiento = ""
     let prioridad = 1 
-    let pesonacimiento = 0
-    let edadgestacional = 0
+    let pesonacimiento = ""
+    let edadgestacional = ""
     let maternidad = false
     let diagnostico = ""
     let unidad = "Prealta"
+    let sexo = ""
+    let pesoinicial = ""
+    let observacion=""
+    
     //Abrazadora
     let abrazadora=""
     let nombreabrazadora = ""
@@ -97,6 +103,9 @@
                 olddata.peso = record.peso
                 unidad = record.unidad
                 olddata.unidad = record.unidad
+                sexo = record.sexo
+                pesoinicial = record.pesoinicial
+                observacion = record.observacion
                 if(fechaegreso!=''){
                     confechaegreso = true
                 }
@@ -142,12 +151,15 @@
             fechaegreso = ""
             prioridad = 1
             fechanacimiento = ""
-            edadmama = 0
+            edadmama = ""
             procedencia = ""
-            pesonacimiento = 0
-            edadgestacional = 0
+            pesonacimiento = ""
+            edadgestacional = ""
             maternidad = false
             diagnostico = ""
+            sexo = ""
+            pesoinicial = ""
+            observacion = ""
             unidad = "Prealta"
             
         }
@@ -292,7 +304,9 @@
                     diagnostico,
                     unidad,
                     peso:pesonacimiento,
-                    abrazadora
+                    abrazadora,
+                    pesoingreso:pesoinicial,
+                    observacion
                 }
                 try{
                     
@@ -337,6 +351,7 @@
                         operacion:"Edicion"
                     }
                     const recordb = await pb.collection('bebes').update(idbebe,data)
+                    //Vamos a hacerlo como fertil con una funcion especiañ
                     const recordnewhistorial = await pb.collection('historialesbebe').create(datah);
                     goto("/bebes")
                     Swal.fire('Éxito guardar', 'Bebé editado con éxito', 'success');
@@ -448,7 +463,7 @@
                 </label>
             </div>
         </div>
-        <h3 class="text-xl font-semibold mb-1 lg:mb-0 text-left">
+        <h3 class="text-xl mx-1 font-semibold mb-1 lg:mb-0 text-left">
             Datos bebé
         </h3>
         <div class="grid lg:grid-cols-3 lg:gap-6 mx-1">
@@ -465,6 +480,14 @@
                     <div class={`label ${malnombre?"":"hidden"}`}>
                         <span class="label-text-alt text-red-400">Error debe escribir el nombre del bebe</span>
                     </div>
+                </label>
+            </div>
+            <div class="mb-4 lg:mb-0">
+                <label for = "peso" class="label">
+                    <span class="label-text text-base">Peso ingreso(gramos)</span>
+                </label>
+                <label class="input-group">
+                    <input id ="peso" type="text"  class="input input-bordered" bind:value={pesoinicial}/>
                 </label>
             </div>
             <div class="mb-4 lg:mb-0">

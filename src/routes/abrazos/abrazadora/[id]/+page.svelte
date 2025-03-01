@@ -204,51 +204,12 @@
                 <option value={""}>{`Todos`}</option>
                 {#each bebes as b}
                     <option value={b.id}>{`${acortarPalabra(b.apellidomama)}(${acortarPalabra(b.nombre)})`}</option>
-                    <!--<option value={b.id}>{`${acortarPalabra(b.nombre)}(${acortarPalabra(b.apellidomama)})`}</option>-->
+                    
                 {/each}
             </select>
         </div>
     </div>
-    <!--<div class="flex flex-wrap lg:mx-10 mb-1 mt-2 sm:mx-0 xm:mx-0" >
-        <div class="lg:w-1/4 md:w-1/2 lg:mx-10 mb-1 md:mb-0 sm:mb-0 sm:mx-0">
-            <label class="block uppercase tracking-wide text-xs font-bold mb-2" for="grid-first-name">
-              Fecha desde
-            </label>
-            <input id ="fechadesde" type="date"  class="input input-bordered" bind:value={fechadesde} on:change={filterUpdate}/>
-        </div>
-        <div class="lg:w-1/4 px-1 md:w-1/2 lg:mx-10 mb-1 md:mb-0 sm:mb-0 sm:mx-0">
-            <label class="block uppercase tracking-wide text-xs font-bold mb-2" for="grid-first-name">
-              Fecha Hasta
-            </label>
-            <input id ="fechadesde" type="date"  class="input input-bordered" bind:value={fechahasta} on:change={filterUpdate}/>
-        </div>
-    </div>-->
-    <!--<div class="flex flex-wrap lg:mx-10 mb-1 lg:mt-2 sm:mt-1 sm:mx-0 xm:mx-0">
-        <div class="lg:w-1/4 md:w-1/2 lg:mx-10 mb-1 md:mb-0 sm:mb-0 sm:mx-0">
-            <label class="block uppercase tracking-wide text-xs font-bold mb-2" for="grid-first-name">
-                Bebes    
-            </label>
-            <select class="select select-bordered" name="bebes" id="bebes" bind:value={idbebebuscar} on:change={filterUpdate}>
-                <option value={""}>{`Todos`}</option>
-                {#each bebes as b}
-                    <option value={b.id}>{`${acortarPalabra(b.nombre)}(${acortarPalabra(b.apellidomama)})`}</option>
-                {/each}
-            </select>
-        </div>
-        <div class="lg:w-1/4 px-1 md:w-1/2 lg:mx-10 mb-1 md:mb-0 sm:mb-0 sm:mx-0">
-            <label class="block uppercase tracking-wide text-xs font-bold mb-2" for="grid-first-name">
-                Unidad    
-            </label>
-            <select class="select select-bordered" name="bebes" id="bebes" bind:value={idubicacion} on:change={filterUpdate}>
-                <option value={""}>{`Todos`}</option>
-                {#each ubicaciones as u}
-                    
-                    <option value={u.nombre}>{`${u.nombre}`}</option>
-                    
-                {/each}
-            </select>
-        </div>
-    </div>-->
+   
     
     
         
