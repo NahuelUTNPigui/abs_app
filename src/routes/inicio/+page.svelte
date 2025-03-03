@@ -129,6 +129,7 @@
             <dir class="card bg-base-100 shadow-xl w-full">
                 <div class="card-body">
                     <h2 class="card-title text-xl">PARTE {new Date(partehoy.fecha).toLocaleDateString()}</h2>
+                    <h3 class="card-title text-lg">Turno :{partehoy.turno}</h3>
                     <div class="grid grid-cols-1">
                         <p class="text-md">
                             {partehoy.parte}
@@ -151,6 +152,7 @@
             <dir class="card bg-base-100 shadow-xl w-full">
                 <div class="card-body">
                     <h2 class="card-title text-xl">PARTE {new Date(parteayer.fecha).toLocaleDateString()}</h2>
+                    <h3 class="card-title text-lg">Turno :{parteayer.turno}</h3>
                     <div class="grid grid-cols-1">
                         <p class="text-md">
                             {parteayer.parte}

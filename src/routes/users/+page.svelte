@@ -7,6 +7,7 @@
   import CronogramaModal from './CronogramaModal.svelte';
   import {coordinadora} from '$lib/coordinadora'
   import { goto } from '$app/navigation';
+  import estados from "$lib/estadouser"
   //VARIABLES
   // Capaz haga falta una nueva pagina para el modal de nueva usuario
   let ruta = import.meta.env.VITE_RUTA
@@ -25,6 +26,10 @@
   let domicilio = ""
   let fechaingreso = ""
   let fechaegreso = ""
+  let nacimiento = ""
+  let estado = ""
+
+
   let idvol = ""
   let contra = ""
   let confirmcontra = ""
@@ -114,6 +119,12 @@
       contra = ""
       confirmcontra = ""
       coordinador = false
+      domicilio = ""
+      estado = ""
+      fechaegreso = ""
+      fechaingreso = ""
+      nacimiento = ""
+      estado = ""
     }
     else{
       contra = ""
@@ -131,6 +142,11 @@
       apellido = vol.apellido
       cel = vol.celular
       coordinador = vol.coordinador
+      estado = vol.estado
+      nacimiento = vol.nacimiento?new Date(vol.nacimiento).toISOString().split("T")[0]:""
+      fechaegreso = vol.fechaegreso?new Date(vol.fechaegreso).toISOString().split("T")[0]:""
+      fechaingreso = vol.fechaingreso?new Date(vol.fechaingreso).toISOString().split("T")[0]:""
+      domicilio = vol.domicilio
     }
     formModal.showModal()
   }
@@ -296,6 +312,10 @@
         passwordConfirm: confirmcontra,
         coordinador: coordinador,
         celular:cel,
+        estado,
+        domicilio,
+        fechaingreso:fechaingreso + " 03:00:00",
+        nacimiento:nacimiento+" 03:00:00",
         active: true
       }
       
@@ -385,13 +405,17 @@
         return
       }
       let data = {
-        //username : (nombre+apellido).toLowerCase()+"_abs",
         name:nombre,
-        //email: (nombre+apellido).toLowerCase()+"@abs.com",
-        //emailVisibility: true,
         apellido:apellido,
         coordinador: coordinador,
-        celular:cel
+        celular:cel,
+        estado,
+        domicilio,
+        fechaingreso:fechaingreso + " 03:00:00",
+        nacimiento:nacimiento+" 03:00:00",
+      }
+      if(fechaegreso!=""){
+        data.fechaegreso = fechaegreso + " 03:00:00"
       }
       if(cambiarcontra){
         data.password = contra
@@ -630,7 +654,7 @@
       <h3 class="text-lg font-bold">Editar Abrazadora</h3>  
     {/if}
     <div class="form-control">
-      <form action="" class="grid grid-cols-2">
+      <form action="" class="grid grid-cols-1">
         <div>
           <label for = "nombre" class="label">
             <span class="label-text text-base">Nombre*</span>
@@ -678,7 +702,44 @@
             <input id ="domicilio" type="text" class="input input-bordered" bind:value={domicilio}/>
           </label>
         </div>
-        
+        <div class="mb-4 lg:mb-0">
+          <label for = "fechanacimiento" class="label">
+              <span class="label-text text-base">Fecha nacimiento</span>
+          </label>
+          <label class="input-group ">
+              <input id ="fechanacimiento" type="date" 
+                  class={`input input-bordered w-3/4 lg:w-1/2 `}                        
+                  bind:value={nacimiento}
+              />
+              
+          </label>
+        </div>
+        <div class="mb-4 lg:mb-0">
+          <label for = "ingreso" class="label">
+              <span class="label-text text-base">Fecha ingreso</span>
+          </label>
+          <label class="input-group ">
+              <input id ="ingreso" type="date" 
+                  class={`input input-bordered w-3/4 lg:w-1/2 `}                        
+                  bind:value={fechaingreso}
+              />
+              
+          </label>
+        </div>
+        {#if idvol !=""}
+        <div class="mb-4 lg:mb-0">
+          <label for = "egreso" class="label">
+              <span class="label-text text-base">Fecha egreso</span>
+          </label>
+          <label class="input-group ">
+              <input id ="egreso" type="date" 
+                  class={`input input-bordered w-3/4 lg:w-1/2 `}                        
+                  bind:value={fechaegreso}
+              />
+              
+          </label>
+        </div>
+        {/if}
         {#if idvol==""}
           <label for = "contra" class="label">
             <span class="label-text text-base">Contraseña*</span>
@@ -711,6 +772,16 @@
           </label>
           
         {/if}
+        <label class="form-control w-4/5">
+          <div class="label">
+            <span class="label-text">Estado</span>
+          </div>
+          <select class="select select-bordered" bind:value={estado}>
+            {#each estados as e}
+            <option value={e.id}>{e.nombre}</option>
+            {/each}
+          </select>
+        </label>
         <label class="form-control w-4/5">
           <div class="label">
             <span class="label-text">Coordinador</span>

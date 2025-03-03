@@ -1,4 +1,6 @@
-export default async function guardarHistorial(pb , id,operacion,user) {
+export default async function guardarHistorial(pb , id,operacion) {
+    let pb_json = await JSON.parse(localStorage.getItem('pocketbase_auth'))
+    let user = pb_json.model.id
     let record = await pb.collection("bebes").getOne(id)
     let histo ={
         bebe:id,
@@ -21,7 +23,8 @@ export default async function guardarHistorial(pb , id,operacion,user) {
         abrazadora:user,
         sexo:record.sexo,
         pesoingreso:record.pesoingreso,
-        observacion:record.observacion  
+        observacion:record.observacion,
+        disponibilidad:record.disponibilidad
     }
-    await pb.collection("historialbebe").create(histo)    
+    await pb.collection("historialesbebe").create(histo)    
 }

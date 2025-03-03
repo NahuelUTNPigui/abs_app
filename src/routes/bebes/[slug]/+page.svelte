@@ -9,12 +9,15 @@
     import guardarHistorial from "$lib/bd/historialbebe"
     import Swal from 'sweetalert2'
     import sexos from "$lib/sexo"
+    import disponibilidades from "$lib/disponibilidades"
     //Variables
     let ruta = import.meta.env.VITE_RUTA
     const pb = new PocketBase(ruta);
     const HOY = new Date().toISOString().split("T")[0]
     let prioridades = [{id:1,desc:"ALTA"},{id:2,desc:"BAJA"}]
     let bebe404=false
+    let diagnosticos = []
+    let diagnosticosfilter = []
     //Atributos bebe
     // Mama
     let nombremama=""
@@ -32,12 +35,16 @@
     let pesonacimiento = ""
     let edadgestacional = ""
     let maternidad = false
-    let diagnostico = ""
+    let disponibilidad = ""
+    
     let unidad = "Prealta"
     let sexo = ""
     let pesoinicial = ""
     let observacion=""
-    
+    //Es una lista
+    let cadenadiagnostico = ""
+    let diagnostico = []
+    let isOpenDiagnostico = false
     //Abrazadora
     let abrazadora=""
     let nombreabrazadora = ""
@@ -49,60 +56,49 @@
     let malnacimiento=false
     let malingreso=false
     let botonhabilitado=false
-    //Informacion vieja 
-    let olddata={
-        nombre:"",
-        nombremama,
-        apellidomama,
-        fechaingreso:"" ,
-        fechanacimiento:"",
-        procedencia,
-        edadmadre:edadmama,
-        prioridad,
-        disponible : true,
-        maternidadnacimiento : "",
-        semanasgestacional :"",
-        diagnostico,
-        unidad,
-        peso:""
-    }
+    
     //Metodos
     onMount(async()=>{
         idbebe = $page.params.slug
+        const diagsrecord = await pb.collection('diagnosticos').getFullList()
+        diagnosticos = diagsrecord
+        diagnosticosfilter = diagnosticos
         if(idbebe!="0"){
             // Debo hacer un try and catch
             try{
                 const record = await pb.collection('bebes').getOne(idbebe)
                 nombrebebe = record.nombre
-                olddata.nombre = record.nombre
+                
                 nombremama = record.nombremama
-                olddata.nombremama = record.nombremama
+                
                 apellidomama = record.apellidomama
-                olddata.apellidomama = record.apellidomama
+                
                 fechaingreso = record.fechaingreso.split(' ')[0]
-                olddata.fechaingreso = record.fechaingreso
+                
                 prioridad = record.prioridad
-                olddata.prioridad = record.prioridad
+                
                 fechanacimiento = record.fechanacimiento.split(' ')[0]
-                olddata.fechanacimiento = record.fechanacimiento
+                
                 disponible = record.disponible
-                olddata.disponible = record.disponible
+                
                 edadmama = record.edadmadre
-                olddata.edadmadre = record.edadmadre
+                
                 procedencia = record.procedencia
-                olddata.procedencia = record.procedencia
+                
                 edadgestacional = record.semanasgestacional
-                olddata.semanasgestacional = record.semanasgestacional
+                
                 maternidad = record.maternidadnacimiento
-                olddata.maternidadnacimiento = record.maternidadnacimiento
-                diagnostico = record.diagnostico
-                olddata.diagnostico = record.diagnostico
+                
+                //Hace falta procesamiento
+                diagnostico = record.diagnostico.split(",")
+                
                 fechaegreso = record.fechaegreso?record.fechaegreso.split(' ')[0]:""
-                olddata.data = record.fechaegreso
+                
                 pesonacimiento = record.peso
-                olddata.peso = record.peso
+                
                 unidad = record.unidad
-                olddata.unidad = record.unidad
+                disponibilidad = record.disponibilidad
+                
                 sexo = record.sexo
                 pesoinicial = record.pesoinicial
                 observacion = record.observacion
@@ -129,12 +125,14 @@
                 fechaegreso = ""
                 prioridad = 1
                 fechanacimiento = ""
+                disponibilidad = ""
                 edadmama = 0
                 procedencia = ""
                 pesonacimiento = 0
                 edadgestacional = 0
+                sexo = ""
                 maternidad = false
-                diagnostico = ""
+                diagnostico = []
                 unidad = "Prealta"
                 bebe404 = true
                 botonhabilitado = false
@@ -156,10 +154,11 @@
             pesonacimiento = ""
             edadgestacional = ""
             maternidad = false
-            diagnostico = ""
+            diagnostico = []
             sexo = ""
             pesoinicial = ""
             observacion = ""
+            disponibilidad = ""
             unidad = "Prealta"
             
         }
@@ -301,10 +300,12 @@
                     disponible : true,
                     maternidadnacimiento : maternidad,
                     semanasgestacional :edadgestacional,
-                    diagnostico,
+                    diagnostico:diagnostico.join(),
                     unidad,
                     peso:pesonacimiento,
                     abrazadora,
+                    sexo,
+                    disponibilidad,
                     pesoingreso:pesoinicial,
                     observacion
                 }
@@ -328,11 +329,13 @@
                     procedencia,
                     edadmadre:edadmama,
                     prioridad,
-                    disponible,
+                    
+                    disponibilidad,
                     maternidadnacimiento : maternidad,
                     semanasgestacional :edadgestacional,
-                    diagnostico,
+                    diagnostico : diagnostico.join(),
                     unidad,
+                    sexo,
                     peso:pesonacimiento
                 }
                 if(fechaegreso != ""){
@@ -345,18 +348,17 @@
                     }
                 }
                 try{
-                    let datah ={
-                        ...olddata,
-                        bebe:idbebe,
-                        operacion:"Edicion"
-                    }
-                    const recordb = await pb.collection('bebes').update(idbebe,data)
+                    
+                    await pb.collection('bebes').update(idbebe,data)
                     //Vamos a hacerlo como fertil con una funcion especiañ
-                    const recordnewhistorial = await pb.collection('historialesbebe').create(datah);
+                    //const recordnewhistorial = await pb.collection('historialesbebe').create(datah);
+                    
+                    await guardarHistorial(pb,idbebe,"Editar")
                     goto("/bebes")
                     Swal.fire('Éxito guardar', 'Bebé editado con éxito', 'success');
                 }
                 catch(e){
+                    console.error(e)
                     Swal.fire('Error guardar', 'No se pudo editar al bebé', 'error'); 
                 }
                 
@@ -368,8 +370,49 @@
             Swal.fire('Error guardar', 'Hay errores en los datos', 'error'); 
         }
     }
+    
     function cancelar(){
         goto("/bebes/")
+    }
+    function inputdiagnostico(){
+        diagnosticosfilter = diagnosticos.filter(d=>d.abreviaturas.toLocaleLowerCase().startsWith(cadenadiagnostico.toLocaleLowerCase()))
+        diagnosticosfilter = diagnosticosfilter
+        isOpenDiagnostico = true
+        let ultima = cadenadiagnostico.slice(-1)
+
+        if(ultima == ","){
+            
+            let abreviatura = cadenadiagnostico.slice(0,-1)
+            let repetido = diagnostico.filter(d=>d==abreviatura).length != 0
+            if(repetido){
+                Swal.fire("Repetido","Ya existe este diagnostico","info")
+                cadenadiagnostico = ""
+                return
+            }
+            diagnostico.push(abreviatura)
+            cadenadiagnostico = ""
+            
+            diagnostico = diagnostico
+            isOpenDiagnostico = false
+            diagnosticosfilter = diagnosticos
+        }
+    }
+    function clickOption(diag){
+        if(dentroDiagnostico(diag)){
+            return 
+        }
+        let dia = diagnosticos.filter(di=>di.id == diag.id)[0]
+        diagnostico.push(dia.abreviaturas)
+        diagnostico = diagnostico
+        isOpenDiagnostico = false
+        diagnosticosfilter = diagnosticos
+    }
+    function dentroDiagnostico(d){
+        let dia = diagnostico.filter(di=>di == d.abreviaturas)
+        return dia.length > 0
+    }
+    function quitarDiagnostico(diag){
+        diagnostico = diagnostico.filter(d=>d != diag)
     }
 
 </script>
@@ -402,6 +445,7 @@
                         class={`input input-bordered`}
                         disabled
                         bind:value={nombreabrazadora}
+                        
                     />
                 </label>
             </div>
@@ -420,6 +464,7 @@
                         class={`input input-bordered ${malnombremadre?"input-error":""}`}
                         bind:value={nombremama}
                         on:change={()=>onChangeInput("NOMBREMAMA")}
+                        
                         
                     />
                     <div class={`label ${malnombremadre?"":"hidden"}`}>
@@ -466,7 +511,7 @@
         <h3 class="text-xl mx-1 font-semibold mb-1 lg:mb-0 text-left">
             Datos bebé
         </h3>
-        <div class="grid lg:grid-cols-3 lg:gap-6 mx-1">
+        <div class="grid grid-cols-1 lg:grid-cols-5 lg:gap-6 mx-1">
             <div class="mb-4 lg:mb-0">
                 <label for = "nombre" class="label">
                     <span class="label-text text-base">Nombre*</span>
@@ -481,6 +526,18 @@
                         <span class="label-text-alt text-red-400">Error debe escribir el nombre del bebe</span>
                     </div>
                 </label>
+            </div>
+            <div class="w-full">
+                <div class="mb-4 lg:mb-0">
+                    <div class="label">
+                        <span class="label-text">Sexo</span>
+                    </div>
+                    <select class="select select-bordered " bind:value={sexo}>
+                        {#each sexos as s}
+                            <option value={s.id}>{s.nombre}</option>
+                        {/each}
+                    </select>
+                </div>
             </div>
             <div class="mb-4 lg:mb-0">
                 <label for = "peso" class="label">
@@ -579,6 +636,19 @@
                     </select>
                 </div>
             </div>
+            <div class="w-full">
+                <div class="mb-4 lg:mb-0">
+                    <div class="label">
+                        <span class="label-text">Disponibilidad</span>
+                    </div>
+                    <select class="select select-bordered " bind:value={disponibilidad}>
+                        {#each disponibilidades as d}
+                            <option value={d.id}>{d.nombre}</option>
+                        {/each}
+                    </select>
+                </div>
+            </div>
+            
             {#if idbebe!="0"}
                 <div class="w-full">
                     <div class="mb-4 lg:mb-0">
@@ -606,13 +676,93 @@
                 </div>
             </div>
         {/if}
+        <div class="mx-1">
+            <div class="mb-4 lg:mb-1 w-full lg:w-2/3">
+                <div class="label">
+                    <span class="label-text">Diagnostico</span>                    
+                </div>
+                <input type="text"
+                    class={`
+                        input input-bordered w-full 
+                    `}
+                    bind:value={cadenadiagnostico} 
+                    on:input={inputdiagnostico} 
+                    on:click={()=>isOpenDiagnostico = !isOpenDiagnostico}
+                    
+                >
+                {#if isOpenDiagnostico}
+                <div 
+                            class={`
+                                absolute z-10 mt-0  rounded-md shadow-lg   
+                                bg-white border-gray-300 dark:border-gray-600 dark:bg-gray-800 text-gray-900 dark:text-gray-100
+                            `}
+                        >
+                            <ul 
+                                class="
+                                    text-base max-h-40 focus:outline-none sm:text-sm overflow-y-auto 
+                                    w-80    
+                                "
+                            >
+                                {#each diagnosticosfilter as d}
+                                    <li class={`cursor-default hover:bg-purple-100 hover:text-purple-800 dark:hover:text-purple-800  dark:text-white `}>
+                                        <button
+                                            class={`text-start w-full relative py-2 pl-3 select-none pr-9 bg-transparent`}
+                                            on:click={()=>clickOption(d)}
+                                        >   
+                                        <span
+                                            class={`
+                                                
+                                                truncate
+                                                ${dentroDiagnostico(d)?"font-semibold":"font-normal"}
+                                            `}
+                                        >
+                                            {d.abreviaturas}
+                                        </span>
+                                        {#if dentroDiagnostico(d)}
+                                        <span 
+                                            class="absolute inset-y-0 right-0 flex items-center pr-4 text-green-600"
+                                        >
+                                            <svg class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                                                <path
+                                                    fillRule="evenodd"
+                                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                    clipRule="evenodd"
+                                                />
+                                            </svg>
+                                        </span>
+                                        {/if}
+                                        </button>
+                                    </li>
+                                {/each}
+                            </ul>
+                        </div>
+                {/if}
+                {#if diagnostico.length != 0}
+                    <div class="flex-row">
+                    {#each diagnostico as d}
+                            <button class="mt-1" on:click={()=>quitarDiagnostico(d)}>
+                                <div class="badge badge-primary badge-outline">
+                                    {d}
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                    </svg>
+                                </div>
+                            </button>   
+                        
+                    {/each}
+                    </div>
+                
+                {/if}
+
+            </div>
+        </div>
         <div class="grid mx-1">
             <div class="mb-4 lg:mb-1 w-full lg:w-2/3">
                 <label class="form-control">
                     <div class="label">
-                        <span class="label-text">Diagnostico</span>                    
+                        <span class="label-text">Observacion</span>                    
                     </div>
-                    <textarea style="line-height: 1.3;" class="textarea textarea-bordered h-36" bind:value={diagnostico} placeholder=""></textarea>
+                    <textarea style="line-height: 1.3;" class="textarea textarea-bordered h-36" bind:value={observacion} placeholder=""></textarea>
               </label>
             </div>
         </div>

@@ -4,7 +4,7 @@
     import Swal from 'sweetalert2'
     import PocketBase from 'pocketbase'
     import { onMount } from 'svelte';
-    
+    import turnos from "$lib/turnos"
     let ruta = import.meta.env.VITE_RUTA
     const pb = new PocketBase(ruta);
     const HOY = new Date().toISOString().split("T")[0]
@@ -12,6 +12,7 @@
     let parte = ""
     let fechadesde = ""
     let fechahasta = ""
+    let turno = "man"
     let botonhabilitado = false
     let malparte = false
     let partesrow = []
@@ -72,7 +73,8 @@
             let data = {
                 parte,
                 fecha:fecha +' 03:00:00.000Z',
-                registrado:idabrazadora
+                registrado:idabrazadora,
+                turno
             }
             try{
                 const recordp = await pb.collection('partes').create(data)
@@ -89,7 +91,8 @@
             let data = {
                 parte,
                 fecha:fecha +' 03:00:00.000Z',
-                modificado:idabrazadora
+                modificado:idabrazadora,
+                turno
             }
             try{
                 const recordp = await pb.collection('partes').update(idparte,data)
@@ -113,10 +116,13 @@
         
         botonhabilitado = false
         idparte = id
+        turno = ""
+        parte = ""
         if(id!="0"){
             
             let p = partesrow.filter(ps=>ps.id==id)[0]
             parte = p.parte
+            turno = p.turno
             botonhabilitado = true
         }
         formParte.showModal()
@@ -165,6 +171,7 @@
     function cerrar(){
         idparte = ""
         parte = ""
+        turno = ""
     }
     
 </script>
@@ -195,6 +202,7 @@
         <thead>
             <tr>
                 <th class="text-base ml-3 pl-3 mr-1 pr-1 ">Fecha</th>
+                <th class="text-base ml-3 pl-3 mr-1 pr-1 ">Turno</th>
                 <th class="text-base mx-1 px-1">Parte</th>
                 <th class="text-base mx-1 px-1">Acciones</th>
             </tr>
@@ -203,6 +211,7 @@
             {#each partesrow as p}
                 <tr>
                     <td class="text-base ml-3 pl-3 mr-1 pr-1 lg:ml-10">{new Date(p.fecha).toLocaleDateString()}</td>
+                    <td class="text-base mx-1 px-1">{p.turno}</td>
                     <td class="text-base mx-1 px-1">
                         {p.parte}
                     </td>
@@ -249,7 +258,19 @@
                         <span class="label-text-alt text-red-400">Error debe escribir una fecha</span>
                     </div>
                 </label>
-                <div class="grid mx-1">
+                <div>
+                    <div class="mb-4 lg:mb-0">
+                        <div class="label">
+                            <span class="label-text">Turno</span>
+                        </div>
+                        <select class="select select-bordered " bind:value={turno}>
+                            {#each turnos as t}
+                                <option value={t.nombre}>{t.nombre}</option>
+                            {/each}
+                        </select>
+                    </div>
+                </div>
+                <div class="mx-1">
                     <div class="mb-4 lg:mb-1 w-full lg:w-2/3">
                         <label class="form-control">
                             <div class="label">
