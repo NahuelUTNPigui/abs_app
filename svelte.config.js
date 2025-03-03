@@ -27,6 +27,8 @@ const config = {
 				"/users",
 				"/abrazos/abrazadora/1",
 				"/abrazos/bebe/1",
+				"/diagnosticos",
+				"/users/1", 
 				"/partes"]
 		}
 	}
