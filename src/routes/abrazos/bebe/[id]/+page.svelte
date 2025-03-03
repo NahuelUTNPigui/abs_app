@@ -122,8 +122,11 @@
         XLSX.writeFile(wb, `${titulo.replace(/\//g, "-")}.xlsx`, { cellStyles: true });
     
     }
-    function volver(){
+    function volverBebes(){
         goto("/bebes/")
+    }
+    function volverAbrazos(){
+        goto("/abrazos/")
     }
 </script>
 <Navbarr>
@@ -135,8 +138,13 @@
     </div>
     <div class="flex flex-wrap mx-1 lg:mx-10 mb-1 mt-4 lg:mb-4" >
         <div class="lg:w-1/4 md:w-1/2">
-            <button class="btn btn-outline"on:click={()=>volver()}>
-                <span class="text-xl">Volver</span>
+            <button class="btn btn-outline"on:click={()=>volverBebes()}>
+                <span class="text-xl">Volver bebés</span>
+            </button>  
+        </div>
+        <div class="lg:w-1/4 md:w-1/2">
+            <button class="btn btn-outline"on:click={()=>volverAbrazos()}>
+                <span class="text-xl">Volver abrazos</span>
             </button>  
         </div>
         <div class="lg:w-1/4 px-1 md:w-1/2">
