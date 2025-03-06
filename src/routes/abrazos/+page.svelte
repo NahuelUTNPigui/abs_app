@@ -557,6 +557,9 @@
 </Navbarr>
 <dialog id="formAbrazo" class="modal">
     <div class="modal-box w-11/12 max-w-1md">
+        <form method="dialog">
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+          </form>
         <h3 class="text-lg font-bold">Nuevo abrazo</h3>
         <div class="form-control">
             <label for="fecha" class="label">

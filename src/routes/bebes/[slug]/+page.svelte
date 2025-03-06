@@ -348,12 +348,8 @@
                     }
                 }
                 try{
-                    
-                    await pb.collection('bebes').update(idbebe,data)
-                    //Vamos a hacerlo como fertil con una funcion especiañ
-                    //const recordnewhistorial = await pb.collection('historialesbebe').create(datah);
-                    
                     await guardarHistorial(pb,idbebe,"Editar")
+                    await pb.collection('bebes').update(idbebe,data)
                     goto("/bebes")
                     Swal.fire('Éxito guardar', 'Bebé editado con éxito', 'success');
                 }
@@ -420,15 +416,20 @@
     
     <div class="container mx-auto">
         <!--NEW-->
-        <h2 class="text-2xl mx-1 font-bold mb-6 text-left">
-            {#if idbebe=="0"}
-                    NUEVO BEBÉ
-                {:else}
-                    EDITAR A: 
-                {/if}
-        </h2>
+        <button on:click={cancelar} class="flex">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 mt-2 ">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+            </svg>
+            <h2 class="text-2xl mx-1 font-bold mb-3 text-left">
+                {#if idbebe=="0"}
+                        NUEVO BEBÉ
+                    {:else}
+                        EDITAR A: 
+                    {/if}
+            </h2>
+        </button>
         {#if idbebe!="0"}
-            <h2 class="text-2xl mx-1 font-bold mb-6 text-left">
+            <h2 class="text-2xl mx-1 font-bold mb-3 text-left">
                 {`${apellidomama},${nombremama} (${nombrebebe})`}
             </h2>
         {/if}
@@ -511,7 +512,7 @@
         <h3 class="text-xl mx-1 font-semibold mb-1 lg:mb-0 text-left">
             Datos bebé
         </h3>
-        <div class="grid grid-cols-1 lg:grid-cols-5 lg:gap-6 mx-1">
+        <div class="grid grid-cols-1 lg:grid-cols-3 lg:gap-6 mx-1">
             <div class="mb-4 lg:mb-0">
                 <label for = "nombre" class="label">
                     <span class="label-text text-base">Nombre*</span>
@@ -692,11 +693,11 @@
                 >
                 {#if isOpenDiagnostico}
                 <div 
-                            class={`
-                                absolute z-10 mt-0  rounded-md shadow-lg   
-                                bg-white border-gray-300 dark:border-gray-600 dark:bg-gray-800 text-gray-900 dark:text-gray-100
-                            `}
-                        >
+                    class={`
+                        absolute z-10 mt-0  rounded-md shadow-lg   
+                        bg-white border-gray-300 dark:border-gray-600 dark:bg-gray-800 text-gray-900 dark:text-gray-100
+                    `}
+                >
                             <ul 
                                 class="
                                     text-base max-h-40 focus:outline-none sm:text-sm overflow-y-auto 

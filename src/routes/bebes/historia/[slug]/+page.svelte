@@ -86,18 +86,27 @@
 </script>
 <Navbarr>
     <div class="container mx-auto">
-        <div class="flex flex-wrap mx-1 lg:mx-10 mb-1 mt-2 lg:mb-4" >
+        <div class="hidden flex flex-wrap mx-1 lg:mx-10 mb-1 mt-2 lg:mb-4" >
             <div class="lg:w-1/4 md:w-1/2">
                 <button class="btn btn-outline"on:click={()=>volver()}>
                     <span class="text-xl">Volver</span>
                 </button>  
             </div>
         </div>
-        <h2 class="text-2xl mx-1 font-bold mb-6 text-left">
-            {nombrebebe}
-        </h2>
-        <div class="w-full grid justify-items-left mx-1 lg:mx-10 mt-3">
-            <h1 class="text-xl font-bold italic">HISTORIA BEBÉ</h1>  
+        <button on:click={volver}>
+            <h2 class="text-2xl mx-1 font-bold mb-3 text-left flex mx-1 lg:mx-10 mt-2">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 mt-2 ">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                </svg>                  
+                {nombrebebe}
+            </h2>
+        </button>
+        <div class="w-full grid justify-items-left mx-1 lg:mx-10 mt-1 lg:mt-2">
+                <h1 class="text-xl font-bold italic">        
+                    HISTORIA BEBÉ
+                </h1>  
+            
+            
         </div>
         <div class="w-full grid justify-items-center mx-1 lg:mx-10 lg:w-3/4 overflow-x-auto">
             <table class="table table-lg w-full lg:mx-10">

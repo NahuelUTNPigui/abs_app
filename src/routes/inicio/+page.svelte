@@ -59,7 +59,7 @@
     }
 </script>
 <Navbarr>
-    <div class="grid justify-items-center mx-1 lg:mx-5">
+    <div class="justify-items-center mx-1 lg:mx-5">
         <div class="card bg-base-100 shadow-xl w-full">
             <div class="card-body">
                 <h2 class="card-title text-xl">CRONOGRAMA {diasemana(new Date().getDay()).toUpperCase()}</h2>
@@ -126,7 +126,7 @@
             </div>
         </div>
         {#if partehoy}
-            <dir class="card bg-base-100 shadow-xl w-full">
+            <dir class="card bg-base-100 shadow-xl w-full mx-0 px-0">
                 <div class="card-body">
                     <h2 class="card-title text-xl">PARTE {new Date(partehoy.fecha).toLocaleDateString()}</h2>
                     <h3 class="card-title text-lg">Turno :{partehoy.turno}</h3>
@@ -149,7 +149,7 @@
             </dir>
         {/if}
         {#if parteayer}
-            <dir class="card bg-base-100 shadow-xl w-full">
+            <dir class="card bg-base-100 shadow-xl w-full mx-0 px-0">
                 <div class="card-body">
                     <h2 class="card-title text-xl">PARTE {new Date(parteayer.fecha).toLocaleDateString()}</h2>
                     <h3 class="card-title text-lg">Turno :{parteayer.turno}</h3>

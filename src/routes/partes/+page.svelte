@@ -237,6 +237,9 @@
     </table>
     <dialog id="formParte" class="modal">
         <div class="modal-box w-11/12 max-w-1md">
+            <form method="dialog">
+                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+            </form>
             {#if idparte=="0"}
                 <h3 class="text-lg font-bold">Nuevo parte</h3>
             {:else}

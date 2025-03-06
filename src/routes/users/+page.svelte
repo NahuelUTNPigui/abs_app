@@ -648,6 +648,9 @@
 </Navbarr>
 <dialog id="formModal" class="modal">
   <div class="modal-box w-11/12 max-w-5xl">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </form>
     {#if idvol==""}
       <h3 class="text-lg font-bold">Nueva Abrazadora</h3>  
     {:else}
@@ -858,6 +861,9 @@
 </dialog>
 <dialog id="schModal" class="modal">
   <div class="modal-box">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </form>
     <CronogramaModal cronovoluntaria={cronovol} on:cerrarModal={cerrarSchModal}></CronogramaModal>
   </div>
 </dialog>
