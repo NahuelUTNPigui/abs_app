@@ -343,17 +343,17 @@
             </button>  
         </div>
         <div class="w-1/2 lg:w-1/4 px-1 ">
-            <button class="btn btn-outline" on:click={exportarXLSX}>
+            <button class="btn btn-outline btn-lg" on:click={exportarXLSX}>
                 <span class="text-xl">Exportar EXCEL</span>
             </button>
         </div>
         <div class="w-1/2 lg:w-1/4 mt-1 lg:mt-0">
-            <button class="btn btn-outline" on:click={()=>exportarAgrupar(false)}>
+            <button class="btn btn-outline btn-lg" on:click={()=>exportarAgrupar(false)}>
                 <span class="text-xl">Excel por abrazadora</span>
             </button>
         </div>
         <div class="w-1/2 lg:w-1/4 mt-1   lg:mt-0">
-            <button class="btn btn-outline" on:click={()=>exportarAgrupar(true)}>
+            <button class="btn btn-outline btn-lg" on:click={()=>exportarAgrupar(true)}>
                 <span class="text-xl">Excel por bebé</span>
             </button>
         </div>

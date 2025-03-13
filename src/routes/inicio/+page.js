@@ -59,119 +59,125 @@ export async function load({params}){
     }
     for(let i = 0;i<recordscrono.length;i++){
       let fila = recordscrono[i]
+      if(fila.lunesback){
+        if(fila.lunestarde){
+          lunes.tarback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
+        }
+        else{
+          lunes.manback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
+        }
+        
+      }
       if(fila.lunes){
-          if(fila.lunesback){
-            if(fila.lunestarde){
-              lunes.tarback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
-            }
-            else{
-              lunes.manback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
-            }
-            //lunes.back.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+": "+fila.expand.user.celular)
-          }
-          else if(fila.lunestarde){
+          
+          if(fila.lunestarde){
               lunes.tar.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
           }
           else{
               lunes.man.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
           }
       }
-      if(fila.martes){
-        if(fila.martesback){
-          if(fila.martestarde){
-            martes.tarback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
-          }
-          else{
-            martes.manback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
-          }
-          //martes.back.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+": "+fila.expand.user.celular)
+      if(fila.martesback){
+        if(fila.martestarde){
+          martes.tarback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
         }
-        else if(fila.martestarde){
+        else{
+          martes.manback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
+        }
+        
+      }
+      if(fila.martes){
+        
+        if(fila.martestarde){
           martes.tar.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
         }
         else{
           martes.man.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
         }
       }
-      if(fila.miercoles){
-        if(fila.miercolesback){
-          if(fila.miercolestarde){
-            miercoles.tarback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
-          }
-          else{
-            miercoles.manback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
-          }
-          //miercoles.back.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+": "+fila.expand.user.celular)
+      if(fila.miercolesback){
+        if(fila.miercolestarde){
+          miercoles.tarback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
         }
-        else if(fila.miercolestarde){
+        else{
+          miercoles.manback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
+        }
+        
+      }
+      if(fila.miercoles){
+        
+        if(fila.miercolestarde){
           miercoles.tar.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
         }
         else{
           miercoles.man.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
         }
       }
-      if(fila.jueves){
-        if(fila.juevesback){
-          if(fila.juevestarde){
-            jueves.tarback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
-          }
-          else{
-            jueves.manback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
-          }
-          //jueves.back.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+": "+fila.expand.user.celular)
+      if(fila.juevesback){
+        if(fila.juevestarde){
+          jueves.tarback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
         }
-        else if(fila.juevestarde){
+        else{
+          jueves.manback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
+        }
+      }
+      if(fila.jueves){
+        
+        if(fila.juevestarde){
           jueves.tar.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
         }
         else{
           jueves.man.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
         }
       }
-      if(fila.viernes){
-        if(fila.viernesback){
-          if(fila.viernestarde){
-            viernes.tarback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
-          }
-          else{
-            viernes.manback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
-          }
-          //viernes.back.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+": "+fila.expand.user.celular)
+      if(fila.viernesback){
+        if(fila.viernestarde){
+          viernes.tarback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
         }
-        else if(fila.viernestarde){
+        else{
+          viernes.manback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
+        }
+        
+      }
+      if(fila.viernes){
+        
+        if(fila.viernestarde){
           viernes.tar.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
         }
         else{
           viernes.man.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
         }
       }
-      if(fila.sabado){
-        if(fila.sabadoback){
-          if(fila.sabadotarde){
-            sabado.tarback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
-          }
-          else{
-            sabado.manback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
-          }
-          //sabado.back.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+": "+fila.expand.user.celular)
+      if(fila.sabadoback){
+        if(fila.sabadotarde){
+          sabado.tarback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
         }
-        else if(fila.sabadotarde){
+        else{
+          sabado.manback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
+        }
+        
+      }
+      if(fila.sabado){
+        
+        if(fila.sabadotarde){
           sabado.tar.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
         }
         else{
           sabado.man.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
         }
       }
-      if(fila.domingo){
-        if(fila.domingoback){
-          if(fila.domingotarde){
-            domingo.tarback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
-          }
-          else{
-            domingo.manback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
-          }
-          //domingo.back.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+": "+fila.expand.user.celular)
+      if(fila.domingoback){
+        if(fila.domingotarde){
+          domingo.tarback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
         }
-        else if(fila.domingotarde){
+        else{
+          domingo.manback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
+        }
+        
+      }
+      if(fila.domingo){
+        
+        if(fila.domingotarde){
           domingo.tar.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido)
         }
         else{
