@@ -28,7 +28,7 @@
   let fechaegreso = ""
   let nacimiento = ""
   let estado = ""
-
+  let voluntaria = ""
 
   let idvol = ""
   let contra = ""
@@ -46,13 +46,36 @@
   let cronovol = {
         userid:"",
         id:"",
-        lunes:{turno:"no",fijo:"no"},
-        martes:{turno:"no",fijo:"no"},
-        miercoles:{turno:"no",fijo:"no"},
-        jueves:{turno:"no",fijo:"no"},
-        viernes:{turno:"no",fijo:"no"},
-        sabado:{turno:"no",fijo:"no"},
-        domingo:{turno:"no",fijo:"no"}
+        lunes:{
+          turno:"no",
+          back:"no",
+          fijo:"no"
+
+        },
+        martes:{
+          turno:"no",
+          back:"no",
+          fijo:"no"},
+        miercoles:{
+          turno:"no",
+          back:"no",
+          fijo:"no"},
+        jueves:{
+          turno:"no",
+          back:"no",
+          fijo:"no"},
+        viernes:{
+          turno:"no",
+          back:"no",
+          fijo:"no"},
+        sabado:{
+          turno:"no",
+          back:"no",
+          fijo:"no"},
+        domingo:{
+          turno:"no",
+          back:"no",
+          fijo:"no"}
   }
   function sortVoluntaria(v1,v2){
     return v1.apellido.toLowerCase().replaceAll("ñ","n")>v2.apellido.toLowerCase().replaceAll("ñ","n")?1:-1
@@ -75,30 +98,37 @@
       id:c.id,
       lunes:{
         turno:c.lunes?c.lunestarde?"tarde":"man":"no",
+        back:c.lunesback?c.lunesbacktarde?"tarde":"man":"no",
         fijo:c.lunes?c.lunesback?"emer":"fijo":"no"
       },
       martes:{
         turno:c.martes?c.martestarde?"tarde":"man":"no",
+        back:c.martesback?c.martesbacktarde?"tarde":"man":"no",
         fijo:c.martes?c.martesback?"emer":"fijo":"no"
       },
       miercoles:{
         turno:c.miercoles?c.miercolestarde?"tarde":"man":"no",
+        back:c.miercolesback?c.miercolesbacktarde?"tarde":"man":"no",
         fijo:c.miercoles?c.miercolesback?"emer":"fijo":"no"
       },
       jueves:{
         turno:c.jueves?c.juevestarde?"tarde":"man":"no",
+        back:c.juevesback?c.juevesbacktarde?"tarde":"man":"no",
         fijo:c.jueves?c.juevesback?"emer":"fijo":"no"
       },
       viernes:{
         turno:c.viernes?c.viernestarde?"tarde":"man":"no",
+        back:c.viernesback?c.viernesbacktarde?"tarde":"man":"no",
         fijo:c.viernes?c.viernesback?"emer":"fijo":"no"
       },
       sabado:{
         turno:c.sabado?c.sabadotarde?"tarde":"man":"no",
+        back:c.sabadoback?c.sabadobacktarde?"tarde":"man":"no",
         fijo:c.sabado?c.sabadoback?"emer":"fijo":"no"
       },
       domingo:{
         turno:c.domingo?c.domingotarde?"tarde":"man":"no",
+        back:c.domingoback?c.domingobacktarde?"tarde":"man":"no",
         fijo:c.domingo?c.domingoback?"emer":"fijo":"no"
       }
     })
@@ -152,6 +182,9 @@
   }
   function openSchModal(id){
     cronovol = cronogramas.filter(c=>c.userid==id)[0]
+    let abr = voluntarias.filter(v=>v.id == id)[0]
+    
+    voluntaria = abr.name+", "+abr.apellido
     schModal.showModal()
   }
   function cerrarSchModal(){
@@ -365,30 +398,37 @@
           id:c.id,
           lunes:{
             turno:c.lunes?c.lunestarde?"tarde":"man":"no",
+            back:c.lunesback?c.lunesbacktarde?"tarde":"man":"no",
             fijo:c.lunes?c.lunesback?"emer":"fijo":"no"
           },
           martes:{
             turno:c.martes?c.martestarde?"tarde":"man":"no",
+            back:c.martesback?c.martesbacktarde?"tarde":"man":"no",
             fijo:c.martes?c.martesback?"emer":"fijo":"no"
           },
           miercoles:{
             turno:c.miercoles?c.miercolestarde?"tarde":"man":"no",
+            back:c.miercolesback?c.miercolesbacktarde?"tarde":"man":"no",
             fijo:c.miercoles?c.miercolesback?"emer":"fijo":"no"
           },
           jueves:{
             turno:c.jueves?c.juevestarde?"tarde":"man":"no",
+            back:c.juevesback?c.juevesbacktarde?"tarde":"man":"no",
             fijo:c.jueves?c.juevesback?"emer":"fijo":"no"
           },
           viernes:{
             turno:c.viernes?c.viernestarde?"tarde":"man":"no",
+            back:c.viernesback?c.viernesbacktarde?"tarde":"man":"no",
             fijo:c.viernes?c.viernesback?"emer":"fijo":"no"
           },
           sabado:{
             turno:c.sabado?c.sabadotarde?"tarde":"man":"no",
+            back:c.sabadoback?c.sabadobacktarde?"tarde":"man":"no",
             fijo:c.sabado?c.sabadoback?"emer":"fijo":"no"
           },
           domingo:{
             turno:c.domingo?c.domingotarde?"tarde":"man":"no",
+            back:c.domingoback?c.domingobacktarde?"tarde":"man":"no",
             fijo:c.domingo?c.domingoback?"emer":"fijo":"no"
           }
         }))
@@ -864,6 +904,6 @@
     <form method="dialog">
       <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
     </form>
-    <CronogramaModal cronovoluntaria={cronovol} on:cerrarModal={cerrarSchModal}></CronogramaModal>
+    <CronogramaModal {voluntaria} cronovoluntaria={cronovol} on:cerrarModal={cerrarSchModal}></CronogramaModal>
   </div>
 </dialog>

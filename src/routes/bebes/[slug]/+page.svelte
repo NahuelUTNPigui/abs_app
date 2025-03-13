@@ -41,6 +41,7 @@
     let sexo = ""
     let pesoinicial = ""
     let observacion=""
+    let pesoegreso = ""
     //Es una lista
     let cadenadiagnostico = ""
     let diagnostico = []
@@ -90,12 +91,15 @@
                 maternidad = record.maternidadnacimiento
                 
                 //Hace falta procesamiento
-                diagnostico = record.diagnostico.split(",")
+                
+                diagnostico = record.diagnostico.length == 0 ? []:record.diagnostico.split(",");
                 
                 fechaegreso = record.fechaegreso?record.fechaegreso.split(' ')[0]:""
                 
                 pesonacimiento = record.peso
-                
+                pesoegreso = record.pesoegreso
+
+
                 unidad = record.unidad
                 disponibilidad = record.disponibilidad
                 
@@ -295,7 +299,7 @@
                     fechanacimiento:fechanacimiento +' 03:00:00.000Z' ,
                     procedencia,
                     edadmadre:edadmama,
-                    prioridad,
+                    
                     active : true,
                     disponible : true,
                     maternidadnacimiento : maternidad,
@@ -328,15 +332,17 @@
                     fechanacimiento:fechanacimiento +' 03:00:00.000Z' ,
                     procedencia,
                     edadmadre:edadmama,
-                    prioridad,
                     
+                    observacion,
                     disponibilidad,
                     maternidadnacimiento : maternidad,
                     semanasgestacional :edadgestacional,
                     diagnostico : diagnostico.join(),
                     unidad,
                     sexo,
-                    peso:pesonacimiento
+                    peso:pesonacimiento,
+                    pesoingreso:pesoinicial,
+                    pesoegreso
                 }
                 if(fechaegreso != ""){
 
@@ -542,20 +548,31 @@
             </div>
             <div class="mb-4 lg:mb-0">
                 <label for = "peso" class="label">
-                    <span class="label-text text-base">Peso ingreso(gramos)</span>
-                </label>
-                <label class="input-group">
-                    <input id ="peso" type="text"  class="input input-bordered" bind:value={pesoinicial}/>
-                </label>
-            </div>
-            <div class="mb-4 lg:mb-0">
-                <label for = "peso" class="label">
                     <span class="label-text text-base">Peso nacimiento(gramos)</span>
                 </label>
                 <label class="input-group">
                     <input id ="peso" type="text"  class="input input-bordered" bind:value={pesonacimiento}/>
                 </label>
             </div>
+            <div class="mb-4 lg:mb-0">
+                <label for = "peso" class="label">
+                    <span class="label-text text-base">Peso ingreso(gramos)</span>
+                </label>
+                <label class="input-group">
+                    <input id ="peso" type="text"  class="input input-bordered" bind:value={pesoinicial}/>
+                </label>
+            </div>
+            {#if idbebe !='0'}
+                <div class="mb-4 lg:mb-0">
+                    <label for = "peso" class="label">
+                        <span class="label-text text-base">Peso egreso(gramos)</span>
+                    </label>
+                    <label class="input-group">
+                        <input id ="peso" type="text"  class="input input-bordered" bind:value={pesoegreso}/>
+                    </label>
+                </div>
+            {/if}
+            
             <div class="mb-4 lg:mb-0">
                 <label for = "gest" class="label">
                     <span class="label-text text-base">Edad gestacional(semanas)</span>
@@ -613,7 +630,7 @@
         </div>
         
         <div class="grid grid-cols-3 gap-4 sm:gap-6 md:gap-8 lg:mb-4 mx-1">
-            <div class="w-full">
+            <div class="hidden w-full">
                 <div class="mb-4 lg:mb-0">
                     <div class="label">
                         <span class="label-text">Prioridad</span>
@@ -651,7 +668,7 @@
             </div>
             
             {#if idbebe!="0"}
-                <div class="w-full">
+                <div class="hidden w-full">
                     <div class="mb-4 lg:mb-0">
                         <div class="label">
                             <span class="label-text">Disponibilidad</span>
@@ -666,7 +683,7 @@
             {/if}
         </div>
         {#if idbebe !='0'}
-            <div class="lg:grid lg:grid-cols-2 lg:gap-6 mx-1">
+            <div class="grid grid-cols-1 lg:grid-cols-2 lg:gap-6 mx-1">
                 <div class="mb-4 lg:mb-0">
                     <label for = "fechaegreso" class="label">
                         <span class="label-text text-base">Fecha egreso</span>
@@ -675,7 +692,9 @@
                         <input id ="fechaegreso" type="date"  class="input input-bordered w-3/4 lg:w-1/2" bind:value={fechaegreso}/>
                     </label>
                 </div>
+                
             </div>
+            
         {/if}
         <div class="mx-1">
             <div class="mb-4 lg:mb-1 w-full lg:w-2/3">
@@ -757,7 +776,7 @@
 
             </div>
         </div>
-        <div class="grid mx-1">
+        <div class="mx-1">
             <div class="mb-4 lg:mb-1 w-full lg:w-2/3">
                 <label class="form-control">
                     <div class="label">
@@ -769,7 +788,7 @@
         </div>
         
         
-        <div class="grid grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8 mx-1 mb-1">
+        <div class="grid grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8 mx-1 mt-1">
             <div class="w-full">
                 <button class="btn btn-success text-white" disabled='{!botonhabilitado}' on:click={guardar}>Guardar</button>
                 

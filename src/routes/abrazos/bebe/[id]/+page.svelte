@@ -224,47 +224,48 @@
             {/each}
         </tbody>
     </table>
-    <dialog id="formAbrazo" class="modal">
-        <div class="modal-box w-11/12 max-w-1md">
-            <h3 class="text-lg font-bold">Ver abrazo</h3>
-            <div class="form-control">
-                <label for="fecha" class="label">
-                    <span class="label-text text-base">Fecha</span>
-                </label>
-                <label class="input-group">
-                    <input id ="fecha" type="date"  class="input input-bordered" bind:value={fechaabrazo}/>
-                </label>
-                <label for="bebe" class="label">
-                    <span class="label-text text-base">Bebé</span>
-                </label>
-                <label class="input-group">
-                    <input id ="bebe" type="text"   class="input input-bordered" bind:value={nombrebebe}/>
-                </label>
-                <label for="abrazadora" class="label">
-                    <span class="label-text text-base">Abrazadora</span>
-                </label>
-                <label class="input-group">
-                    <input id ="abrazadora" type="text"   class="input input-bordered" bind:value={nombreabrazadora}/>
-                </label>
-                <label for="unidad" class="label">
-                    <span class="label-text text-base">Unidad</span>
-                </label>
-                <label class="input-group">
-                    <input id ="unidad" type="text"   class="input input-bordered" bind:value={ubicacion}/>
-                </label>
-                <label for="turno" class="label">
-                    <span class="label-text text-base">Turno</span>
-                </label>
-                <label class="input-group">
-                    <input id ="turno" type="text"   class="input input-bordered" bind:value={turno}/>
-                </label>
-            </div>
-            <div class="modal-action justify-start">
-                <form method="dialog">
-                  <button class="btn btn-error" on:click={cerrar}>Cancelar</button>
-                </form>
-            </div>
-        </div>
-    </dialog>
+    
     
 </Navbarr>
+<dialog id="formAbrazo" class="modal">
+    <div class="modal-box w-11/12 max-w-1md">
+        <h3 class="text-lg font-bold">Ver abrazo</h3>
+        <div class="form-control">
+            <label for="fecha" class="label">
+                <span class="label-text text-base">Fecha</span>
+            </label>
+            <label class="input-group">
+                <input id ="fecha" type="date"  class="input input-bordered" bind:value={fechaabrazo}/>
+            </label>
+            <label for="bebe" class="label">
+                <span class="label-text text-base">Bebé</span>
+            </label>
+            <label class="input-group">
+                <input id ="bebe" type="text"   class="input input-bordered" bind:value={nombrebebe}/>
+            </label>
+            <label for="abrazadora" class="label">
+                <span class="label-text text-base">Abrazadora</span>
+            </label>
+            <label class="input-group">
+                <input id ="abrazadora" type="text"   class="input input-bordered" bind:value={nombreabrazadora}/>
+            </label>
+            <label for="unidad" class="label">
+                <span class="label-text text-base">Unidad</span>
+            </label>
+            <label class="input-group">
+                <input id ="unidad" type="text"   class="input input-bordered" bind:value={ubicacion}/>
+            </label>
+            <label for="turno" class="label">
+                <span class="label-text text-base">Turno</span>
+            </label>
+            <label class="input-group">
+                <input id ="turno" type="text"   class="input input-bordered" bind:value={turno}/>
+            </label>
+        </div>
+        <div class="modal-action justify-start">
+            <form method="dialog">
+              <button class="btn btn-error" on:click={cerrar}>Cancelar</button>
+            </form>
+        </div>
+    </div>
+</dialog>

@@ -36,6 +36,7 @@
     let schdia = data.lunes
     let partehoy = data.partehoy
     let parteayer = data.parteayer
+    
     if(dianum==1){
         schdia = data.lunes
     }
@@ -125,11 +126,42 @@
                 </div>
             </div>
         </div>
+        <div class="card bg-base-100 shadow-xl w-full mx-0 px-0">
+            <div class="card-body">
+                <h2 class="card-title text-xl">Abrazos del día</h2>
+                <div class="grid grid-cols-1">
+                    <table class="table table-lg w-full">
+                        <thead>
+                            <tr>
+                                <th class="text-base mx-1 px-1">Bebe</th>
+                                <th class="text-base mx-1 px-1">Abrazadora</th>
+                                <th class="text-base mx-1 px-1">Unidad</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {#each data.abrazoshoy as a}
+                                <tr>
+                                    <td class="text-base mx-1 px-1">
+                                        {`${a.expand.bebe.apellidomama},\n${a.expand.bebe.nombremama}\n(${a.expand.bebe.nombre})`}
+                                    </td>
+                                    <td class="text-base mx-1 px-1">
+                                        {`${a.expand.abrazadora.apellido},\n${a.expand.abrazadora.name}`}
+                                    </td>
+                                    <td class="text-base mx-1 px-1">
+                                        {`${a.ubicacion}`}
+                                    </td>
+                                </tr>
+                            {/each}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
         {#if partehoy}
-            <dir class="card bg-base-100 shadow-xl w-full mx-0 px-0">
+            <div class="card bg-base-100 shadow-xl w-full mx-0 px-0">
                 <div class="card-body">
                     <h2 class="card-title text-xl">PARTE {new Date(partehoy.fecha).toLocaleDateString()}</h2>
-                    <h3 class="card-title text-lg">Turno :{partehoy.turno}</h3>
+                    <h3 class="card-title text-lg">Turno : {partehoy.turno}</h3>
                     <div class="grid grid-cols-1">
                         <p class="text-md">
                             {partehoy.parte}
@@ -146,13 +178,13 @@
                         {/if}
                     </div>
                 </div>
-            </dir>
+            </div>
         {/if}
         {#if parteayer}
-            <dir class="card bg-base-100 shadow-xl w-full mx-0 px-0">
+            <div class="card bg-base-100 shadow-xl w-full mx-0 px-0">
                 <div class="card-body">
                     <h2 class="card-title text-xl">PARTE {new Date(parteayer.fecha).toLocaleDateString()}</h2>
-                    <h3 class="card-title text-lg">Turno :{parteayer.turno}</h3>
+                    <h3 class="card-title text-lg">Turno : {parteayer.turno}</h3>
                     <div class="grid grid-cols-1">
                         <p class="text-md">
                             {parteayer.parte}
@@ -170,7 +202,7 @@
                         {/if}
                     </div>
                 </div>
-            </dir>    
+            </div>    
         {/if}
     </div>
 </Navbarr>

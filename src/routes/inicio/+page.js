@@ -2,6 +2,7 @@ import PocketBase from 'pocketbase'
 let ruta = import.meta.env.VITE_RUTA
 
 export async function load({params}){
+    
     const pb = new PocketBase(ruta);
     const recordscrono = await pb.collection('cronogramas').getFullList({
         expand:"user",
@@ -182,6 +183,12 @@ export async function load({params}){
       sort:"-fecha",
       expand:"registrado,modificado"
     })
+    let hoy = new Date().toISOString().split("T")[0]
+    console.log(hoy)
+    let abrazoshoy = await pb.collection("abrazos").getFullList({
+        filter:`fecha ~ '${hoy}' && active=true`,
+        expand:'abrazadora,bebe'
+    })
     
     let partehoy=partesdiarios.items[0]?partesdiarios.items[0]:null
     let parteayer=partesdiarios.items[1]?partesdiarios.items[1]:null
@@ -195,6 +202,7 @@ export async function load({params}){
       sabado,
       domingo,
       partehoy,
-      parteayer
+      parteayer,
+      abrazoshoy
     }
 }

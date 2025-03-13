@@ -5,6 +5,8 @@
     import { onMount } from 'svelte';
     import { goto } from '$app/navigation';
     import ubicaciones from '$lib/ubicaciones'
+    import guardarHistorial from "$lib/bd/historialbebe"
+    import disponibilidades from "$lib/disponibilidades"
     let ruta = import.meta.env.VITE_RUTA
     const pb = new PocketBase(ruta);
     const HOY = new Date()
@@ -18,17 +20,17 @@
     let bebesselect = []
     //let ubicaciones =[{nombre:"UTI1"},{nombre:"UTI2"},{nombre:"UTI3"},{nombre:"UCI1"},{nombre:"UCI2"},{nombre:"UCI3"},{nombre:"Prealta"}]
     let turnos=[{nombre:"Mañana"},{nombre:"Tarde"}]
-    let prioridades = [{id:1,nombre:"Todos"},{id:2,nombre:"Solo alta"}]
-    let opcionesdisponibilidad=[{nombre:"Todos"},{nombre:"Disponibles"},{nombre:"No disponibles"}]
+    
     const formasordenar = [{id:"unidad"},{id:"mama"},{id:"bebe"},{id:"ultimo"}]
     let ordenar = "unidad"
-    let iddisponibilidad = "Todos"
+    let iddisponible = ""
     let idbebe = ""
     let idabrazadora=""
     let fechaabrazo=""
     let turno = ""
     let ubicacion = ""
-    let prioridad = 1
+    let observacion = ""
+    
     
     // Validar
     let malbebe = false
@@ -37,8 +39,7 @@
     let malubicacion = false
     let malfecha = false
     let botonhabilitado = false
-    //Formas de ordenar
-    let formas
+    
     function sortVoluntaria(v1,v2){
         return v1.apellido.toLowerCase().replaceAll("ñ","n")>v2.apellido.toLowerCase().replaceAll("ñ","n")?1:-1
     }
@@ -50,7 +51,7 @@
         const recordsb = await pb.collection('bebes').getFullList({filter:`active=true&&fechaegreso=""`});
         
         bebes = recordsb
-        bebes.sort((b1,b2)=>b1.apellidomama.toLowerCase()>b2.apellidomama.toLowerCase()?1:-1)
+        
         //const record = await pb.collection('abrazos').getFirstListItem(`active=true&&bebe="${b.id}"`);
         bebesrows = []
         for(let i = 0;i<bebes.length;i++){
@@ -82,10 +83,12 @@
             b.abrazos = resultList.length
             bebesrows.push(b)
         }
-        //bebesrows = bebes
+        
         ordenarBebes({id:ordenar})
+        
         bebesselect = bebesrows
-        //bebesselect.sort((b1,b2)=>b1.nombre>b2.nombre?1:-1)
+        bebesselect.sort((b1,b2)=>b1.apellidomama.toLocaleLowerCase()>b2.apellidomama.toLocaleLowerCase()?1:-1)
+        
         let pb_json = await JSON.parse(localStorage.getItem('pocketbase_auth'))
         usuarioid = pb_json.model.id
         escoordinador = pb_json.model.coordinador
@@ -98,7 +101,8 @@
     function darAbrazo(id){
         idbebe = id
         let bebe = bebesrows.filter(b=>b.id==id)[0]
-        ubicacion = bebe.unidad    
+        ubicacion = bebe.unidad
+        observacion = bebe.observacion    
         openModal()
     }
     function isEmpty(str) {
@@ -138,6 +142,8 @@
                 malbebe = false
                 let bebe = bebesrows.filter(b=>b.id==idbebe)[0]
                 ubicacion = bebe.unidad 
+                
+                observacion = bebe.observacion
             }
         }
         if(inputName=="VOL"){
@@ -193,6 +199,7 @@
         if(!validarform()){
             return
         }
+        let b = bebes.filter(be=>be.id==idbebe)[0]
         let data={
             ubicacion,
             turno,
@@ -230,10 +237,17 @@
                 }).then(async result=>{
                     if(result.value){
                         const recorda = await pb.collection('abrazos').create(data)
+                        if(observacion != b.observacion){
+                            await guardarHistorial(pb,idbebe,"Abrazo")
+                            await pb.collection("bebes").update(idbebe,{observacion})
+                            b.observacion = observacion
+                        }
+                        
                         bebesrows = []
                         for(let i = 0;i<bebes.length;i++){
                             let b = bebes[i]
-                            if(b.fechaegreso!=""){
+                            if(b.fechaegreso !=""){
+                                
                                 continue
                             }
                             const resultList = await pb.collection('abrazos').getList(1, 100, {
@@ -260,43 +274,56 @@
                         
                         bebesrows.sort((b1,b2)=>b1.diasnumero<b2.diasnumero?1:-1)
                         bebesrows = bebesrows
+                        
+                       
+                        cambiarFiltro()
+                        
                         Swal.fire('Éxito guardar', 'Abrazo guardado con éxito', 'success');
                     }
                 })
             }
             else{
                 const recorda = await pb.collection('abrazos').create(data)
-                        bebesrows = []
-                        for(let i = 0;i<bebes.length;i++){
-                            let b = bebes[i]
-                            if(b.fechaegreso!=""){
-                                continue
-                            }
-                            const resultList = await pb.collection('abrazos').getList(1, 100, {
-                                filter:  `active=true&&bebe="${b.id}"`,
-                                sort:"-fecha"
-                            });
-                            if(resultList.totalItems > 0){
-                                let abrazo = resultList.items[0]
-                                let Difference_In_Time =HOY.getTime() - new Date(abrazo.fecha).getTime();
-                                // Calculating the no. of days between
-                                // two dates
-                                let Difference_In_Days =
-                                    Math.round
-                                        (Difference_In_Time / (1000 * 3600 * 24));
-                                b.dias = Difference_In_Days+" dias"
-                                b.diasnumero=Difference_In_Days
-                            }
-                            else{
-                                b.diasnumero = Number.MAX_VALUE
-                                b.dias ="Sin abrazo"
-                            }
-                            bebesrows.push(b)
-                        }
+                if(observacion != b.observacion){
+                    await guardarHistorial(pb,idbebe,"Abrazo")
+                    await pb.collection("bebes").update(idbebe,{observacion})
+                    b.observacion = observacion
+                }
+                bebesrows = []
+                for(let i = 0;i<bebes.length;i++){
+                    let b = bebes[i]
+                    if(b.fechaegreso!=""){
                         
-                        bebesrows.sort((b1,b2)=>b1.diasnumero<b2.diasnumero?1:-1)
-                        bebesrows = bebesrows
-                        Swal.fire('Éxito guardar', 'Abrazo guardado con éxito', 'success');
+                        continue
+                    }
+                    const resultList = await pb.collection('abrazos').getList(1, 100, {
+                        filter:  `active=true&&bebe="${b.id}"`,
+                        sort:"-fecha"
+                    });
+                    if(resultList.totalItems > 0){
+                        let abrazo = resultList.items[0]
+                        let Difference_In_Time =HOY.getTime() - new Date(abrazo.fecha).getTime();
+                        // Calculating the no. of days between
+                        // two dates
+                        let Difference_In_Days =
+                            Math.round
+                                (Difference_In_Time / (1000 * 3600 * 24));
+                        b.dias = Difference_In_Days+" dias"
+                        b.diasnumero=Difference_In_Days
+                    }
+                    else{
+                        b.diasnumero = Number.MAX_VALUE
+                        b.dias ="Sin abrazo"
+                    }
+                    bebesrows.push(b)
+                }
+                        
+                bebesrows.sort((b1,b2)=>b1.diasnumero<b2.diasnumero?1:-1)
+                bebesrows = bebesrows
+                
+                cambiarFiltro()
+                
+                Swal.fire('Éxito guardar', 'Abrazo guardado con éxito', 'success');
             }
             
             
@@ -322,42 +349,30 @@
         turno = ""
         ubicacion = ""
         fechaabrazo = ""
+        observacion = ""
     }
     function irHistorial(){
         goto("/abrazos/historial/")
     }
     function cambiarFiltro(){
-        bebesrows=[]
-        if(prioridad==1){
-            
-            for(let i = 0;i<bebes.length;i++){
-                
-                bebesrows.push(bebes[i])
-            }
-        }
-        else{
-            for(let i = 0;i<bebes.length;i++){
-                if(bebes[i].prioridad>1){
-                    bebesrows.push(bebes[i])
-                }
-                
-            }
-        }
-        if(iddisponibilidad != "Todos"){
-            if(iddisponibilidad == "Disponibles"){
-                bebesrows = bebesrows.filter(b=>b.disponible)
+        bebesrows=bebes
+        if(iddisponible !== ""){
+            if(iddisponible == 0){
+                bebesrows = bebesrows.filter(b=>b.disponibilidad != 3)
             }
             else{
-                bebesrows = bebesrows.filter(b=>!b.disponible)
-            }
+                bebesrows = bebesrows.filter(b=>b.disponibilidad == iddisponible)
+            }  
         }
+        
         ordenarBebes({id:ordenar})
         //bebesrows.sort((b1,b2)=>b1.diasnumero<b2.diasnumero?1:-1)
+
     }
     function ordenarBebes(forma){
         ordenar = forma.id
         if(ordenar=="unidad"){
-            bebesrows.sort((b1,b2)=>{
+            bebesrows = bebesrows.sort((b1,b2)=>{
                 if(b1.unidad>b2.unidad){
                     return 1
                 }
@@ -365,7 +380,7 @@
                     return -1
                 }
                 else{
-                    if(b1.apellidomama<b2.apellidomama){
+                    if(b1.apellidomama.toLocaleLowerCase()<b2.apellidomama.toLocaleLowerCase()){
                         return -1
                     }
                     else{
@@ -375,8 +390,8 @@
             })
         }
         else if(ordenar=="mama"){
-            bebesrows.sort((b1,b2)=>{
-                if(b1.apellidomama<b2.apellidomama){
+            bebesrows =  bebesrows.sort((b1,b2)=>{
+                if(b1.apellidomama.toLocaleLowerCase()<b2.apellidomama.toLocaleLowerCase()){
                         return -1
                     }
                     else{
@@ -385,8 +400,8 @@
             })
         }
         else if(ordenar=="bebe"){
-            bebesrows.sort((b1,b2)=>{
-                if(b1.nombre < b2.nombre){
+            bebesrows =  bebesrows.sort((b1,b2)=>{
+                if(b1.nombre.toLocaleLowerCase() < b2.nombre.toLocaleLowerCase()){
                     return -1
                 }
                 else{
@@ -395,14 +410,30 @@
             })
         }
         else if(ordenar=="ultimo"){
-            bebesrows.sort((b1,b2)=>b1.diasnumero<b2.diasnumero?1:-1)
+            bebesrows = bebesrows.sort((b1,b2)=>b1.diasnumero<b2.diasnumero?1:-1)
         }
         bebesrows = bebesrows
     }
-    
+    function getEmojiDisp(disp){
+        let d = disponibilidades.filter(di=>di.id == disp)[0]
+        return d.emoji
+    }
 </script>
 <Navbarr>
-    <div class="flex flex-wrap mx-1 mb-3 mt-1 lg:mx-10 lg:mb-5" >
+    <div class="grid grid-cols-2 mx-1 mb-3 mt-1 lg:mx-10 lg:mb-5">
+        <div class="">
+            <button class="btn btn-primary text-white " on:click={()=>irHistorial()}>
+                <span class="text-xl">Historial</span>
+            </button> 
+        </div>
+        <div class="mx-2">
+            <button class="btn btn-primary text-white " on:click={()=>openModal()}>
+                
+                <span class="text-xl">Nuevo</span>
+            </button>  
+        </div>
+    </div>
+    <div class="hidden flex flex-wrap mx-1 mb-3 mt-1 lg:mx-10 lg:mb-5" >
         <div class="lg:w-1/4 md:w-1/2">
             <button class="btn btn-primary text-white " on:click={()=>irHistorial()}>
                 <span class="text-xl">Historial</span>
@@ -416,24 +447,15 @@
         </div>
     </div>
     <div class="grid grid-cols-2 m-1 gap-2 lg:gap-10 mb-2 mt-1 mx-1 lg:mx-10" >
-        <div class="">
-            <label class="block uppercase tracking-wide text-xs font-bold mb-2" for="grid-first-name">
-                Prioridad    
-            </label>
-            <select class="select select-bordered" bind:value={prioridad} on:change={cambiarFiltro}>
-                {#each prioridades as p}
-                    <option value={p.id}>{p.nombre}</option>
-                {/each}
-
-            </select>
-        </div>
+        
         <div class="">
             <label class="block uppercase tracking-wide text-xs font-bold mb-2" for="grid-first-name">
                 Disponible
             </label>
-            <select id="opciondisp" name="opciondisp" class="select select-bordered" bind:value={iddisponibilidad} on:change={cambiarFiltro}>
-                {#each opcionesdisponibilidad as o}
-                    <option value={o.nombre}>{o.nombre}</option>
+            <select id="opciondisp" name="opciondisp" class="select select-bordered" bind:value={ iddisponible} on:change={cambiarFiltro}>
+                <option value={""}>Todos</option>
+                {#each disponibilidades as o}
+                    <option value={o.id}>{o.nombre}</option>
                 {/each}
 
             </select>
@@ -444,24 +466,29 @@
     <div class="w-full mx-1 mb-1 mt-2 lg:mx-10 lg:mb-1">
         <h1 class="text-xl font-bold italic ">ABRAZOS</h1>  
         <span>
-            <div class="badge badge-outline">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="green" class="size-4 mx-1">
-                    <path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" />
-                </svg>
-                Alta prioridad
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="purple" class="size-4 mx-1">
-                    <path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" />
-                </svg>
-                Disponible
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="red" class="size-4 mx-1">
-                    <path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" />
-                </svg>
-                No disponible
+            <div class="badge badge-lg">
+                {#each disponibilidades as d,i}
+                    {#if i < 2}
+                        <div class="mx-1 gap-1">
+                            {d.emoji} {d.nombre}
+                        </div>
+                    {/if}
+                {/each}
+            </div>
+        </span>
+        <span>
+            <div class="badge badge-lg my-1">
+                {#each disponibilidades as d,i}
+                    {#if i > 1}
+                        <div class="mx-1 gap-1">
+                            {d.emoji} {d.nombre}
+                        </div>
+                        
+                    {/if}
+                {/each}
             </div>
         </span>
     </div>
-
-    
     <div class="w-full grid justify-items-center mx-1 lg:mx-10 lg:w-3/4 overflow-x-auto">
         <table class="table table-lg w-full ">
             <thead>
@@ -502,42 +529,23 @@
                     <tr >
                         <td class="text-base px-1">{b.unidad}</td>
                         <td class="text-base px-1">
-                            {`${b.apellidomama},${b.nombremama}`}
+                            {#if b.apellidomama.length>10}
+                                {`${b.apellidomama}`}  <br> {`${b.nombremama}`}
+                            {:else}
+                                {`${b.apellidomama},${b.nombremama}`}
+                            {/if}
+                            
                             
                         </td>
                         <td class="text-base px-1">
+                            <button class="flex gap-1" on:click={()=>darAbrazo(b.id)}>
+                                {b.nombre}
+                                {getEmojiDisp(b.disponibilidad)}
+                            </button>
                             
-                            {#if b.prioridad>1&&b.disponible}
-                                    <div class="tooltip" data-tip="Alta prioridad">
-                                        <button class="flex gap-1" on:click={()=>darAbrazo(b.id)}>
-                                            {b.nombre}
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="green" class="size-4">
-                                                <path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                            {:else if b.disponible}
-                                    <div class="tooltip" data-tip="Disponible">
-                                        <button class="flex gap-1" on:click={()=>darAbrazo(b.id)}>
-                                            {b.nombre}
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="purple" class="size-4">
-                                                <path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                            {:else}
-                                    <div class="tooltip" data-tip="No disponible">
-                                        <button class="flex gap-1" on:click={()=>darAbrazo(b.id)}>
-                                            {b.nombre}
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="red" class="size-4">
-                                                <path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                            {/if}
                         </td>
-                        <td class="text-base  px-1">
-                            {b.abrazos} abrazos
+                        <td class="text-base  px-1 flex">
+                            {b.abrazos} {b.abrazos==0?"Sin abrazos":"abrazos"}
                             <div class="tooltip" data-tip="Historial abrazos">
                                 <button on:click={()=>{goto("/abrazos/bebe/"+b.id)}}>
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
@@ -558,16 +566,16 @@
 <dialog id="formAbrazo" class="modal">
     <div class="modal-box w-11/12 max-w-1md">
         <form method="dialog">
-            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-          </form>
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" on:click={cerrar}>✕</button>
+        </form>
         <h3 class="text-lg font-bold">Nuevo abrazo</h3>
-        <div class="form-control">
+        <div class="form-control w-">
             <label for="fecha" class="label">
                 <span class="label-text text-base">Fecha*</span>
             </label>
             <label class="input-group">
                 <input id ="fecha" type="date"  
-                    class={`input input-bordered ${malfecha?"input-error":""}`} 
+                    class={`input input-bordered w-full ${malfecha?"input-error":""}`} 
                     max={MAXHOY}
                     bind:value={fechaabrazo}
                     
@@ -578,7 +586,7 @@
                     <span class="label-text-alt text-red-400">Error debe seleccionar una fecha</span>
                 </div>
             </label>
-            <label class="form-control w-3/5">
+            <label class="form-control w-full">
                 <div class="label">
                     <span class="label-text text-base">Bebé*</span>
                 </div>
@@ -598,7 +606,7 @@
                     <span class="label-text-alt text-red-400">Error debe seleccionar un bebe</span>
                 </div>
             </label>
-            <label class="form-control w-3/5">
+            <label class="form-control w-full">
                 <div class="label">
                     <span class="label-text text-base">Abrazadoras*</span>
                 </div>
@@ -616,7 +624,7 @@
                     <span class="label-text-alt text-red-400">Error debe seleccionar una abrazadora</span>
                 </div>
             </label>
-            <label class="form-control w-3/5">
+            <label class="form-control w-full">
                 <div class="label">
                     <span class="label-text text-base">Unidad*</span>
                 </div>
@@ -634,7 +642,7 @@
                     <span class="label-text-alt text-red-400">Error debe seleccionar una unidad</span>
                 </div>
             </label>
-            <label class="form-control w-3/5">
+            <label class="form-control w-full">
                 <div class="label">
                     <span class="label-text text-base">Turno*</span>
                 </div>
@@ -653,6 +661,14 @@
                     <span class="label-text-alt text-red-400">Error debe seleccionar un turno</span>
                 </div>
             </label>
+            <div class="mb-4 lg:mb-1 w-full">
+                <label class="form-control">
+                    <div class="label">
+                        <span class="label-text">Observacion</span>                    
+                    </div>
+                    <textarea style="line-height: 1.3;" class="textarea textarea-bordered h-16" bind:value={observacion} placeholder=""></textarea>
+              </label>
+            </div>
             
         </div>
         <div class="modal-action justify-start">

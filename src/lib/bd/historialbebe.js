@@ -24,7 +24,8 @@ export default async function guardarHistorial(pb , id,operacion) {
         sexo:record.sexo,
         pesoingreso:record.pesoingreso,
         observacion:record.observacion,
-        disponibilidad:record.disponibilidad
+        disponibilidad:record.disponibilidad,
+        pesoegreso : record.pesoegreso
     }
     await pb.collection("historialesbebe").create(histo)    
 }

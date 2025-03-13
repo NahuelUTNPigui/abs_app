@@ -202,20 +202,20 @@
         <thead>
             <tr>
                 <th class="text-base ml-3 pl-3 mr-1 pr-1 ">Fecha</th>
-                <th class="text-base ml-3 pl-3 mr-1 pr-1 ">Turno</th>
+                <th class=" hidden text-base ml-3 pl-3 mr-1 pr-1 ">Turno</th>
                 <th class="text-base mx-1 px-1">Parte</th>
-                <th class="text-base mx-1 px-1">Acciones</th>
+                <th class="hidden text-base mx-1 px-1">Acciones</th>
             </tr>
         </thead>
         <tbody>
             {#each partesrow as p}
-                <tr>
-                    <td class="text-base ml-3 pl-3 mr-1 pr-1 lg:ml-10">{new Date(p.fecha).toLocaleDateString()}</td>
-                    <td class="text-base mx-1 px-1">{p.turno}</td>
+                <tr on:click={()=>abrirModal(p.id)}>
+                    <td class="text-base ml-3 pl-3 mr-1 pr-1 lg:ml-10">{new Date(p.fecha).toLocaleDateString() } <br> {p.turno}</td>
+                    <td class="hidden text-base mx-1 px-1">{p.turno}</td>
                     <td class="text-base mx-1 px-1">
                         {p.parte}
                     </td>
-                    <td class="flex gap-2 text-base mx-1 px-1">
+                    <td class="hidden flex gap-2 text-base mx-1 px-1">
                         <div class="tooltip" data-tip="Editar">
                             <button on:click={()=>abrirModal(p.id)}>
                               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
@@ -236,7 +236,7 @@
             {/each}
     </table>
     <dialog id="formParte" class="modal">
-        <div class="modal-box w-11/12 max-w-1md">
+        <div class="modal-box w-11/12 max-w-xl">
             <form method="dialog">
                 <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
             </form>
@@ -279,7 +279,7 @@
                             <div class="label">
                                 <span class="label-text">Parte</span>                    
                             </div>
-                            <textarea style="line-height: 1.3;" class="textarea textarea-bordered h-36" bind:value={parte} on:change={()=>onchange("PARTE")}  on:input={validarBoton} placeholder=""></textarea>
+                            <textarea style="line-height: 1.3;" class="textarea textarea-bordered h-64" bind:value={parte} on:change={()=>onchange("PARTE")}  on:input={validarBoton} placeholder=""></textarea>
                         </label>
                         <div class={`label ${malparte?"":"hidden"}`}>
                             <span class="label-text-alt text-red-400">Error, debe escribir algo en el parte</span>
@@ -291,7 +291,8 @@
                 <form method="dialog">
                   <!-- if there is a button, it will close the modal -->
                   <button class="btn btn-success" disabled='{!botonhabilitado}' on:click={guardar}>Guardar</button>
-                  <button class="btn btn-error" on:click={cerrar}>Cancelar</button>
+                  <button class="btn btn-neutral" on:click={cerrar}>Cancelar</button>
+                  <button class="btn btn-error" on:click={()=>eliminar(idparte)}>Eliminar</button>
                 </form>
             </div>
         </div>

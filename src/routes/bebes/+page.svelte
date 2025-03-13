@@ -4,6 +4,7 @@
   import PocketBase from 'pocketbase'
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
+  import disponibilidades from "$lib/disponibilidades"
   let ruta = import.meta.env.VITE_RUTA
   const pb = new PocketBase(ruta);
   const HOY = new Date().toISOString().split("T")[0]
@@ -30,7 +31,7 @@
   let opcionesegresos=[{nombre:"Sin fecha egreso"},{nombre:"Todos"}]
   
   let conegreso = opcionesegresos[0].nombre
-  let opcionesdisponibilidad=[{nombre:"Todos"},{nombre:"Disponibles"},{nombre:"No disponibles"}]
+  
   let ubicaciones =[{nombre:"UTI1"},{nombre:"UTI2"},{nombre:"UTI3"},{nombre:"UCI1"},{nombre:"UCI2"},{nombre:"UCI3"},{nombre:"Prealta"}]
   let turnos=[{nombre:"Mañana"},{nombre:"Tarde"}]
   
@@ -40,7 +41,7 @@
   let turno = ""
   let ubicacion = ""
   let disponible = true
-  let iddisponible="Todos"
+  let iddisponible=""
 
   onMount(async () =>{
     let pb_json = await JSON.parse(localStorage.getItem('pocketbase_auth'))
@@ -68,37 +69,8 @@
     goto('/bebes/'+id+"/")
   }
   
-  async function guardarabrazo(){
-    let data = {
-      bebe:idbebeabrazo,
-      abrazadora:idabrazadora,
-      turno,
-      ubicacion,
-      fecha:fechaabrazo+" 03:00:00",
-      active:true
-    }
-    try{
-      const recorda = await pb.collection('abrazos').create(data)
-      Swal.fire('Éxito guardar', 'Abrazo guardado con éxito', 'success');
-      
-    }
-    catch(e){
-      Swal.fire('Error guardar', 'No se pudo guardar el abrazo', 'error');
-    }
-    idbebeabrazo = ""
-    idabrazadora = ""
-    turno = ""
-    ubicacion = ""
-    fechaabrazo = ""
-    confechaegreso = false
-  }
-  function cerrar(){
-    idbebeabrazo = ""
-    idabrazadora = ""
-    turno = ""
-    ubicacion = ""
-    fechaabrazo = ""
-  }
+ 
+  
   function eliminar(id){
     if(!escoordinador){
         Swal.fire("Error eliminar","No tienes los permisos para eliminar al bebé","error")
@@ -142,116 +114,22 @@
         
     })
   }
-  function isEmpty(str) {
-    return (!str || str.length === 0 );
-  }
-  function validarform(){
-    if(isEmpty(nombrebebe)){
-        Swal.fire('Error guardar', 'El nombre del bebe esta vacio', 'error');
-        return false
-    }
-    if(isEmpty(nombremama)){
-        Swal.fire('Error guardar', 'El nombre de la mamá esta vacio', 'error');
-        return false
-    }
-    if(isEmpty(apellidomama)){
-        Swal.fire('Error guardar', 'El apellido de la mamá esta vacio', 'error');
-        return false
-    }
-    if(isEmpty(fechaingreso)){
-        Swal.fire('Error guardar', 'Debe seleccionar la fecha ingreso', 'error');
-        return false
-    }
-    return true
-
-  }
-  async function guardar(){
-    let valido = validarform()
-    if(!valido){
-        return
-    }
-
-    if(idbebe ==""){
-        let data = {
-            nombre:nombrebebe,
-            nombremama,
-            apellidomama,
-            fechaingreso:fechaingreso +' 03:00:00.000Z' ,
-            fechanacimiento:fechanacimiento +' 03:00:00.000Z' ,
-            prioridad,
-            active : true,
-            disponible : true
-        }
-        try{
-            const recordb = await pb.collection('bebes').create(data)
-            const recordsb = await pb.collection('bebes').getFullList({filter:"active=true"});
-            bebes = recordsb
-            bebes.sort((b1,b2)=>b1.apellidomama>b2.apellidomama?1:-1)
-            filterupdate()
-            nombrebebe=""
-            nombremama=""
-            apellidomama = ""
-            fechaingreso = ""
-            fechaegreso = ""
-            prioridad = 1
-            Swal.fire('Éxito guardar', 'Bebé guardado con éxito', 'success');
-        }
-        catch(e){
-            Swal.fire('Error guardar', 'No se pudo guardar al bebé', 'error');
-        }
-    }
-    else{
-        let data = {
-            nombre:nombrebebe,
-            nombremama,
-            apellidomama,
-            fechaingreso:fechaingreso +' 03:00:00.000Z',
-            fechanacimiento:fechanacimiento +' 03:00:00.000Z' ,
-            prioridad,
-            disponible
-        }
-        if(fechaegreso != ""){
-
-            data.fechaegreso = fechaegreso +' 03:00:00.000Z'
-        }
-        else{
-            if(confechaegreso){
-                data.fechaegreso=''
-            }
-        }
-        try{
-
-            const recordb = await pb.collection('bebes').update(idbebe,data)
-            const recordsb = await pb.collection('bebes').getFullList({filter:"active=true"});
-            bebes = recordsb
-            bebes.sort((b1,b2)=>b1.apellidomama>b2.apellidomama?1:-1)
-            filterupdate()
-            nombrebebe=""
-            nombremama=""
-            apellidomama = ""
-            fechaingreso = ""
-            fechaegreso = ""
-            prioridad = 1
-            confechaegreso = false
-            Swal.fire('Éxito editar', 'Bebé editado con éxito', 'success');
-        }
-        catch(e){
-            Swal.fire('Error editar', 'No se pudo editar al bebé', 'error');
-        }
-    }
-  }
+  
+  
+  
   function filterupdate(){
     bebesrows = bebes
     if(conegreso=="Sin fecha egreso"){
         bebesrows = bebesrows.filter(b=>b.fechaegreso=="")
     }
-    if(iddisponible!="Todos"){
-        if(iddisponible=="Disponibles"){
-            bebesrows = bebesrows.filter(b=>b.disponible)
+    
+    if(iddisponible !== ""){
+        if(iddisponible == 0){
+            bebesrows = bebesrows.filter(b=>b.disponibilidad != 3)
         }
         else{
-            bebesrows = bebesrows.filter(b=>!b.disponible)
-        }
+            bebesrows = bebesrows.filter(b=>b.disponibilidad == iddisponible)
+        }  
     }
     bebesrows = bebesrows.filter(b=>{
         if(b.apellidomama.toLowerCase().startsWith(nombrebuscar.toLowerCase()) ){
@@ -265,6 +143,10 @@
   function historialbebe(id){
     goto("/abrazos/bebe/"+id)
   }
+  function getEmojiDisp(disp){
+    let d = disponibilidades.filter(di=>di.id == disp)[0]
+    return d.emoji
+  }
 </script>
 <Navbarr>
     <div class="px-1 lg:px-4 mx-1 lg:mx-4">
@@ -273,6 +155,29 @@
             <span class="text-xl font-bold italic">BEBÉS</span>
         </h1>
         <span>
+            <div class="badge badge-lg">
+                {#each disponibilidades as d,i}
+                    {#if i < 2}
+                        <div class="mx-1 gap-1">
+                            {d.emoji} {d.nombre}
+                        </div>
+                    {/if}
+                {/each}
+            </div>
+        </span>
+        <span>
+            <div class="badge badge-lg my-1">
+                {#each disponibilidades as d,i}
+                    {#if i > 1}
+                        <div class="mx-1 gap-1">
+                            {d.emoji} {d.nombre}
+                        </div>
+                        
+                    {/if}
+                {/each}
+            </div>
+        </span>
+        <span class="hidden">
             <div class="badge badge-outline">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="green" class="size-4 mx-1">
                     <path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" />
@@ -307,8 +212,9 @@
                 Disponible
             </label>
             <select id="opciondisp" name="opciondisp" class="select select-bordered" bind:value={ iddisponible} on:change={filterupdate}>
-                {#each opcionesdisponibilidad as o}
-                    <option value={o.nombre}>{o.nombre}</option>
+                <option value={""}>Todos</option>
+                {#each disponibilidades as o}
+                    <option value={o.id}>{o.nombre}</option>
                 {/each}
 
             </select>
@@ -339,27 +245,8 @@
                 {#each bebesrows as b}
                     <tr>
                        <td class="text-base">
-                            {b.apellidomama}, {b.nombremama}
-                            {#if b.prioridad>1&&b.disponible}
-                                <div class="tooltip" data-tip="Alta prioridad">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="green" class="size-4">
-                                        <path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" />
-                                    </svg>
-                                </div>
-                            {:else if b.disponible}
-                                <div class="tooltip" data-tip="Disponible">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="purple" class="size-4">
-                                        <path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" />
-                                    </svg>
-                                </div>
-                            {:else}
-                                <div class="tooltip" data-tip="No disponible">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="red" class="size-4">
-                                        <path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" />
-                                    </svg>
-                                </div>
-                            {/if}
-                                         
+                            {b.apellidomama}, {b.nombremama} {getEmojiDisp(b.disponibilidad)}
+                                    
                         </td> 
                        <td class="text-base">
                             {`${b.nombre} (${b.unidad})`  }    
@@ -402,148 +289,8 @@
             </tbody>
         </table>
         
-        <dialog id="formAbrazo" class="modal">
-          <div class="modal-box w-11/12 max-w-1md">
-              <h3 class="text-lg font-bold">Nuevo abrazo</h3>
-              <div class="form-control">
-                  <label for="fecha" class="label">
-                      <span class="label-text text-base">Fecha</span>
-                  </label>
-                  <label class="input-group">
-                      <input id ="fecha" type="date"  class="input input-bordered" bind:value={fechaabrazo}/>
-                  </label>
-                  <label class="form-control w-3/5">
-                      <div class="label">
-                          <span class="label-text text-base">Bebé</span>
-                      </div>
-                      <select class="select select-bordered" name="bebes" id="bebes" bind:value={idbebeabrazo}>
-                          {#each bebesselect as b}
-                              <option value={b.id}>{`${b.nombre}(${b.apellidomama},${b.nombremama})`}</option>
-                          {/each}
-                      </select>
-                  </label>
-                  <label class="form-control w-3/5">
-                      <div class="label">
-                          <span class="label-text text-base">Abrazadoras</span>
-                      </div>
-                      <select class="select select-bordered" name="abrazadoras" id="abrazadoras" bind:value={idabrazadora}>
-                          {#each abrazadorasselect as a}
-                              <option value={a.id}>{`${a.name}, ${a.apellido}`}</option>
-                          {/each}
-                      </select>
-                  </label>
-                  <label class="form-control w-3/5">
-                      <div class="label">
-                          <span class="label-text text-base">Ubicación</span>
-                      </div>
-                      <select class="select select-bordered" name="ubicacion" id="ubicacion" bind:value={ubicacion}>
-                          {#each ubicaciones as u}
-                              <option value={u.nombre}>{`${u.nombre}`}</option>
-                          {/each}
-                      </select>
-                  </label>
-                  <label class="form-control w-3/5">
-                      <div class="label">
-                          <span class="label-text text-base">Turno</span>
-                      </div>
-                      <select class="select select-bordered" name="turno" id="turno" bind:value={turno}>
-                          {#each turnos as t}
-                              <option value={t.nombre}>{`${t.nombre}`}</option>
-                          {/each}
-                      </select>
-                  </label>
-                  
-              </div>
-              <div class="modal-action justify-start">
-                  <form method="dialog">
-                    <!-- if there is a button, it will close the modal -->
-                    <button class="btn btn-success" on:click={guardarabrazo}>Guardar</button>
-                    <button class="btn btn-error" on:click={cerrar}>Cancelar</button>
-                  </form>
-              </div>
-          </div>
-      </dialog>
+        
     </div>
     </div>
 </Navbarr>
-<dialog id="formModal" class="modal modal-middle">
-    <div class="modal-box w-11/12 max-w-1md">
-        {#if idbebe==""}
-            <h3 class="text-lg font-bold">Nuevo bebé</h3>  
-        {:else}
-            <h3 class="text-lg font-bold">Editar bebé</h3>  
-        {/if}
-        <div class="form-control">
-            <label for = "nombre" class="label">
-                <span class="label-text text-base">Nombre</span>
-            </label>
-            <label class="input-group">
-                <input id ="nombre" type="text"  class="input input-bordered" bind:value={nombrebebe}/>
-            </label>
-            <label for = "nombremama" class="label">
-                <span class="label-text text-base">Nombre Madre</span>
-            </label>
-            <label class="input-group">
-                <input id ="nombremama" type="text"  class="input input-bordered" bind:value={nombremama}/>
-            </label>
-            <label for = "apellidomama" class="label">
-                <span class="label-text text-base">Apellido Madre</span>
-            </label>
-            <label class="input-group">
-                <input id ="apellidomama" type="text"  class="input input-bordered" bind:value={apellidomama}/>
-            </label>
-            <label for = "fechanacimiento" class="label">
-                <span class="label-text text-base">Fecha nacimiento</span>
-            </label>
-            <label class="input-group ">
-                <input id ="fechanacimiento" type="date" max={HOY}  class="input input-bordered" bind:value={fechanacimiento}/>
-            </label>
-            <label for = "fechaingreso" class="label">
-                <span class="label-text text-base">Fecha ingreso</span>
-            </label>
-            <label class="input-group ">
-                <input id ="fechaingreso" type="date" max={HOY}  class="input input-bordered" bind:value={fechaingreso}/>
-            </label>
-            {#if idbebe !=''}
-                <label for = "fechaegreso" class="label">
-                    <span class="label-text text-base">Fecha egreso</span>
-                </label>
-                <label class="input-group">
-                    <input id ="fechaegreso" type="date"  class="input input-bordered" bind:value={fechaegreso}/>
-                </label>
-            {/if}
-            <label class="form-control w-3/5">
-                <div class="label">
-                  <span class="label-text">Prioridad</span>
-                </div>
-                <select class="select select-bordered" bind:value={prioridad}>
-                    {#each prioridades as p}
-                        <option value={p.id}>{p.desc}</option>
-                    {/each}
 
-                </select>
-            </label>
-            {#if idbebe !=''}
-                <label class="form-control w-3/5">
-                    <div class="label">
-                    <span class="label-text">Disponible</span>
-                    </div>
-                    <select class="select select-bordered" bind:value={disponible}>
-                        <option value={true}>{"Disponible"}</option>
-                        <option value={false}>{"No disponible"}</option>
-                        
-
-                    </select>
-                </label>
-            {/if}
-            
-        </div>
-        <div class="modal-action justify-start">
-            <form method="dialog">
-              <!-- if there is a button, it will close the modal -->
-              <button class="btn btn-success" on:click={guardar}>Guardar</button>
-              <button class="btn btn-error">Cancelar</button>
-            </form>
-        </div>
-    </div>
-</dialog>

@@ -411,21 +411,7 @@
             </select>
         </div>
     </div>
-    <!--<div class="flex flex-wrap lg:mx-10 mb-6 lg:mt-2 sm:mt-1 sm:mx-0 xm:mx-0">
-        <div class="lg:w-1/4 md:w-1/2 lg:mx-10 mb-6 md:mb-0 sm:mb-0 sm:mx-0">
-            <label class="block uppercase tracking-wide text-xs font-bold mb-2" for="grid-first-name">
-                Ubicación    
-            </label>
-            <select class="select select-bordered" name="bebes" id="bebes" bind:value={idubicacion} on:change={filterUpdate}>
-                <option value={""}>{`Todos`}</option>
-                {#each ubicaciones as u}
-                    
-                    <option value={u.nombre}>{`${u.nombre}`}</option>
-                    
-                {/each}
-            </select>
-        </div>
-    </div>-->
+    
     
         
     <div class="w-full grid justify-items-left mx-1 lg:mx-10 mt-3">
@@ -446,7 +432,6 @@
                     <td class="text-base ml-3 pl-3 mr-1 pr-1 lg:ml-10">{new Date(a.fecha).toLocaleDateString()}</td>
                     <td class="text-base mx-1 px-1">
                         {`${a.expand.bebe.apellidomama},\n${a.expand.bebe.nombremama}\n(${a.expand.bebe.nombre})`}
-                        
                     </td>
                     <td class="text-base mx-1 px-1">
                         {`${a.expand.abrazadora.apellido},\n${a.expand.abrazadora.name}`}

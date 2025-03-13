@@ -62,7 +62,7 @@ export async function load({params}){
       let fila = recordscrono[i]
       if(fila.lunes){
           if(fila.lunesback){
-            if(fila.lunestarde){
+            if(fila.lunesbacktarde){
               lunes.tarback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
             }
             else{
@@ -79,7 +79,7 @@ export async function load({params}){
       }
       if(fila.martes){
         if(fila.martesback){
-          if(fila.martestarde){
+          if(fila.martesbacktarde){
             martes.tarback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
           }
           else{
@@ -96,7 +96,7 @@ export async function load({params}){
       }
       if(fila.miercoles){
         if(fila.miercolesback){
-          if(fila.miercolestarde){
+          if(fila.miercolesbacktarde){
             miercoles.tarback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
           }
           else{
@@ -113,7 +113,7 @@ export async function load({params}){
     }
     if(fila.jueves){
       if(fila.juevesback){
-        if(fila.juevestarde){
+        if(fila.juevesbacktarde){
           jueves.tarback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
         }
         else{
@@ -130,7 +130,7 @@ export async function load({params}){
   }
   if(fila.viernes){
     if(fila.viernesback){
-      if(fila.viernestarde){
+      if(fila.viernesbacktarde){
         viernes.tarback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
       }
       else{
@@ -147,7 +147,7 @@ export async function load({params}){
   }
   if(fila.sabado){
     if(fila.sabadoback){
-      if(fila.sabadotarde){
+      if(fila.sabadobacktarde){
         sabado.tarback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
       }
       else{
@@ -164,7 +164,7 @@ export async function load({params}){
   }
   if(fila.domingo){
     if(fila.domingoback){
-      if(fila.domingotarde){
+      if(fila.domingobacktarde){
         domingo.tarback.push(fila.expand.user.name[0]+". "+fila.expand.user.apellido+"-"+fila.expand.user.celular)
       }
       else{
