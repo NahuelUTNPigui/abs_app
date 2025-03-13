@@ -184,7 +184,7 @@ export async function load({params}){
       expand:"registrado,modificado"
     })
     let hoy = new Date().toISOString().split("T")[0]
-    console.log(hoy)
+    
     let abrazoshoy = await pb.collection("abrazos").getFullList({
         filter:`fecha ~ '${hoy}' && active=true`,
         expand:'abrazadora,bebe'

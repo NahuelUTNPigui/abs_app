@@ -67,24 +67,22 @@
             if(resultList.length > 0){
                 
                 let abrazo = resultList[0]
-                let Difference_In_Time =HOY.getTime() - new Date(abrazo.fecha).getTime();
+                let Difference_In_Time = HOY.getTime() - new Date(abrazo.fecha).getTime();
                 // Calculating the no. of days between
                 // two dates
-                let Difference_In_Days =
-                    Math.round
-                        (Difference_In_Time / (1000 * 3600 * 24));
+                let Difference_In_Days = Math.round(Difference_In_Time / (1000 * 3600 * 24)) - 1;
                 b.dias = Difference_In_Days+" dias"
-                b.diasnumero=Difference_In_Days
+                b.diasnumero = Difference_In_Days
             }
             else{
-                b.diasnumero = Number.MAX_VALUE
+                b.diasnumero = -1
                 b.dias ="Sin abrazo"
             }
             b.abrazos = resultList.length
             bebesrows.push(b)
         }
-        
-        ordenarBebes({id:ordenar})
+        cambiarFiltro()
+        //ordenarBebes({id:ordenar})
         
         bebesselect = bebesrows
         bebesselect.sort((b1,b2)=>b1.apellidomama.toLocaleLowerCase()>b2.apellidomama.toLocaleLowerCase()?1:-1)
@@ -318,7 +316,7 @@
                     bebesrows.push(b)
                 }
                         
-                bebesrows.sort((b1,b2)=>b1.diasnumero<b2.diasnumero?1:-1)
+                //bebesrows.sort((b1,b2)=>b1.diasnumero<b2.diasnumero?1:-1)
                 bebesrows = bebesrows
                 
                 cambiarFiltro()
@@ -410,7 +408,7 @@
             })
         }
         else if(ordenar=="ultimo"){
-            bebesrows = bebesrows.sort((b1,b2)=>b1.diasnumero<b2.diasnumero?1:-1)
+            bebesrows = bebesrows.sort((b1,b2)=>b1.diasnumero>b2.diasnumero?1:-1)
         }
         bebesrows = bebesrows
     }
@@ -495,18 +493,18 @@
                 <tr>
                     <th 
                         on:click={()=>ordenarBebes(formasordenar[0])}
-                        class="text-base px-1 hover:cursor-pointer">
+                        class="text-base px-1 hover:cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-800 rounded-lg">
                         Unidad
                     </th>
                     <th 
                         on:click={()=>ordenarBebes(formasordenar[1])}
-                        class="text-base px-1 hover:cursor-pointer"
+                        class="text-base px-1 hover:cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-800 rounded-lg"
                     >
                         Mamá
                     </th>
                     <th 
                         on:click={()=>ordenarBebes(formasordenar[2])}
-                        class="text-base px-1 hover:cursor-pointer"
+                        class="text-base px-1 hover:cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-800 rounded-lg"
                     >
                         Bebé
                     </th>
@@ -518,7 +516,7 @@
                     </th>
                     <th 
                         on:click={()=>ordenarBebes(formasordenar[3])}
-                        class="text-base mx-1 px-1 hover:cursor-pointer"
+                        class="text-base mx-1 px-1 hover:cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-800 rounded-lg" 
                     >
                         Último abrazo
                     </th>            

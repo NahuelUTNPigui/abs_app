@@ -7,6 +7,7 @@
     import Oscuro from "$lib/Oscuro.svelte";
     import PocketBase from 'pocketbase'
     let ruta = import.meta.env.VITE_RUTA
+    let mostrarcontra = false
     function isEmpty(str) {
         return (!str || str.length === 0 );
     }
@@ -75,9 +76,27 @@
             <label for = "nombre" class="label">
                 <span class="label-text text-lg">Contraseña</span>
             </label>
-            <label class="input-group">
-              <input id ="pass" type="password"  class="input input-bordered" bind:value={contra}/>
-            </label>
+            {#if mostrarcontra}
+                <label class="input-group">
+                <input id ="pass" 
+                    type="text"
+                    class="input input-bordered" 
+                    bind:value={contra}/>
+                </label>
+            {:else}
+                <label class="input-group">
+                    <input id ="pass" 
+                    type="password"
+                    class="input input-bordered" 
+                    bind:value={contra}/>
+                </label>
+            {/if}
+            <div class="form-control">
+                <label class="label cursor-pointer">
+                  <span class="label-text">Mostrar constraseña</span>
+                  <input type="checkbox" bind:checked={mostrarcontra} class="checkbox" />
+                </label>
+            </div>
         </div>
         <div class="card-actions justify-start mt-10">
             <button class="btn btn-primary" on:click={ingresar}>Ingresar</button>

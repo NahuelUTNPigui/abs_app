@@ -177,6 +177,7 @@
       fechaegreso = vol.fechaegreso?new Date(vol.fechaegreso).toISOString().split("T")[0]:""
       fechaingreso = vol.fechaingreso?new Date(vol.fechaingreso).toISOString().split("T")[0]:""
       domicilio = vol.domicilio
+      
     }
     formModal.showModal()
   }
@@ -444,6 +445,7 @@
       if (!valido){
         return
       }
+
       let data = {
         name:nombre,
         apellido:apellido,
@@ -454,6 +456,7 @@
         fechaingreso:fechaingreso + " 03:00:00",
         nacimiento:nacimiento+" 03:00:00",
       }
+      
       if(fechaegreso!=""){
         data.fechaegreso = fechaegreso + " 03:00:00"
       }
@@ -611,6 +614,15 @@
     malconfcontra = false
     malcontra = false
   }
+  function getEstadoNombre(estadoid){
+    let e = estados.filter(est=>est.id == estadoid)[0]
+    if(e){
+      return estado.nombre
+    }
+    else{
+      return ""
+    }
+  }
 </script>
 <Navbarr>
   <div class="w-full grid py-1 px-1 lg:px-8">
@@ -638,7 +650,8 @@
       <!-- head -->
       <thead>
         <tr>
-          <th class="text-base w-1/4">Abrazadora</th>
+          <th class="text-base">Abrazadora</th>
+          
           <th class="text-base">Acciones</th>
           
         </tr>
@@ -647,6 +660,7 @@
         {#each voluntariasrows as v}
           <tr>
             <td class="text-base">{v.apellido},{v.name}</td>
+            
             <td class="flex gap-2">
               <div class="tooltip" data-tip="Cronograma">
                 <button on:click={()=>openSchModal(v.id)}>
