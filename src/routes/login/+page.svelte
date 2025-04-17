@@ -11,7 +11,7 @@
     function isEmpty(str) {
         return (!str || str.length === 0 );
     }
-    async function ingresar(){
+    async function ingresar2() {
         if(isEmpty(usuarioname)){
             Swal.fire('Error login', 'Nombre usuario vacio', 'error');
             return
@@ -36,6 +36,52 @@
                     coordinadora.set(pb.authStore.model.coordinador?"Si":"No")
                     enabled.set("si")
                     goto('/')
+                }
+                else{
+                    Swal.fire('Error login', 'El usuario esta eliminado', 'error');
+                }
+                
+            }
+            else{
+                Swal.fire('Error login', 'Mal puestas las credenciales', 'error');
+            }
+        }
+        catch(e){
+            Swal.fire('Error login', 'No se puede logear, puede que esten mal escritas las credenciales', 'error');
+        }
+    }
+    async function ingresar(){
+        if(isEmpty(usuarioname)){
+            Swal.fire('Error login', 'Nombre usuario vacio', 'error');
+            return
+        }
+        if (isEmpty(contra)){
+            Swal.fire('Error login', 'Contraseña vacia', 'error');
+            return
+        }
+        const pb = new PocketBase(ruta);
+
+        try{
+            
+            const authData = await pb.collection('users').authWithPassword(
+                usuarioname,
+                contra
+            );
+
+            if(pb.authStore.isValid){
+                if(pb.authStore.model.active){
+                    console.log(pb.authStore.model)
+                    if(pb.authStore.model.estado != "1"){
+                        // after the above you can also access the auth data from the authStore
+                        usuario.set(pb.authStore.token)
+                        coordinadora.set(pb.authStore.model.coordinador?"Si":"No")
+                        enabled.set("si")
+                        goto('/')
+                    }
+                    else{
+                        Swal.fire('Error login', 'El usuario esta inactiva', 'error');    
+                    }
+                    
                 }
                 else{
                     Swal.fire('Error login', 'El usuario esta eliminado', 'error');

@@ -113,6 +113,7 @@
                 <thead>
                     <tr>
                         <th class="text-base ml-3 pl-3 mr-1 pr-1 ">Fecha</th>
+                        <th class="text-base mx-1 px-1">Unidad</th>
                         <th class="text-base mx-1 px-1">Diagnostico</th>
                         <th class="text-base mx-1 px-1">Observacion</th>
                         <th class="text-base mx-1 px-1">Acciones</th>
@@ -123,6 +124,9 @@
                         <tr>
                             <td class="text-base ml-3 pl-3 mr-1 pr-1 lg:ml-10">
                                 {new Date(m.created).toLocaleDateString()}
+                            </td>
+                            <td class="text-base ml-3 pl-3 mr-1 pr-1 lg:ml-10">
+                                {m.unidad}
                             </td>
                             <td class="text-base mx-1 px-1">
                                 {m.diagnostico.split(",").join(" , ")}
@@ -153,6 +157,9 @@
 </Navbarr>
 <dialog id="formVer" class="modal">
     <div class="modal-box md:max-w-7xl">
+        <form method="dialog">
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 rounded-xl">✕</button>
+        </form>
         <div class="form-control">
             <BebeHistorial
                 nombrebebe = {nombre}

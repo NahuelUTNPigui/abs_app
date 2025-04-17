@@ -6,6 +6,7 @@
     import { goto } from '$app/navigation';
     import * as XLSX from "xlsx"
     import ubicaciones from "$lib/ubicaciones"
+    import {isCoordinadora} from "$lib/permisos"
     let ruta = import.meta.env.VITE_RUTA
     const pb = new PocketBase(ruta);
     let usuarioid = ""
@@ -28,6 +29,7 @@
     let idbebebuscar =""
     let idabrazadorabuscar = ""
     let idubicacion=""
+    let nombreunidad = ""
     // Validar
     let malturno = false
     let malubicacion = false
@@ -44,7 +46,7 @@
         const recordaz = await pb.collection('abrazos').getFullList({filter:"active=true",expand:'abrazadora,bebe',sort:"-fecha"});
         abrazos = recordaz
         abrazosrows = recordaz
-        let pb_json = await JSON.parse(localStorage.getItem('pocketbase_auth'))
+        let pb_json = JSON.parse(localStorage.getItem('pocketbase_auth'))
         usuarioid = pb_json.model.id
         escoordinador = pb_json.model.coordinador
     })
@@ -105,11 +107,16 @@
             }
         }
     }
+    //deberia tener una funcion que actualice la data del usuario
     async function guardar(){
         let data = {
             turno,
             ubicacion,
             fecha:fechaabrazo+" 03:00:00"
+        }
+        if(!isCoordinadora()){
+            Swal.fire("Error permisos","No tienes permisos de edicion","error")
+            return
         }
         try{
             let recordaedit = await pb.collection('abrazos').update(idabrazo,data);
@@ -146,6 +153,10 @@
         nombrebebe = ""
     }
     async function eliminar(id){
+        if(!isCoordinadora()){
+            Swal.fire("Error permisos","No tienes permisos de edicion","error")
+            return
+        }
         Swal.fire({
             title: 'Eliminar abrazo',
             text: '¿Seguro que deseas eliminar abrazo?',
@@ -225,8 +236,8 @@
         const range = XLSX.utils.decode_range('A1:K1');
         ws['!merges'] = [{ s: { r: range.s.r, c: range.s.c }, e: { r: range.e.r, c: range.e.c } }];
         XLSX.utils.sheet_add_json(ws, csvdata, { origin: 'A2' });
-        let totalfilas = [{"CANTIDAD ABRAZOS":csvdata.length}]
-        XLSX.utils.sheet_add_json(ws,totalfilas,{origin:'G2'})
+        //let totalfilas = [{"CANTIDAD ABRAZOS":csvdata.length}]
+        //XLSX.utils.sheet_add_json(ws,totalfilas,{origin:'G2'})
         XLSX.utils.book_append_sheet(wb, ws, 'Abrazos');
         // Filtros
         let bebesfilter = bebes.filter(b=>idbebebuscar==b.id)
@@ -456,82 +467,84 @@
             {/each}
         </tbody>
     </table>
-    <dialog id="formAbrazo" class="modal">
-        <div class="modal-box w-11/12 max-w-1md">
-            <h3 class="text-lg font-bold">Nuevo abrazo</h3>
-            <div class="form-control">
-                <label for="fecha" class="label">
-                    <span class="label-text text-base">Fecha*</span>
-                </label>
-                <label class="input-group">
-                    <input id ="fecha" type="date"
-                        class="input input-bordered" 
-                        bind:value={fechaabrazo}
-                        on:change={()=>onChangeInput("FECHA")}
-                    />
-                    <div class={`label ${malfecha?"":"hidden"}`}>
-                        <span class="label-text-alt text-red-400">Error debe seleccionar una fecha</span>
-                    </div>
-                </label>
-                <label for="bebe" class="label">
-                    <span class="label-text text-base">Bebé</span>
-                </label>
-                <label class="input-group">
-                    <input id ="bebe" type="text" disabled class="input input-bordered" bind:value={nombrebebe}/>
-                </label>
-                <label for="abrazadora" class="label">
-                    <span class="label-text text-base">Abrazadora</span>
-                </label>
-                <label class="input-group">
-                    <input id ="abrazadora" type="text" disabled  class="input input-bordered" bind:value={nombreabrazadora}/>
-                </label>
-                <label class="form-control w-3/5">
-                    <div class="label">
-                        <span class="label-text text-base">Unidad*</span>
-                    </div>
-                    <select 
-                        class={`input input-bordered ${malubicacion?"input-error":""}`}  
-                        name="ubicacion" 
-                        id="ubicacion" 
-                        bind:value={ubicacion}
-                        on:change={()=>onChangeInput("UNIDAD")}
-                    >
-                        {#each ubicaciones as u}
-                            <option value={u.nombre}>{`${u.nombre}`}</option>
-                        {/each}
-                    </select>
-                    <div class={`label ${malubicacion?"":"hidden"}`}>
-                        <span class="label-text-alt text-red-400">Error debe seleccionar una unidad</span>
-                    </div>
-                </label>
-                <label class="form-control w-3/5">
-                    <div class="label">
-                        <span class="label-text text-base">Turno*</span>
-                    </div>
-                    <select 
-                    class={`input input-bordered ${malturno?"input-error":""}`} 
-                        name="turno" id="turno" 
-                        bind:value={turno}
-                        on:change={()=>onChangeInput("TURNO")}
-                    >
-                        {#each turnos as t}
-                            <option value={t.nombre}>{`${t.nombre}`}</option>
-                        {/each}
-                    </select>
-                    <div class={`label ${malturno?"":"hidden"}`}>
-                        <span class="label-text-alt text-red-400">Error debe seleccionar un turno</span>
-                    </div>
-                </label>
-                
-            </div>
-            <div class="modal-action justify-start">
-                <form method="dialog">
-                  <!-- if there is a button, it will close the modal -->
-                  <button class="btn btn-success" disabled='{!botonhabilitado}' on:click={guardar}>Guardar</button>
-                  <button class="btn btn-error" on:click={cerrar}>Cancelar</button>
-                </form>
-            </div>
-        </div>
-    </dialog>
+    
     
 </Navbarr>
+<dialog id="formAbrazo" class="modal">
+    <div class="modal-box w-11/12 max-w-1md">
+        <h3 class="text-lg font-bold">Editar abrazo</h3>
+        <div class="form-control">
+            <label for="fecha" class="label">
+                <span class="label-text text-base">Fecha*</span>
+            </label>
+            <label class="input-group">
+                <input id ="fecha" type="date"
+                    class="input input-bordered" 
+                    bind:value={fechaabrazo}
+                    on:change={()=>onChangeInput("FECHA")}
+                />
+                <div class={`label ${malfecha?"":"hidden"}`}>
+                    <span class="label-text-alt text-red-400">Error debe seleccionar una fecha</span>
+                </div>
+            </label>
+            <label for="bebe" class="label">
+                <span class="label-text text-base">Bebé</span>
+            </label>
+            <label class="input-group">
+                <input id ="bebe" type="text" disabled class="input input-bordered" bind:value={nombrebebe}/>
+            </label>
+            <label for="abrazadora" class="label">
+                <span class="label-text text-base">Abrazadora</span>
+            </label>
+            <label class="input-group">
+                <input id ="abrazadora" type="text" disabled  class="input input-bordered" bind:value={nombreabrazadora}/>
+            </label>
+            <label class="form-control w-3/5">
+                <div class="label">
+                    <span class="label-text text-base">Unidad</span>
+                </div>
+                <select 
+                    class={`input input-bordered ${malubicacion?"input-error":""}`}  
+                    name="ubicacion" 
+                    id="ubicacion" 
+                    bind:value={ubicacion}
+                    
+                    on:change={()=>onChangeInput("UNIDAD")}
+                >
+                    {#each ubicaciones as u}
+                        <option value={u.nombre}>{`${u.nombre}`}</option>
+                    {/each}
+                </select>
+                <div class={`label ${malubicacion?"":"hidden"}`}>
+                    <span class="label-text-alt text-red-400">Error debe seleccionar una unidad</span>
+                </div>
+            </label>
+            <label class="form-control w-3/5">
+                <div class="label">
+                    <span class="label-text text-base">Turno*</span>
+                </div>
+                <select 
+                class={`input input-bordered ${malturno?"input-error":""}`} 
+                    name="turno" id="turno" 
+                    bind:value={turno}
+                    on:change={()=>onChangeInput("TURNO")}
+                >
+                    {#each turnos as t}
+                        <option value={t.nombre}>{`${t.nombre}`}</option>
+                    {/each}
+                </select>
+                <div class={`label ${malturno?"":"hidden"}`}>
+                    <span class="label-text-alt text-red-400">Error debe seleccionar un turno</span>
+                </div>
+            </label>
+            
+        </div>
+        <div class="modal-action justify-start">
+            <form method="dialog">
+              <!-- if there is a button, it will close the modal -->
+              <button class="btn btn-success" disabled='{!botonhabilitado}' on:click={guardar}>Guardar</button>
+              <button class="btn btn-error" on:click={cerrar}>Cancelar</button>
+            </form>
+        </div>
+    </div>
+</dialog>

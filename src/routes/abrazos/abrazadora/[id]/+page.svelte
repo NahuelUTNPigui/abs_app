@@ -7,6 +7,7 @@
     import * as XLSX from "xlsx"
     import ubicaciones from "$lib/ubicaciones"
     import Trend from '$lib/graficos/Trend.svelte';
+    
     let ruta = import.meta.env.VITE_RUTA
     const pb = new PocketBase(ruta);
     let usuarioid = ""

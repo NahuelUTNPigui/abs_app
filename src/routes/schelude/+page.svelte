@@ -9,6 +9,10 @@
     let viernes = data.viernes
     let sabado = data.sabado
     let domingo = data.domingo
+    let abrazadorasdia = data.abrazadorasdia
+    let reemplazodia = data.reemplazodia
+    let demas = data.demas
+
     function mostrarNumero(numero){
         Swal.fire({
             title:"Numero de la abrazadora",
@@ -21,6 +25,12 @@
 <Navbarr>
     <div class="w-11/12 px-1 lg:px-4 mx-1 lg:mx-4">
         <div >
+            <details class="hidden my-2 collapse collapse-plus bg-base-200">
+                <summary class="collapse-title text-xl font-bold">ASISTENCIA</summary>
+                <div class="collapse-content">
+                    
+                </div>
+            </details>
             <details class="my-2 collapse collapse-plus bg-base-200">
                 <summary class="collapse-title text-xl font-bold">LUNES</summary>
                 <div class="collapse-content">

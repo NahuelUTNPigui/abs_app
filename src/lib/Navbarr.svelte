@@ -60,7 +60,7 @@
             <div class="flex">
               <span>{nombreusuario}</span>
               
-              <details class="dropdown">
+              <details class="dropdown dropdown-end">
                 <summary class="btn btn-square btn-ghost">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"

@@ -190,11 +190,16 @@ export async function load({params}){
       expand:"registrado,modificado"
     })
     let hoy = new Date().toISOString().split("T")[0]
-    
+    let ayer = new Date()
+    ayer.setDate(ayer.getDate() - 1)
     let abrazoshoy = await pb.collection("abrazos").getFullList({
         filter:`fecha ~ '${hoy}' && active=true`,
         expand:'abrazadora,bebe'
     })
+    let abrazosayer = await pb.collection("abrazos").getFullList({
+      filter:`fecha ~ '${ayer.toISOString().split("T")[0]}' && active=true`,
+      expand:'abrazadora,bebe'
+  })
     
     let partehoy=partesdiarios.items[0]?partesdiarios.items[0]:null
     let parteayer=partesdiarios.items[1]?partesdiarios.items[1]:null
@@ -209,6 +214,7 @@ export async function load({params}){
       domingo,
       partehoy,
       parteayer,
-      abrazoshoy
+      abrazoshoy,
+      abrazosayer
     }
 }

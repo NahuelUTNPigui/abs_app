@@ -8,18 +8,22 @@
   import {coordinadora} from '$lib/coordinadora'
   import { goto } from '$app/navigation';
   import estados from "$lib/estadouser"
+  import {isCoordinadora} from "$lib/permisos"
   //VARIABLES
   // Capaz haga falta una nueva pagina para el modal de nueva usuario
   let ruta = import.meta.env.VITE_RUTA
   const pb = new PocketBase(ruta);
 
+  //filtros
+  let estadofilter = ""
+  let nombrebuscar = ""
   let usuarioid = ""
   let escoordinador=false
   let habilitado = false
   let voluntarias = []
   let voluntariasrows = []
   let cronogramas = []
-  let nombrebuscar = ""
+  
   let nombre = ""
   let apellido = ""
   let cel = ""
@@ -85,6 +89,8 @@
 
     voluntarias  = recordsv.sort((v1,v2)=>sortVoluntaria(v1,v2))
     voluntariasrows = voluntarias
+
+    filterupdate()
     let pb_json = await JSON.parse(localStorage.getItem('pocketbase_auth'))
     usuarioid = pb_json.model.id
     escoordinador = pb_json.model.coordinador
@@ -193,8 +199,10 @@
   }
   async function eliminar(id){
     let c = $coordinadora
-    if(c=="No" || c==""){
+    //if(c=="No" || c==""){
+    if(!escoordinador && idvol != usuarioid){
       Swal.fire('Error eliminar', 'No tienes permisos para eliminar la voluntaria', 'error');
+      return
     }
     Swal.fire({
       title: 'Eliminar voluntaria',
@@ -326,9 +334,8 @@
     
   }
   async function guardar(){
-    let c = $coordinadora
-    if(idvol=="" && (c=="No" || c=="")){
-      Swal.fire('Error guardar', 'No tienes permisos para guardar la voluntaria', 'error');
+    if(!isCoordinadora()){
+      Swal.fire("Error permisos","No tienes permisos de edicion","error")
       return
     }
     if(idvol ==""){
@@ -441,6 +448,10 @@
       }
     }
     else{
+      if(!escoordinador && idvol != usuarioid){
+        Swal.fire('Error guardar', 'No tienes permisos para editar la voluntaria', 'error');
+        return
+      }
       let valido = validarform(false)
       if (!valido){
         return
@@ -470,6 +481,7 @@
         const recordu = await pb.collection('users').update(idvol,data);
         voluntarias = await pb.collection('users').getFullList({filter:"active=true"});
         voluntariasrows = voluntarias
+        filterupdate()
         voluntariasrows.sort((v1,v2)=>sortVoluntaria(v1,v2))
         nombre = ""
         apellido = ""
@@ -539,6 +551,9 @@
         return false
       }
     })
+    if(estadofilter != ""){
+      voluntariasrows = voluntariasrows.filter(v=>v.estado == estadofilter)
+    }
   }
   function onChangeInput(inputNombre,esguardar){
     if(inputNombre == "NOMBRE" ){
@@ -615,9 +630,10 @@
     malcontra = false
   }
   function getEstadoNombre(estadoid){
-    let e = estados.filter(est=>est.id == estadoid)[0]
+    
+    let e = estados.filter(est=>est.id == estadoid+"")[0]
     if(e){
-      return estado.nombre
+      return e.nombre
     }
     else{
       return ""
@@ -645,6 +661,27 @@
         </div>
         
     </div>
+    <div class="grid lg:grid-cols-2 m-1 gap-2 lg:gap-10 mb-2 mt-1" >
+      <div>
+        <label class="form-control ">
+          <div class="label">
+            <span class="label-text">Estado</span>
+          </div>
+          <select class="select select-bordered" 
+          
+            bind:value={estadofilter}
+            on:change={filterupdate}
+          >
+            
+            <option value="">Todas</option>
+            
+            {#each estados as e}
+              <option value={e.id}>{e.nombre}</option>
+            {/each}
+          </select>
+        </label>
+      </div>
+    </div>
     <div class="w-full grid justify-items-center mx-1  lg:w-3/4 overflow-x-auto">
     <table class="table table-lg w-full" >
       <!-- head -->
@@ -653,6 +690,7 @@
           <th class="text-base">Abrazadora</th>
           
           <th class="text-base">Acciones</th>
+          <th class="text-base">Estado</th>
           
         </tr>
       </thead>
@@ -660,7 +698,6 @@
         {#each voluntariasrows as v}
           <tr>
             <td class="text-base">{v.apellido},{v.name}</td>
-            
             <td class="flex gap-2">
               <div class="tooltip" data-tip="Cronograma">
                 <button on:click={()=>openSchModal(v.id)}>
@@ -693,6 +730,7 @@
               </div>
               
             </td>
+            <td class="text-base">{getEstadoNombre(v.estado)}</td>
           </tr>
         {/each}
       </tbody>

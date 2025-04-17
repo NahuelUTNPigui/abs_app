@@ -5,21 +5,39 @@
     import PocketBase from 'pocketbase'
     import { onMount } from 'svelte';
     import turnos from "$lib/turnos"
+    import {isCoordinadora} from "$lib/permisos"
     let ruta = import.meta.env.VITE_RUTA
     const pb = new PocketBase(ruta);
     const HOY = new Date().toISOString().split("T")[0]
+    //Datos parte
     let idparte = ""
     let parte = ""
-    let fechadesde = ""
-    let fechahasta = ""
+    let cadenaconsentimientos = ""
+    let cadenaentran = ""
+    let cadenasalen = ""
+    let cadenaunidades = ""
+    let cadenasituaciones = ""
+
+    let consentimientos = []
+    let entran = []
+    let salen = []
+    let unidades = []
+    let situaciones = []
+
+
+
     let turno = "man"
+    let fecha = HOY
+    let malfecha = false
     let botonhabilitado = false
     let malparte = false
+
+    let fechadesde = ""
+    let fechahasta = ""
     let partesrow = []
     let partes = []
     let idabrazadora = ""
-    let fecha = HOY
-    let malfecha = false
+    
     onMount(async ()=>{
         if(browser){
             idabrazadora = JSON.parse(localStorage.getItem("pocketbase_auth")).model.id
@@ -35,11 +53,70 @@
     }
     function validarBoton(){
         botonhabilitado = true
-        if(isEmpty(parte)){
-            botonhabilitado = false    
-        }
+        
         if(isEmpty(fecha)){
             botonhabilitado = false    
+        }
+    }
+    function quitarConsentimiento(p_c){
+        consentimientos  = consentimientos.filter(c=>c!=p_c)
+    }
+    function inputconsentimiento(){
+        if(cadenaconsentimientos.slice(-1)==","){
+            let s = cadenaconsentimientos.slice(0,-1)
+            
+            consentimientos.push(s)
+            consentimientos = consentimientos
+            cadenaconsentimientos = ""
+        }
+    }
+    function quitarEntran(p_c){
+        entran  = entran.filter(c=>c!=p_c)
+    }
+    function inputEntran(){
+        if(cadenaentran.slice(-1)==","){
+            let s = cadenaentran.slice(0,-1)
+            
+            entran.push(s)
+            entran = entran
+            cadenaentran = ""
+        }
+    }
+    function quitarSalen(p_c){
+        salen  = salen.filter(c=>c!=p_c)
+    }
+    function inputSalen(){
+        if(cadenasalen.slice(-1)==","){
+            let s = cadenasalen.slice(0,-1)
+            
+            salen.push(s)
+            salen = salen
+            cadenasalen = ""
+        }
+    }
+    function quitarUnidades(p_c){
+        //Va traer problemas el unidades
+        unidades  = unidades.filter(c=>c!=p_c)
+    }
+    function inputUnidades(){
+        if(cadenaunidades.slice(-1)==","){
+            let s = cadenaunidades.slice(0,-1)
+            
+            unidades.push(s)
+            unidades = unidades
+            cadenaunidades = ""
+        }
+    }
+    function quitarSituaciones(p_c){
+        situaciones  = situaciones.filter(c=>c!=p_c)
+    }
+    function inputSituaciones(){
+        if(cadenasituaciones.slice(-1)==","){
+            let s = cadenasituaciones.slice(0,-1)
+            
+            situaciones.push(s)
+            situaciones = situaciones
+            cadenasituaciones = ""
         }
     }
     function onchange(inputName){
@@ -65,7 +142,11 @@
     }
     
     async function guardar(){
-        if(malparte || malfecha){
+        if(!isCoordinadora()){
+            Swal.fire("Error permisos","No tienes permisos de edicion","error")
+            return
+        }
+        if(malfecha){
             Swal.fire("Error parte","El parte tiene errores","error")
             return
         }
@@ -74,7 +155,12 @@
                 parte,
                 fecha:fecha +' 03:00:00.000Z',
                 registrado:idabrazadora,
-                turno
+                turno,
+                consentimientos:consentimientos.join(),
+                entran:entran.join(),
+                salen:salen.join(),
+                unidades:unidades.join(),
+                situaciones:situaciones.join()
             }
             try{
                 const recordp = await pb.collection('partes').create(data)
@@ -92,7 +178,12 @@
                 parte,
                 fecha:fecha +' 03:00:00.000Z',
                 modificado:idabrazadora,
-                turno
+                turno,
+                consentimientos:consentimientos.join(),
+                entran:entran.join(),
+                salen:salen.join(),
+                unidades:unidades.join(),
+                situaciones:situaciones.join()
             }
             try{
                 const recordp = await pb.collection('partes').update(idparte,data)
@@ -118,18 +209,36 @@
         idparte = id
         turno = ""
         parte = ""
+        cadenaconsentimientos = ""
+        cadenaentran = ""
+        cadenasalen = ""
+        cadenaunidades = ""
+        cadenasituaciones = ""
+        consentimientos = []
+        entran = []
+        salen = []
+        unidades = []
+        situaciones = []
         if(id!="0"){
             
             let p = partesrow.filter(ps=>ps.id==id)[0]
             parte = p.parte
             turno = p.turno
+            consentimientos =  p.consentimientos.split(",")
+            entran = p.entran.split(",")
+            salen = p.salen.split(",")
+            unidades = p.unidades.split(",")
+            situaciones = p.situaciones.split(",")
             botonhabilitado = true
         }
         formParte.showModal()
         
     }
     async function eliminar(id){
-        
+        if(!isCoordinadora()){
+            Swal.fire("Error permisos","No tienes permisos de edicion","error")
+            return
+        }
         Swal.fire({
             title: 'Eliminar parte',
             text: '¿Seguro que deseas eliminar el parte?',
@@ -235,67 +344,227 @@
 
             {/each}
     </table>
-    <dialog id="formParte" class="modal">
-        <div class="modal-box w-11/12 max-w-xl">
-            <form method="dialog">
-                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-            </form>
-            {#if idparte=="0"}
-                <h3 class="text-lg font-bold">Nuevo parte</h3>
-            {:else}
-                <h3 class="text-lg font-bold">Editar parte</h3>
-            {/if}
-            <div class="form-control">
-                <label for="fecha" class="label">
-                    <span class="label-text text-base">Fecha</span>
-                </label>
-                <label class="input-group">
-                    <input id ="fecha" type="date" 
-                    class={`input input-bordered w-3/4 lg:w-1/2 ${malfecha?"input-error":""}`}
-                        bind:value={fecha}
-                        on:change={()=>onchange("FECHA")}
-                        
-                        
-                    />
-                    <div class={`label ${malfecha?"":"hidden"}`}>
-                        <span class="label-text-alt text-red-400">Error debe escribir una fecha</span>
-                    </div>
-                </label>
-                <div>
-                    <div class="mb-4 lg:mb-0">
-                        <div class="label">
-                            <span class="label-text">Turno</span>
-                        </div>
-                        <select class="select select-bordered " bind:value={turno}>
-                            {#each turnos as t}
-                                <option value={t.nombre}>{t.nombre}</option>
-                            {/each}
-                        </select>
-                    </div>
-                </div>
-                <div class="mx-1">
-                    <div class="mb-4 lg:mb-1 w-full lg:w-2/3">
-                        <label class="form-control">
-                            <div class="label">
-                                <span class="label-text">Parte</span>                    
-                            </div>
-                            <textarea style="line-height: 1.3;" class="textarea textarea-bordered h-64" bind:value={parte} on:change={()=>onchange("PARTE")}  on:input={validarBoton} placeholder=""></textarea>
-                        </label>
-                        <div class={`label ${malparte?"":"hidden"}`}>
-                            <span class="label-text-alt text-red-400">Error, debe escribir algo en el parte</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-action justify-start">
-                <form method="dialog">
-                  <!-- if there is a button, it will close the modal -->
-                  <button class="btn btn-success" disabled='{!botonhabilitado}' on:click={guardar}>Guardar</button>
-                  <button class="btn btn-neutral" on:click={cerrar}>Cancelar</button>
-                  <button class="btn btn-error" on:click={()=>eliminar(idparte)}>Eliminar</button>
-                </form>
-            </div>
-        </div>
-    </dialog>
+    
 </Navbarr>
-
+<dialog id="formParte" class="modal">
+    <div class="modal-box w-11/12 max-w-xl">
+        <form method="dialog">
+            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+        </form>
+        {#if idparte=="0"}
+            <h3 class="text-lg font-bold">Nuevo parte</h3>
+        {:else}
+            <h3 class="text-lg font-bold">Editar parte</h3>
+        {/if}
+        <div class="form-control">
+            <label for="fecha" class="label">
+                <span class="label-text text-base">Fecha*</span>
+            </label>
+            <label class="input-group">
+                <input id ="fecha" type="date" 
+                class={`input input-bordered w-3/4 lg:w-1/2 ${malfecha?"input-error":""}`}
+                    bind:value={fecha}
+                    on:change={()=>onchange("FECHA")}
+                    
+                    
+                />
+                <div class={`label ${malfecha?"":"hidden"}`}>
+                    <span class="label-text-alt text-red-400">Error debe escribir una fecha</span>
+                </div>
+            </label>
+            <div>
+                <div class="mb-4 lg:mb-0">
+                    <div class="label">
+                        <span class="label-text">Turno</span>
+                    </div>
+                    <select class="select select-bordered " bind:value={turno}>
+                        {#each turnos as t}
+                            <option value={t.nombre}>{t.nombre}</option>
+                        {/each}
+                    </select>
+                </div>
+            </div>
+            <div class="mx-1">
+                <div class="mb-4 lg:mb-1 w-full lg:w-2/3">
+                    <label class="form-control">
+                        <div class="label">
+                            <span class="label-text">Parte</span>                    
+                        </div>
+                        <textarea style="line-height: 1.3;" class="textarea textarea-bordered h-32" bind:value={parte} on:change={()=>onchange("PARTE")}  on:input={validarBoton} placeholder=""></textarea>
+                    </label>
+                </div>
+            </div>
+            <!--Consentimientos-->
+            <div class="mx-1">
+                <div class="mb-4 lg:mb-1 w-full lg:w-2/3">
+                    <div class="label">
+                        <span class="label-text">Consentimientos entregados</span> 
+                        <span class="label-text">Ingresalos separados por coma</span> 
+                    </div>
+                    <input type="text"
+                        class={`
+                            input input-bordered w-full 
+                        `}
+                        bind:value={cadenaconsentimientos}
+                        on:input={inputconsentimiento}
+                    />
+                    {#if consentimientos.length != 0}
+                        <div class="flex-row">
+                            {#each consentimientos as c}
+                                <button class="mt-1" on:click={()=>quitarConsentimiento(c)}>
+                                    <div class="badge badge-primary badge-outline">
+                                        {c} 
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                        </svg>
+                                    </div>
+                                </button> 
+                            {/each}
+                            
+                        </div>
+                    {/if}
+                    
+                </div>
+            </div>
+            <!--Entran-->
+            <div class="mx-1">
+                <div class="mb-4 lg:mb-1 w-full lg:w-2/3">
+                    <div class="label">
+                        <span class="label-text">Entran al programa</span>                    
+                        <span class="label-text">Ingresalos separados por coma</span> 
+                    </div>
+                    <input type="text"
+                        class={`
+                            input input-bordered w-full 
+                        `}
+                        bind:value={cadenaentran}
+                        on:input={inputEntran}
+                    />
+                    {#if entran.length != 0}
+                        <div class="flex-row">
+                            {#each entran as c}
+                                <button class="mt-1" on:click={()=>quitarEntran(c)}>
+                                    <div class="badge badge-primary badge-outline">
+                                        {c} 
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                        </svg>
+                                    </div>
+                                </button> 
+                            {/each}
+                            
+                        </div>
+                    {/if}
+                    
+                </div>
+            </div>
+            <!--Salen-->
+            <div class="mx-1">
+                <div class="mb-4 lg:mb-1 w-full lg:w-2/3">
+                    <div class="label">
+                        <span class="label-text">Salen del programa</span>            
+                        <span class="label-text">Ingresalos separados por coma</span>         
+                    </div>
+                    <input type="text"
+                        class={`
+                            input input-bordered w-full 
+                        `}
+                        bind:value={cadenasalen}
+                        on:input={inputSalen}
+                    />
+                    {#if salen.length != 0}
+                        <div class="flex-row">
+                            {#each salen as c}
+                                <button class="mt-1" on:click={()=>quitarSalen(c)}>
+                                    <div class="badge badge-primary badge-outline">
+                                        {c} 
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                        </svg>
+                                    </div>
+                                </button> 
+                            {/each}
+                            
+                        </div>
+                    {/if}
+                    
+                </div>
+            </div>
+            <!--Unidades-->
+            <div class="mx-1">
+                <div class="mb-4 lg:mb-1 w-full lg:w-2/3">
+                    <div class="label">
+                        <span class="label-text">Unidades</span>                    
+                        <span class="label-text">Ingresalos separados por coma</span> 
+                    </div>
+                    <input type="text"
+                        class={`
+                            input input-bordered w-full 
+                        `}
+                        bind:value={cadenaunidades}
+                        on:input={inputUnidades}
+                    />
+                    {#if unidades.length != 0}
+                        <div class="flex-row">
+                            {#each unidades as c}
+                                <button class="mt-1" on:click={()=>quitarUnidades(c)}>
+                                    <div class="badge badge-primary badge-outline">
+                                        {c} 
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                        </svg>
+                                    </div>
+                                </button> 
+                            {/each}
+                            
+                        </div>
+                    {/if}
+                    
+                </div>
+            </div>
+            <!--Situaciones-->
+            <div class="mx-1">
+                <div class="mb-4 lg:mb-1 w-full lg:w-2/3">
+                    <div class="label">
+                        <span class="label-text">Situaciones especiales</span>        
+                        <span class="label-text">Ingresalos separados por coma</span>             
+                    </div>
+                    <input type="text"
+                        class={`
+                            input input-bordered w-full 
+                        `}
+                        bind:value={cadenasituaciones}
+                        on:input={inputSituaciones}
+                    />
+                    {#if situaciones.length != 0}
+                        <div class="flex-row">
+                            {#each situaciones as c}
+                                <button class="mt-1" on:click={()=>quitarSituaciones(c)}>
+                                    <div class="badge badge-primary badge-outline">
+                                        {c} 
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                        </svg>
+                                    </div>
+                                </button> 
+                            {/each}
+                            
+                        </div>
+                    {/if}
+                    
+                </div>
+            </div>
+            
+        </div>
+        <div class="modal-action justify-start">
+            <form method="dialog">
+              <!-- if there is a button, it will close the modal -->
+              <button class="btn btn-success" disabled='{!botonhabilitado}' on:click={guardar}>Guardar</button>
+              <button class="btn btn-neutral" on:click={cerrar}>Cancelar</button>
+              {#if idparte != "0"}
+                <button class="btn btn-error" on:click={()=>eliminar(idparte)}>Eliminar</button>
+              {/if}
+            </form>
+        </div>
+    </div>
+</dialog>

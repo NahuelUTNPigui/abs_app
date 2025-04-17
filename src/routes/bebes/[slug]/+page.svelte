@@ -10,6 +10,7 @@
     import Swal from 'sweetalert2'
     import sexos from "$lib/sexo"
     import disponibilidades from "$lib/disponibilidades"
+    import {isCoordinadora} from "$lib/permisos"
     //Variables
     let ruta = import.meta.env.VITE_RUTA
     const pb = new PocketBase(ruta);
@@ -61,7 +62,7 @@
     //Metodos
     onMount(async()=>{
         idbebe = $page.params.slug
-        const diagsrecord = await pb.collection('diagnosticos').getFullList()
+        const diagsrecord = await pb.collection('diagnosticos').getFullList({sort:"nombre"})
         diagnosticos = diagsrecord
         diagnosticosfilter = diagnosticos
         if(idbebe!="0"){
@@ -104,7 +105,7 @@
                 disponibilidad = record.disponibilidad
                 
                 sexo = record.sexo
-                pesoinicial = record.pesoinicial
+                pesoinicial = record.pesoingreso
                 observacion = record.observacion
                 if(fechaegreso!=''){
                     confechaegreso = true
@@ -289,6 +290,13 @@
         }        
     }
     async function guardar(){
+        let c = isCoordinadora()
+        
+        if(!c){
+            Swal.fire("Error permisos","No tienes permisos de edicion","error")
+            
+            return
+        }
         if(validarform()){
             if(idbebe=="0"){
                 let data={
@@ -313,6 +321,7 @@
                     pesoingreso:pesoinicial,
                     observacion
                 }
+                
                 try{
                     
                     const recordb = await pb.collection('bebes').create(data)
@@ -344,6 +353,7 @@
                     pesoingreso:pesoinicial,
                     pesoegreso
                 }
+                console.log(data)
                 if(fechaegreso != ""){
 
                     data.fechaegreso = fechaegreso +' 03:00:00.000Z'
@@ -709,7 +719,7 @@
                     on:input={inputdiagnostico} 
                     on:click={()=>isOpenDiagnostico = !isOpenDiagnostico}
                     
-                >
+                />
                 {#if isOpenDiagnostico}
                 <div 
                     class={`

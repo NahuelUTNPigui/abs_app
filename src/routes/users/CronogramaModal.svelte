@@ -2,6 +2,7 @@
     import PocketBase from 'pocketbase'
     import { createEventDispatcher } from 'svelte'
     import Swal from 'sweetalert2'
+    import {isCoordinadora} from "$lib/permisos"
     let ruta = import.meta.env.VITE_RUTA
     const dispatch = createEventDispatcher()
     export let voluntaria = ""
@@ -127,6 +128,10 @@
         }
     }
     async function editarcrono(){
+        if(!isCoordinadora()){
+            Swal.fire("Error permisos","No tienes permisos de edicion","error")
+            return
+        }
         const pb = new PocketBase(ruta);
         let data = {
             lunes:cronovoluntaria.lunes.turno=="no"?false:true,

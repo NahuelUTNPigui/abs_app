@@ -4,6 +4,7 @@
     import PocketBase from 'pocketbase'
     import { onMount } from 'svelte';
     import emptyString from '$lib/strings/lib'
+    import {isCoordinadora} from "$lib/permisos"
     let ruta = import.meta.env.VITE_RUTA
     const pb = new PocketBase(ruta);
     let diagnosticos = []
@@ -66,6 +67,10 @@
         }
     }
     async function guardar(){
+        if(!isCoordinadora()){
+            Swal.fire("Error permisos","No tienes permisos de edicion","error")
+            return
+        }
         let data = {
             abreviaturas,
             nombre,
@@ -91,10 +96,15 @@
         }
     }
     async function eliminar(id){
-
+        if(!isCoordinadora()){
+            Swal.fire("Error permisos","No tienes permisos de edicion","error")
+            return
+        }
         try{
             await pb.collection("diagnosticos").delete(id)
-            let records=await pb.collection('diagnosticos').getFullList()
+            let records=await pb.collection('diagnosticos').getFullList(
+                {sort:"nombre"}
+            )
             diagnosticos = records
             filterupdate()
             Swal.fire("Éxito eliminar","Se pudo eliminar el diagnóstico","success")

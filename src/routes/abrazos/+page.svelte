@@ -7,6 +7,7 @@
     import ubicaciones from '$lib/ubicaciones'
     import guardarHistorial from "$lib/bd/historialbebe"
     import disponibilidades from "$lib/disponibilidades"
+    import {isCoordinadora} from "$lib/permisos"
     let ruta = import.meta.env.VITE_RUTA
     const pb = new PocketBase(ruta);
     const HOY = new Date()
@@ -194,6 +195,10 @@
         return true
     }
     async function guardar(){
+        if(!isCoordinadora()){
+            Swal.fire("Error permisos","No tienes permisos de edicion","error")
+            return
+        }
         if(!validarform()){
             return
         }
@@ -334,6 +339,7 @@
         turno = ""
         ubicacion = ""
         fechaabrazo = ""
+        observacion = ""
         malbebe = false
         malabrazadora = false
         malubicacion = false
@@ -355,12 +361,13 @@
     function cambiarFiltro(){
         bebesrows=bebes
         if(iddisponible !== ""){
-            if(iddisponible == 0){
-                bebesrows = bebesrows.filter(b=>b.disponibilidad != 3)
-            }
-            else{
-                bebesrows = bebesrows.filter(b=>b.disponibilidad == iddisponible)
-            }  
+            bebesrows = bebesrows.filter(b=>b.disponibilidad == iddisponible)
+            //if(iddisponible == 0){
+            //    bebesrows = bebesrows.filter(b=>b.disponibilidad != 3)
+            //}
+            //else{
+            //    bebesrows = bebesrows.filter(b=>b.disponibilidad == iddisponible)
+            //}  
         }
         
         ordenarBebes({id:ordenar})
@@ -530,16 +537,19 @@
                             {#if b.apellidomama.length>10}
                                 {`${b.apellidomama}`}  <br> {`${b.nombremama}`}
                             {:else}
-                                {`${b.apellidomama},${b.nombremama}`}
+                                <button class="flex gap-1" on:click={()=>darAbrazo(b.id)}>
+                                    {getEmojiDisp(b.disponibilidad)}
+                                    {`${b.apellidomama},${b.nombremama}`}
+                                </button>
                             {/if}
                             
                             
                         </td>
                         <td class="text-base px-1">
-                            <button class="flex gap-1" on:click={()=>darAbrazo(b.id)}>
+                            
                                 {b.nombre}
-                                {getEmojiDisp(b.disponibilidad)}
-                            </button>
+                                
+                            
                             
                         </td>
                         <td class="text-base  px-1 flex">
@@ -630,6 +640,7 @@
                     name="ubicacion" id="ubicacion" 
                     bind:value={ubicacion}
                     class={`input input-bordered ${malubicacion?"input-error":""}`} 
+                    disabled
                     on:change={()=>onChangeInput("UNIDAD")}
                 >
                     {#each ubicaciones as u}

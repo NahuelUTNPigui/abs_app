@@ -1,6 +1,10 @@
 <script>
     import Navbarr from '$lib/Navbarr.svelte';
+    import { onMount } from 'svelte';
     import Swal from 'sweetalert2'
+    import PocketBase from 'pocketbase' 
+    let ruta = import.meta.env.VITE_RUTA
+    const pb = new PocketBase(ruta);
     function diasemana(dia){
         if(dia == 1){
             return "lunes"
@@ -58,6 +62,10 @@
     else {
         schdia = data.domingo
     }
+    onMount(async ()=>{
+            await pb.collection('users').authRefresh();
+
+    })
 </script>
 <Navbarr>
     <div class="justify-items-center mx-1 lg:mx-5">
@@ -157,6 +165,37 @@
                 </div>
             </div>
         </div>
+        <div class="card bg-base-100 shadow-xl w-full mx-0 px-0">
+            <div class="card-body">
+                <h2 class="card-title text-xl">Abrazos del día anterior</h2>
+                <div class="grid grid-cols-1">
+                    <table class="table table-lg w-full">
+                        <thead>
+                            <tr>
+                                <th class="text-base mx-1 px-1">Bebe</th>
+                                <th class="text-base mx-1 px-1">Abrazadora</th>
+                                <th class="text-base mx-1 px-1">Unidad</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {#each data.abrazosayer as a}
+                                <tr>
+                                    <td class="text-base mx-1 px-1">
+                                        {`${a.expand.bebe.apellidomama},\n${a.expand.bebe.nombremama}\n(${a.expand.bebe.nombre})`}
+                                    </td>
+                                    <td class="text-base mx-1 px-1">
+                                        {`${a.expand.abrazadora.apellido},\n${a.expand.abrazadora.name}`}
+                                    </td>
+                                    <td class="text-base mx-1 px-1">
+                                        {`${a.ubicacion}`}
+                                    </td>
+                                </tr>
+                            {/each}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
         {#if partehoy}
             <div class="card bg-base-100 shadow-xl w-full mx-0 px-0">
                 <div class="card-body">
@@ -167,6 +206,56 @@
                             {partehoy.parte}
                         </p>
                     </div>
+                    {#if partehoy.consentimientos.length > 0}
+                        <div class="grid grid-cols-1">
+                            <h3 class="text-lg italic">Consentimientos entregados:</h3>
+                            <ul class="list-disc px-5">
+                                {#each partehoy.consentimientos.split(",") as c}
+                                <li>{c}</li>   
+                                {/each}
+                            </ul>
+                        </div>
+                    {/if}
+                    {#if partehoy.entran.length > 0}
+                        <div class="grid grid-cols-1">
+                            <h3 class="text-lg italic">Entran al programa:</h3>
+                            <ul class="list-disc px-5">
+                                {#each partehoy.entran.split(",") as c}
+                                <li>{c}</li>   
+                                {/each}
+                            </ul>
+                        </div>
+                    {/if}
+                    {#if partehoy.salen.length > 0}
+                        <div class="grid grid-cols-1">
+                            <h3 class="text-lg italic">Salen del programa:</h3>
+                            <ul class="list-disc px-5">
+                                {#each partehoy.salen.split(",") as c}
+                                <li>{c}</li>   
+                                {/each}
+                            </ul>
+                        </div>
+                    {/if}
+                    {#if partehoy.unidades.length > 0}
+                        <div class="grid grid-cols-1">
+                            <h3 class="text-lg italic">Unidades recorridas:</h3>
+                            <ul class="list-disc px-5">
+                                {#each partehoy.unidades.split(",") as c}
+                                <li>{c}</li>   
+                                {/each}
+                            </ul>
+                        </div>
+                    {/if}
+                    {#if partehoy.situaciones.length > 0}
+                        <div class="grid grid-cols-1">
+                            <h3 class="text-lg italic">Situaciones especiales:</h3>
+                            <ul class="list-disc px-5">
+                                {#each partehoy.situaciones.split(",") as c}
+                                <li>{c}</li>   
+                                {/each}
+                            </ul>
+                        </div>
+                    {/if}
                     <div class="grid grid-cols-2">
                         <span class="text-xs">
                             {`Registrado por: ${partehoy.expand.registrado.apellido}, ${partehoy.expand.registrado.name}`}
@@ -180,7 +269,7 @@
                 </div>
             </div>
         {/if}
-        {#if parteayer}
+        {#if false && parteayer}
             <div class="card bg-base-100 shadow-xl w-full mx-0 px-0">
                 <div class="card-body">
                     <h2 class="card-title text-xl">PARTE {new Date(parteayer.fecha).toLocaleDateString()}</h2>
